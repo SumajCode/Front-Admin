@@ -2,20 +2,17 @@
 
 import * as React from 'react'
 import {
-  BookOpen,
-  Bot,
+  BookUser,
   Command,
   Frame,
   LifeBuoy,
   Map,
+  Newspaper,
   PieChart,
   Send,
-  Settings2,
-  SquareTerminal,
 } from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
-
 import { NavSecondary } from '@/components/nav-secondary'
 import { NavUser } from '@/components/nav-user'
 import {
@@ -30,31 +27,27 @@ import {
 
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
+    name: 'Admin',
+    email: 'admin@gmail.com',
     avatar: '/avatars/shadcn.jpg',
   },
   navMain: [
     {
-      title: 'Playground',
+      title: 'Docentes',
       url: '#',
-      icon: SquareTerminal,
+      icon: BookUser,
       isActive: true,
       items: [
         {
-          title: 'History',
-          url: '#',
+          title: 'Gestionar Docentes',
+          url: '/admin/docentes',
         },
         {
-          title: 'Starred',
-          url: '#',
-        },
-        {
-          title: 'Settings',
-          url: '#',
+          title: 'Historial de Docentes',
+          url: '/admin/historial',
         },
       ],
-    },
+    },/*Por si es necesario
     {
       title: 'Models',
       url: '#',
@@ -73,55 +66,14 @@ const data = {
           url: '#',
         },
       ],
-    },
-    {
-      title: 'Documentation',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Introduction',
-          url: '#',
-        },
-        {
-          title: 'Get Started',
-          url: '#',
-        },
-        {
-          title: 'Tutorials',
-          url: '#',
-        },
-        {
-          title: 'Changelog',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'General',
-          url: '#',
-        },
-        {
-          title: 'Team',
-          url: '#',
-        },
-        {
-          title: 'Billing',
-          url: '#',
-        },
-        {
-          title: 'Limits',
-          url: '#',
-        },
-      ],
-    },
+    },*/
   ],
   navSecondary: [
+    {
+      title: 'Noticias y Anuncios',
+      url: '/admin/noticias',
+      icon: Newspaper
+    },
     {
       title: 'Support',
       url: '#',
