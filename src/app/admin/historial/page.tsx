@@ -1,49 +1,56 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 // Mock data for teacher history
 const teacherHistory = [
   {
     id: 1,
-    name: "Juan Pérez",
-    action: "Creación",
-    date: "15/04/2023",
-    user: "admin@gmail.com",
+    name: 'Juan Pérez',
+    action: 'Creación',
+    date: '15/04/2023',
+    user: 'admin@gmail.com',
   },
   {
     id: 2,
-    name: "María González",
-    action: "Creación",
-    date: "20/04/2023",
-    user: "admin@gmail.com",
+    name: 'María González',
+    action: 'Creación',
+    date: '20/04/2023',
+    user: 'admin@gmail.com',
   },
   {
     id: 3,
-    name: "Carlos Rodríguez",
-    action: "Creación",
-    date: "25/04/2023",
-    user: "admin@gmail.com",
+    name: 'Carlos Rodríguez',
+    action: 'Creación',
+    date: '25/04/2023',
+    user: 'admin@gmail.com',
   },
   {
     id: 4,
-    name: "Ana Martínez",
-    action: "Creación",
-    date: "30/04/2023",
-    user: "admin@gmail.com",
+    name: 'Ana Martínez',
+    action: 'Creación',
+    date: '30/04/2023',
+    user: 'admin@gmail.com',
   },
   {
     id: 4,
-    name: "Ana Martínez",
-    action: "Baja",
-    date: "15/05/2023",
-    user: "admin@gmail.com",
+    name: 'Ana Martínez',
+    action: 'Baja',
+    date: '15/05/2023',
+    user: 'admin@gmail.com',
   },
   {
     id: 5,
-    name: "Roberto Sánchez",
-    action: "Creación",
-    date: "10/05/2023",
-    user: "admin@gmail.com",
+    name: 'Roberto Sánchez',
+    action: 'Creación',
+    date: '10/05/2023',
+    user: 'admin@gmail.com',
   },
 ]
 
@@ -55,7 +62,9 @@ export default function HistorialPage() {
       <Card>
         <CardHeader>
           <CardTitle>Registro de Actividades</CardTitle>
-          <CardDescription>Historial de todas las acciones realizadas sobre los docentes.</CardDescription>
+          <CardDescription>
+            Historial de todas las acciones realizadas sobre los docentes.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -76,11 +85,11 @@ export default function HistorialPage() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        record.action === "Creación"
-                          ? "bg-green-100 text-green-800"
-                          : record.action === "Edición"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-red-100 text-red-800"
+                        record.action === 'Creación'
+                          ? 'bg-green-100 text-green-800'
+                          : record.action === 'Edición'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-red-100 text-red-800'
                       }`}
                     >
                       {record.action}
