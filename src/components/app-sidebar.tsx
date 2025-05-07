@@ -13,7 +13,6 @@ import {
 } from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
-
 import { NavSecondary } from '@/components/nav-secondary'
 import { NavUser } from '@/components/nav-user'
 import {
@@ -41,11 +40,11 @@ const data = {
       items: [
         {
           title: 'Gestionar Docentes',
-          url: '#',
+          url: '/admin/docentes',
         },
         {
           title: 'Historial de Docentes',
-          url: '#',
+          url: '/admin/historial',
         },
       ],
     },/*Por si es necesario
@@ -72,7 +71,7 @@ const data = {
   navSecondary: [
     {
       title: 'Noticias y Anuncios',
-      url: '#',
+      url: '/admin/noticias',
       icon: Newspaper
     },
     {
