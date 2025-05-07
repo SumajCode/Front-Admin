@@ -1,16 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {
-  BookUser,
-  Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  Newspaper,
-  PieChart,
-  Send,
-} from 'lucide-react'
+import { BookUser, Command, Frame, LifeBuoy, Map, Newspaper, PieChart, Send } from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
 import { NavSecondary } from '@/components/nav-secondary'
@@ -47,7 +38,7 @@ const data = {
           url: '/admin/historial',
         },
       ],
-    },/*Por si es necesario
+    } /*Por si es necesario
     {
       title: 'Models',
       url: '#',
@@ -66,13 +57,13 @@ const data = {
           url: '#',
         },
       ],
-    },*/
+    },*/,
   ],
   navSecondary: [
     {
       title: 'Noticias y Anuncios',
       url: '/admin/noticias',
-      icon: Newspaper
+      icon: Newspaper,
     },
     {
       title: 'Support',
