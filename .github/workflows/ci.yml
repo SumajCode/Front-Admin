@@ -1,0 +1,52 @@
+name: CI
+# Nombre del workflow que aparecerá en GitHub Actions.
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+# Define cuándo se ejecuta el workflow:
+# - push: cada vez que se hace push a la rama main.
+# - pull_request: cada vez que se crea o actualiza un pull request hacia la rama main.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Define un job llamado 'build' que se ejecuta en un runner de Ubuntu.
+    concurrency:
+      group: ci-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        # Paso 1: Clona el repositorio en el runner.
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+        # Paso 2: Configura Node.js versión 20.x en el runner.
+
+      - name: Install dependencies
+        run: npm install
+        # Paso 3: Instala las dependencias del proyecto usando npm.
+
+      - name: Lint
+        run: npx next lint --max-warnings=0
+        # Paso 4: Ejecuta el linter y falla si hay advertencias o errores.
+
+      - name: Build
+        run: npm run build
+        # Paso 5: Compila el proyecto.
+
+      - name: Run tests
+        run: npm test
+        # Paso 6: Ejecuta los tests definidos en el proyecto.
+
+      - name: Prettier Check
+        run: npx prettier --check .
+        # Paso extra: Verifica que el código cumpla con el formato Prettier.
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+        # Falla si hay vulnerabilidades de nivel alto o crítico.
