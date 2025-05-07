@@ -1,44 +1,51 @@
-import { Button } from "@/components/ui/button"
-import { PlusCircle, Pencil, Trash2 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from '@/components/ui/button'
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 // Mock data for teachers
 const teachers = [
   {
     id: 1,
-    name: "Juan Pérez",
-    email: "juan.perez@example.com",
-    department: "Matemáticas",
-    status: "Activo",
+    name: 'Juan Pérez',
+    email: 'juan.perez@example.com',
+    department: 'Matemáticas',
+    status: 'Activo',
   },
   {
     id: 2,
-    name: "María González",
-    email: "maria.gonzalez@example.com",
-    department: "Ciencias Politicas",
-    status: "Activo",
+    name: 'María González',
+    email: 'maria.gonzalez@example.com',
+    department: 'Ciencias Politicas',
+    status: 'Activo',
   },
   {
     id: 3,
-    name: "Carlos Rodríguez",
-    email: "carlos.rodriguez@example.com",
-    department: "Biología",
-    status: "Activo",
+    name: 'Carlos Rodríguez',
+    email: 'carlos.rodriguez@example.com',
+    department: 'Biología',
+    status: 'Activo',
   },
   {
     id: 4,
-    name: "Ana Martínez",
-    email: "ana.martinez@example.com",
-    department: "Electrónica",
-    status: "Inactivo",
+    name: 'Ana Martínez',
+    email: 'ana.martinez@example.com',
+    department: 'Electrónica',
+    status: 'Inactivo',
   },
   {
     id: 5,
-    name: "Roberto Sánchez",
-    email: "roberto.sanchez@example.com",
-    department: "Física",
-    status: "Activo",
+    name: 'Roberto Sánchez',
+    email: 'roberto.sanchez@example.com',
+    department: 'Física',
+    status: 'Activo',
   },
 ]
 
@@ -82,7 +89,9 @@ export default function DocentesPage() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        teacher.status === "Activo" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        teacher.status === 'Activo'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
                       }`}
                     >
                       {teacher.status}
@@ -94,7 +103,11 @@ export default function DocentesPage() {
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Button>
-                      <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700"
+                      >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Eliminar</span>
                       </Button>

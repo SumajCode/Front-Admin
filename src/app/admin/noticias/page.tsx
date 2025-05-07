@@ -1,29 +1,29 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { PlusCircle } from "lucide-react"
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PlusCircle } from 'lucide-react'
 
 // Mock data for news
 const news = [
   {
     id: 1,
-    title: "Inicio del año académico",
-    date: "01/03/2023",
+    title: 'Inicio del año académico',
+    date: '01/03/2023',
     content:
-      "El inicio del año académico será el 15 de marzo. Todos los docentes deben presentarse el 10 de marzo para la reunión de planificación.",
+      'El inicio del año académico será el 15 de marzo. Todos los docentes deben presentarse el 10 de marzo para la reunión de planificación.',
   },
   {
     id: 2,
-    title: "Capacitación docente",
-    date: "15/02/2023",
+    title: 'Capacitación docente',
+    date: '15/02/2023',
     content:
-      "Se realizará una capacitación docente sobre nuevas metodologías de enseñanza el 20 de febrero. La asistencia es obligatoria.",
+      'Se realizará una capacitación docente sobre nuevas metodologías de enseñanza el 20 de febrero. La asistencia es obligatoria.',
   },
   {
     id: 3,
-    title: "Actualización de plataforma educativa",
-    date: "10/01/2023",
+    title: 'Actualización de plataforma educativa',
+    date: '10/01/2023',
     content:
-      "Se ha actualizado la plataforma educativa. Se recomienda a todos los docentes familiarizarse con las nuevas funcionalidades.",
+      'Se ha actualizado la plataforma educativa. Se recomienda a todos los docentes familiarizarse con las nuevas funcionalidades.',
   },
 ]
 
