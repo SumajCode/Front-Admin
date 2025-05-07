@@ -3,9 +3,9 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, KevinU]
   pull_request:
-    branches: [main, dev]
+    branches: [main, dev, KevinU]
 # Define cuándo se ejecuta el workflow:
 # - push: cada vez que se hace push a la rama main.
 # - pull_request: cada vez que se crea o actualiza un pull request hacia la rama main.
