@@ -1,12 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 // Mock data for teacher history
 const teacherHistory = [
@@ -86,9 +79,9 @@ export default function HistorialPage() {
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         record.action === 'Creación'
-                          ? 'bg-green-100 text-green-800'
+                          ? "bg-[#00bf7d]/20 text-[#00bf7d]"
                           : record.action === 'Edición'
-                            ? 'bg-blue-100 text-blue-800'
+                            ? "bg-[#0073e6]/20 text-[#0073e6]"
                             : 'bg-red-100 text-red-800'
                       }`}
                     >
