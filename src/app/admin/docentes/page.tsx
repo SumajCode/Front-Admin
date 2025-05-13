@@ -1,14 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table,TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 // Mock data for teachers
 const teachers = [
@@ -54,7 +47,7 @@ export default function DocentesPage() {
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Gestión de Docentes</h1>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white">
           <PlusCircle className="h-4 w-4" />
           Nuevo Docente
         </Button>
@@ -89,9 +82,9 @@ export default function DocentesPage() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        teacher.status === 'Activo'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                        teacher.status === "Activo" ? 
+                        "bg-[#00bf7d]/20 text-[#00bf7d]" : 
+                        "bg-red-100 text-red-800"
                       }`}
                     >
                       {teacher.status}
@@ -99,14 +92,14 @@ export default function DocentesPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="border-[#0073e6] hover:bg-[#0073e6]/10">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 border-red-500 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Eliminar</span>
