@@ -1,72 +1,114 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { X } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { useState, useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { X } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import type { Docente, DocenteFormData } from '@/types/docente'
 
 // Lista de facultades disponibles
 const facultades = [
-  "Facultad de Arquitectura y Ciencias del Hábitat",
-  "Facultad de Ciencias Agrícolas y Pecuarias",
-  "Facultad de Ciencias Bioquímicas y Farmacéuticas",
-  "Facultad de Ciencias Económicas",
-  "Facultad de Ciencias Jurídicas y Políticas",
-  "Facultad de Ciencias Sociales",
-  "Facultad de Ciencias y Tecnología",
-  "Facultad de Desarrollo Rural y Territorial",
-  "Facultad de Enfermería",
-  "Facultad de Humanidades y Ciencias de la Educación",
-  "Facultad de Medicina",
-  "Facultad de Odontología",
-  "Facultad Politécnica del Valle Alto",
-  "Facultad de Ciencias Veterinarias",
-  "Escuela de Ciencias Forestales",
-  "Unidad Desconcentrada del Valle de Sacta",
+  'Facultad de Arquitectura y Ciencias del Hábitat',
+  'Facultad de Ciencias Agrícolas y Pecuarias',
+  'Facultad de Ciencias Bioquímicas y Farmacéuticas',
+  'Facultad de Ciencias Económicas',
+  'Facultad de Ciencias Jurídicas y Políticas',
+  'Facultad de Ciencias Sociales',
+  'Facultad de Ciencias y Tecnología',
+  'Facultad de Desarrollo Rural y Territorial',
+  'Facultad de Enfermería',
+  'Facultad de Humanidades y Ciencias de la Educación',
+  'Facultad de Medicina',
+  'Facultad de Odontología',
+  'Facultad Politécnica del Valle Alto',
+  'Facultad de Ciencias Veterinarias',
+  'Escuela de Ciencias Forestales',
+  'Unidad Desconcentrada del Valle de Sacta',
 ]
 
 const formSchema = z.object({
   nombre: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
+    message: 'El nombre debe tener al menos 2 caracteres.',
   }),
   apellido: z.string().min(2, {
-    message: "El apellido debe tener al menos 2 caracteres.",
+    message: 'El apellido debe tener al menos 2 caracteres.',
   }),
   email: z.string().email({
-    message: "Ingrese un correo electrónico válido.",
+    message: 'Ingrese un correo electrónico válido.',
   }),
   telefono: z.string().min(8, {
-    message: "Ingrese un número de célular válido.",
+    message: 'Ingrese un número de célular válido.',
   }),
   facultades: z.array(z.string()).min(1, {
-    message: "Seleccione al menos una facultad.",
+    message: 'Seleccione al menos una facultad.',
   }),
 })
 
-export function DocenteForm({ onSubmit }: { onSubmit: (success: boolean) => void }) {
+interface DocenteFormProps {
+  onSubmit: (success: boolean) => void
+  docente?: Docente
+  isEditMode?: boolean
+}
+
+export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFormProps) {
   const [simulateSuccess, setSimulateSuccess] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState('')
+
+  // Extraer nombre y apellido del nombre completo si estamos en modo edición
+  const getNombreApellido = () => {
+    if (!docente || !docente.name) return { nombre: '', apellido: '' }
+
+    const parts = docente.name.split(' ')
+    if (parts.length === 1) return { nombre: parts[0], apellido: '' }
+
+    const nombre = parts[0]
+    const apellido = parts.slice(1).join(' ')
+    return { nombre, apellido }
+  }
+
+  const { nombre, apellido } = getNombreApellido()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      nombre: "",
-      apellido: "",
-      email: "",
-      telefono: "",
-      facultades: [],
+      nombre: isEditMode ? nombre : '',
+      apellido: isEditMode ? apellido : '',
+      email: isEditMode && docente ? docente.email : '',
+      telefono: isEditMode ? '60436897' : '', // Valor de ejemplo para teléfono
+      facultades: isEditMode && docente ? docente.facultades : [],
     },
   })
 
-  function handleSubmit(values: z.infer<typeof formSchema>) {
+  // Actualizar el formulario cuando cambian los datos del docente
+  useEffect(() => {
+    if (isEditMode && docente) {
+      const { nombre, apellido } = getNombreApellido()
+      form.reset({
+        nombre,
+        apellido,
+        email: docente.email,
+        telefono: '60436897', // Valor de ejemplo para teléfono
+        facultades: docente.facultades,
+      })
+    }
+  }, [docente, isEditMode, form])
+
+  function handleSubmit(values: DocenteFormData) {
     // Simulamos el envío del formulario
     console.log(values)
 
@@ -77,7 +119,9 @@ export function DocenteForm({ onSubmit }: { onSubmit: (success: boolean) => void
   }
 
   // Filtrar facultades basado en el término de búsqueda
-  const filteredFacultades = facultades.filter((facultad) => facultad.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredFacultades = facultades.filter((facultad) =>
+    facultad.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   return (
     <Form {...form}>
@@ -171,7 +215,7 @@ export function DocenteForm({ onSubmit }: { onSubmit: (success: boolean) => void
                                 ? [...currentValues, facultad]
                                 : currentValues.filter((value) => value !== facultad)
 
-                              form.setValue("facultades", newValues, { shouldValidate: true })
+                              form.setValue('facultades', newValues, { shouldValidate: true })
                             }}
                           />
                           <label
@@ -198,7 +242,7 @@ export function DocenteForm({ onSubmit }: { onSubmit: (success: boolean) => void
                         className="h-auto p-0 ml-2"
                         onClick={() => {
                           const newValues = field.value.filter((value) => value !== facultad)
-                          form.setValue("facultades", newValues, { shouldValidate: true })
+                          form.setValue('facultades', newValues, { shouldValidate: true })
                         }}
                       >
                         <X className="h-3 w-3" />
@@ -213,17 +257,21 @@ export function DocenteForm({ onSubmit }: { onSubmit: (success: boolean) => void
         />
 
         <div className="flex items-center space-x-2 py-4">
-          <Switch id="simulate-success" checked={simulateSuccess} onCheckedChange={setSimulateSuccess} />
+          <Switch
+            id="simulate-success"
+            checked={simulateSuccess}
+            onCheckedChange={setSimulateSuccess}
+          />
           <label
             htmlFor="simulate-success"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {simulateSuccess ? "Simular registro exitoso" : "Simular error de registro"}
+            {simulateSuccess ? 'Simular operación exitosa' : 'Simular error de operación'}
           </label>
         </div>
 
         <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4">
-          Guardar Docente
+          {isEditMode ? 'Actualizar Docente' : 'Guardar Docente'}
         </Button>
       </form>
     </Form>
