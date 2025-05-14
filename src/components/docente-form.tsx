@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -61,7 +61,7 @@ const formSchema = z.object({
 
 interface DocenteFormProps {
   onSubmit: (success: boolean) => void
-  docente?: Docente
+  docente?: Docente | null
   isEditMode?: boolean
 }
 
@@ -70,7 +70,7 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
   const [searchTerm, setSearchTerm] = useState('')
 
   // Extraer nombre y apellido del nombre completo si estamos en modo edición
-  const getNombreApellido = () => {
+  const getNombreApellido = useCallback(() => {
     if (!docente || !docente.name) return { nombre: '', apellido: '' }
 
     const parts = docente.name.split(' ')
@@ -79,7 +79,7 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
     const nombre = parts[0]
     const apellido = parts.slice(1).join(' ')
     return { nombre, apellido }
-  }
+  }, [docente])
 
   const { nombre, apellido } = getNombreApellido()
 
@@ -89,7 +89,7 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
       nombre: isEditMode ? nombre : '',
       apellido: isEditMode ? apellido : '',
       email: isEditMode && docente ? docente.email : '',
-      telefono: isEditMode ? '60436897' : '', // Valor de ejemplo para teléfono
+      telefono: isEditMode && docente?.telefono ? docente.telefono : '',
       facultades: isEditMode && docente ? docente.facultades : [],
     },
   })
@@ -102,11 +102,11 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
         nombre,
         apellido,
         email: docente.email,
-        telefono: '60436897', // Valor de ejemplo para teléfono
+        telefono: docente.telefono || '60436897',
         facultades: docente.facultades,
       })
     }
-  }, [docente, isEditMode, form])
+  }, [docente, isEditMode, form, getNombreApellido])
 
   function handleSubmit(values: DocenteFormData) {
     // Simulamos el envío del formulario

@@ -19,12 +19,23 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Switch } from '@/components/ui/switch'
 import { DocenteForm } from '@/components/docente-form'
 import { useToast } from '@/hooks/use-toast'
 import type { Docente } from '@/types/docente'
 
 // Mock data for teachers
-const teachers: Docente[] = [
+const initialTeachers: Docente[] = [
   {
     id: 1,
     name: 'Juan Pérez',
@@ -68,9 +79,12 @@ const teachers: Docente[] = [
 ]
 
 export default function DocentesPage() {
+  const [teachers, setTeachers] = useState<Docente[]>(initialTeachers)
   const [isOpen, setIsOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentDocente, setCurrentDocente] = useState<Docente | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const { toast } = useToast()
 
   const handleSuccess = (success: boolean) => {
@@ -105,6 +119,34 @@ export default function DocentesPage() {
     setIsEditMode(true)
     setCurrentDocente(docente)
     setIsOpen(true)
+  }
+
+  const handleDeleteClick = (docente: Docente) => {
+    setCurrentDocente(docente)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = () => {
+    setIsDeleteDialogOpen(false)
+
+    if (simulateDeleteSuccess && currentDocente) {
+      // Simulamos la eliminación del docente
+      setTeachers(teachers.filter((teacher) => teacher.id !== currentDocente.id))
+
+      toast({
+        title: 'Docente eliminado',
+        description: 'El docente ha sido eliminado correctamente.',
+        variant: 'success',
+      })
+    } else {
+      toast({
+        title: 'Error al eliminar',
+        description: 'No se pudo eliminar el docente. Intente nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setCurrentDocente(null)
   }
 
   return (
@@ -180,6 +222,7 @@ export default function DocentesPage() {
                         variant="outline"
                         size="sm"
                         className="text-red-500 hover:text-red-700 border-red-500 hover:bg-red-50"
+                        onClick={() => handleDeleteClick(teacher)}
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Eliminar</span>
@@ -212,6 +255,43 @@ export default function DocentesPage() {
           </div>
         </SheetContent>
       </Sheet>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Está seguro de eliminar este docente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El docente será eliminado permanentemente del
+              sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="flex items-center space-x-2 py-4">
+            <Switch
+              id="simulate-delete-success"
+              checked={simulateDeleteSuccess}
+              onCheckedChange={setSimulateDeleteSuccess}
+            />
+            <label
+              htmlFor="simulate-delete-success"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {simulateDeleteSuccess
+                ? 'Simular eliminación exitosa'
+                : 'Simular error de eliminación'}
+            </label>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
