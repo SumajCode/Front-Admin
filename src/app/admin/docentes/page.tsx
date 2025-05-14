@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { PlusCircle, Pencil, Trash2, CheckCircle2, XCircle } from 'lucide-react'
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -15,34 +15,15 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
-  SheetFooter,
 } from '@/components/ui/sheet'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { DocenteForm } from '@/components/docente-form'
 import { useToast } from '@/hooks/use-toast'
 
-// Tipo para los docentes
-type Teacher = {
-  id: number
-  name: string
-  email: string
-  department: string
-  status: string
-}
-
-// Tipo para los errores del formulario
-type FormErrors = {
-  name?: string
-  email?: string
-  department?: string
-}
-
 // Mock data for teachers
-const initialTeachers = [
+const teachers = [
   {
     id: 1,
     name: 'Juan Pérez',
@@ -82,87 +63,22 @@ const initialTeachers = [
 
 export default function DocentesPage() {
   const [isOpen, setIsOpen] = useState(false)
-  const [teachers, setTeachers] = useState<Teacher[]>(initialTeachers)
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    department: '',
-    isActive: true,
-  })
-  const [errors, setErrors] = useState<FormErrors>({})
   const { toast } = useToast()
 
-  // Función para validar el formulario
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {}
+  const handleSuccess = (success: boolean) => {
+    setIsOpen(false)
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'El nombre es obligatorio'
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'El correo electrónico es obligatorio'
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'El correo electrónico no es válido'
-    }
-
-    if (!formData.department.trim()) {
-      newErrors.department = 'El departamento es obligatorio'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = () => {
-    // Validar el formulario
-    if (!validateForm()) {
-      toast({
-        title: 'Error de validación',
-        description: 'Por favor, complete todos los campos obligatorios correctamente.',
-        variant: 'destructive',
-        icon: <XCircle className="h-4 w-4" />,
-      })
-      return
-    }
-
-    try {
-      // Crear nuevo docente
-      const newTeacher = {
-        id: teachers.length > 0 ? Math.max(...teachers.map((t) => t.id)) + 1 : 1,
-        name: formData.name,
-        email: formData.email,
-        department: formData.department,
-        status: formData.isActive ? 'Activo' : 'Inactivo',
-      }
-
-      // Agregar a la lista
-      setTeachers([...teachers, newTeacher])
-
-      // Mostrar mensaje de éxito
+    if (success) {
       toast({
         title: 'Docente registrado',
         description: 'El docente ha sido registrado correctamente.',
         variant: 'success',
-        icon: <CheckCircle2 className="h-4 w-4" />,
       })
-
-      // Resetear formulario y cerrar panel
-      setFormData({
-        name: '',
-        email: '',
-        department: '',
-        isActive: true,
-      })
-      setErrors({})
-      setIsOpen(false)
-    } catch {
-      // Mostrar mensaje de error
+    } else {
       toast({
         title: 'Error al registrar',
-        description: 'Ocurrió un error al registrar el docente.',
+        description: 'No se pudo registrar el docente. Intente nuevamente.',
         variant: 'destructive',
-        icon: <XCircle className="h-4 w-4" />,
       })
     }
   }
@@ -243,84 +159,18 @@ export default function DocentesPage() {
           </Table>
         </CardContent>
       </Card>
-      {/* Deslizador lateral con formulario */}
+
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent className="sm:max-w-md">
+        <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
           <SheetHeader>
             <SheetTitle>Nuevo Docente</SheetTitle>
             <SheetDescription>
-              Complete el formulario para registrar un nuevo docente en el sistema.
+              Complete el formulario para registrar un nuevo docente.
             </SheetDescription>
           </SheetHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nombre completo</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => {
-                  setFormData({ ...formData, name: e.target.value })
-                  if (errors.name) {
-                    setErrors({ ...errors, name: undefined })
-                  }
-                }}
-                placeholder="Ingrese el nombre completo"
-                className={errors.name ? 'border-red-500 focus-visible:ring-red-500' : ''}
-              />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => {
-                  setFormData({ ...formData, email: e.target.value })
-                  if (errors.email) {
-                    setErrors({ ...errors, email: undefined })
-                  }
-                }}
-                placeholder="correo@ejemplo.com"
-                className={errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}
-              />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="department">Departamento</Label>
-              <Input
-                id="department"
-                value={formData.department}
-                onChange={(e) => {
-                  setFormData({ ...formData, department: e.target.value })
-                  if (errors.department) {
-                    setErrors({ ...errors, department: undefined })
-                  }
-                }}
-                placeholder="Ej: Matemáticas"
-                className={errors.department ? 'border-red-500 focus-visible:ring-red-500' : ''}
-              />
-              {errors.department && (
-                <p className="text-red-500 text-xs mt-1">{errors.department}</p>
-              )}
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="status">Estado activo</Label>
-              <Switch
-                id="status"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-              />
-            </div>
+          <div className="py-6">
+            <DocenteForm onSubmit={handleSuccess} />
           </div>
-          <SheetFooter>
-            <Button
-              className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white"
-              onClick={handleSubmit}
-            >
-              Registrar Docente
-            </Button>
-          </SheetFooter>
         </SheetContent>
       </Sheet>
     </div>
