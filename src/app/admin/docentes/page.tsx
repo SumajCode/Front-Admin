@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
+import { PlusCircle, Pencil, Trash2, CheckCircle2, XCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -23,6 +23,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useToast } from '@/hooks/use-toast'
 
 // Tipo para los docentes
 type Teacher = {
@@ -81,28 +82,47 @@ export default function DocentesPage() {
     department: '',
     isActive: true,
   })
+  const { toast } = useToast()
 
   const handleSubmit = () => {
-    // Crear nuevo docente
-    const newTeacher = {
-      id: teachers.length > 0 ? Math.max(...teachers.map((t) => t.id)) + 1 : 1,
-      name: formData.name,
-      email: formData.email,
-      department: formData.department,
-      status: formData.isActive ? 'Activo' : 'Inactivo',
+    try {
+      // Crear nuevo docente
+      const newTeacher = {
+        id: teachers.length > 0 ? Math.max(...teachers.map((t) => t.id)) + 1 : 1,
+        name: formData.name,
+        email: formData.email,
+        department: formData.department,
+        status: formData.isActive ? 'Activo' : 'Inactivo',
+      }
+
+      // Agregar a la lista
+      setTeachers([...teachers, newTeacher])
+
+      // Mostrar mensaje de éxito
+      toast({
+        title: 'Docente registrado',
+        description: 'El docente ha sido registrado correctamente.',
+        variant: 'success',
+        icon: <CheckCircle2 className="h-4 w-4" />,
+      })
+
+      // Resetear formulario y cerrar panel
+      setFormData({
+        name: '',
+        email: '',
+        department: '',
+        isActive: true,
+      })
+      setIsOpen(false)
+    } catch {
+      // Mostrar mensaje de error
+      toast({
+        title: 'Error al registrar',
+        description: 'Ocurrió un error al registrar el docente.',
+        variant: 'destructive',
+        icon: <XCircle className="h-4 w-4" />,
+      })
     }
-
-    // Agregar a la lista
-    setTeachers([...teachers, newTeacher])
-
-    // Resetear formulario y cerrar panel
-    setFormData({
-      name: '',
-      email: '',
-      department: '',
-      isActive: true,
-    })
-    setIsOpen(false)
   }
 
   return (
