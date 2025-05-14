@@ -34,6 +34,13 @@ type Teacher = {
   status: string
 }
 
+// Tipo para los errores del formulario
+type FormErrors = {
+  name?: string
+  email?: string
+  department?: string
+}
+
 // Mock data for teachers
 const initialTeachers = [
   {
@@ -82,9 +89,43 @@ export default function DocentesPage() {
     department: '',
     isActive: true,
   })
+  const [errors, setErrors] = useState<FormErrors>({})
   const { toast } = useToast()
 
+  // Función para validar el formulario
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {}
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'El nombre es obligatorio'
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'El correo electrónico es obligatorio'
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'El correo electrónico no es válido'
+    }
+
+    if (!formData.department.trim()) {
+      newErrors.department = 'El departamento es obligatorio'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleSubmit = () => {
+    // Validar el formulario
+    if (!validateForm()) {
+      toast({
+        title: 'Error de validación',
+        description: 'Por favor, complete todos los campos obligatorios correctamente.',
+        variant: 'destructive',
+        icon: <XCircle className="h-4 w-4" />,
+      })
+      return
+    }
+
     try {
       // Crear nuevo docente
       const newTeacher = {
@@ -113,6 +154,7 @@ export default function DocentesPage() {
         department: '',
         isActive: true,
       })
+      setErrors({})
       setIsOpen(false)
     } catch {
       // Mostrar mensaje de error
@@ -216,9 +258,16 @@ export default function DocentesPage() {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, name: e.target.value })
+                  if (errors.name) {
+                    setErrors({ ...errors, name: undefined })
+                  }
+                }}
                 placeholder="Ingrese el nombre completo"
+                className={errors.name ? 'border-red-500 focus-visible:ring-red-500' : ''}
               />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Correo electrónico</Label>
@@ -226,18 +275,34 @@ export default function DocentesPage() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, email: e.target.value })
+                  if (errors.email) {
+                    setErrors({ ...errors, email: undefined })
+                  }
+                }}
                 placeholder="correo@ejemplo.com"
+                className={errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}
               />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="department">Departamento</Label>
               <Input
                 id="department"
                 value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, department: e.target.value })
+                  if (errors.department) {
+                    setErrors({ ...errors, department: undefined })
+                  }
+                }}
                 placeholder="Ej: Matemáticas"
+                className={errors.department ? 'border-red-500 focus-visible:ring-red-500' : ''}
               />
+              {errors.department && (
+                <p className="text-red-500 text-xs mt-1">{errors.department}</p>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="status">Estado activo</Label>
