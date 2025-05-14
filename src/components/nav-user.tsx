@@ -35,9 +35,12 @@ export function NavUser({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white">
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white"
+            >
               <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
-                <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                <AvatarImage src={user.avatar || '/placeholder.svg'} alt={user.name} />
                 <AvatarFallback className="rounded-lg bg-[#2546f0] text-white">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -56,7 +59,7 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                  <AvatarImage src={user.avatar || '/placeholder.svg'} alt={user.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">

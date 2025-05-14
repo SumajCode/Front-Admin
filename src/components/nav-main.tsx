@@ -51,7 +51,10 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild className="hover:bg-[#00bf7d]/10 hover:text-[#00bf7d]">
+                      <SidebarMenuSubButton
+                        asChild
+                        className="hover:bg-[#00bf7d]/10 hover:text-[#00bf7d]"
+                      >
                         <Link href={subItem.url}>
                           <span>{subItem.title}</span>
                         </Link>
