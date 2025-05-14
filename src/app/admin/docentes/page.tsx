@@ -1,63 +1,50 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
-import { DocenteForm } from '@/components/docente-form'
-import { useToast } from '@/hooks/use-toast'
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { PlusCircle, Pencil, Trash2 } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { DocenteForm } from "@/components/docente-form"
+import { useToast } from "@/hooks/use-toast"
 
 // Mock data for teachers
 const teachers = [
   {
     id: 1,
-    name: 'Juan Pérez',
-    email: 'juan.perez@example.com',
-    department: 'Matemáticas',
-    status: 'Activo',
+    name: "Juan Pérez",
+    email: "juan.perez@example.com",
+    facultades: ["Facultad de Ciencias y Tecnología", "Facultad de Ciencias Económicas"],
+    status: "Activo",
   },
   {
     id: 2,
-    name: 'María González',
-    email: 'maria.gonzalez@example.com',
-    department: 'Ciencias Politicas',
-    status: 'Activo',
+    name: "María González",
+    email: "maria.gonzalez@example.com",
+    facultades: ["Facultad de Ciencias Jurídicas y Políticas"],
+    status: "Activo",
   },
   {
     id: 3,
-    name: 'Carlos Rodríguez',
-    email: 'carlos.rodriguez@example.com',
-    department: 'Biología',
-    status: 'Activo',
+    name: "Carlos Rodríguez",
+    email: "carlos.rodriguez@example.com",
+    facultades: ["Facultad de Ciencias Bioquímicas y Farmacéuticas"],
+    status: "Activo",
   },
   {
     id: 4,
-    name: 'Ana Martínez',
-    email: 'ana.martinez@example.com',
-    department: 'Electrónica',
-    status: 'Inactivo',
+    name: "Ana Martínez",
+    email: "ana.martinez@example.com",
+    facultades: ["Facultad de Ciencias y Tecnología"],
+    status: "Inactivo",
   },
   {
     id: 5,
-    name: 'Roberto Sánchez',
-    email: 'roberto.sanchez@example.com',
-    department: 'Física',
-    status: 'Activo',
+    name: "Roberto Sánchez",
+    email: "roberto.sanchez@example.com",
+    facultades: ["Facultad de Medicina", "Facultad de Ciencias Sociales"],
+    status: "Activo",
   },
 ]
 
@@ -70,15 +57,15 @@ export default function DocentesPage() {
 
     if (success) {
       toast({
-        title: 'Docente registrado',
-        description: 'El docente ha sido registrado correctamente.',
-        variant: 'success',
+        title: "Docente registrado",
+        description: "El docente ha sido registrado correctamente.",
+        variant: "success",
       })
     } else {
       toast({
-        title: 'Error al registrar',
-        description: 'No se pudo registrar el docente. Intente nuevamente.',
-        variant: 'destructive',
+        title: "Error al registrar",
+        description: "No se pudo registrar el docente. Intente nuevamente.",
+        variant: "destructive",
       })
     }
   }
@@ -110,7 +97,7 @@ export default function DocentesPage() {
                 <TableHead>ID</TableHead>
                 <TableHead>Nombre</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Departamento</TableHead>
+                <TableHead>Facultades</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
@@ -121,13 +108,19 @@ export default function DocentesPage() {
                   <TableCell>{teacher.id}</TableCell>
                   <TableCell className="font-medium">{teacher.name}</TableCell>
                   <TableCell>{teacher.email}</TableCell>
-                  <TableCell>{teacher.department}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {teacher.facultades.map((facultad, index) => (
+                        <span key={index} className="text-xs">
+                          {facultad}
+                        </span>
+                      ))}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        teacher.status === 'Activo'
-                          ? 'bg-[#00bf7d]/20 text-[#00bf7d]'
-                          : 'bg-red-100 text-red-800'
+                        teacher.status === "Activo" ? "bg-[#00bf7d]/20 text-[#00bf7d]" : "bg-red-100 text-red-800"
                       }`}
                     >
                       {teacher.status}
@@ -135,11 +128,7 @@ export default function DocentesPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-[#0073e6] hover:bg-[#0073e6]/10"
-                      >
+                      <Button variant="outline" size="sm" className="border-[#0073e6] hover:bg-[#0073e6]/10">
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Button>
@@ -164,9 +153,7 @@ export default function DocentesPage() {
         <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
           <SheetHeader>
             <SheetTitle>Nuevo Docente</SheetTitle>
-            <SheetDescription>
-              Complete el formulario para registrar un nuevo docente.
-            </SheetDescription>
+            <SheetDescription>Complete el formulario para registrar un nuevo docente.</SheetDescription>
           </SheetHeader>
           <div className="py-6">
             <DocenteForm onSubmit={handleSuccess} />
