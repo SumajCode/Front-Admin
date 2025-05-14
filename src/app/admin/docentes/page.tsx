@@ -24,8 +24,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 
+// Tipo para los docentes
+type Teacher = {
+  id: number
+  name: string
+  email: string
+  department: string
+  status: string
+}
+
 // Mock data for teachers
-const teachers = [
+const initialTeachers = [
   {
     id: 1,
     name: 'Juan Pérez',
@@ -65,12 +74,37 @@ const teachers = [
 
 export default function DocentesPage() {
   const [isOpen, setIsOpen] = useState(false)
+  const [teachers, setTeachers] = useState<Teacher[]>(initialTeachers)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     department: '',
     isActive: true,
   })
+
+  const handleSubmit = () => {
+    // Crear nuevo docente
+    const newTeacher = {
+      id: teachers.length > 0 ? Math.max(...teachers.map((t) => t.id)) + 1 : 1,
+      name: formData.name,
+      email: formData.email,
+      department: formData.department,
+      status: formData.isActive ? 'Activo' : 'Inactivo',
+    }
+
+    // Agregar a la lista
+    setTeachers([...teachers, newTeacher])
+
+    // Resetear formulario y cerrar panel
+    setFormData({
+      name: '',
+      email: '',
+      department: '',
+      isActive: true,
+    })
+    setIsOpen(false)
+  }
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
@@ -195,7 +229,10 @@ export default function DocentesPage() {
             </div>
           </div>
           <SheetFooter>
-            <Button className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white">
+            <Button
+              className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white"
+              onClick={handleSubmit}
+            >
               Registrar Docente
             </Button>
           </SheetFooter>
