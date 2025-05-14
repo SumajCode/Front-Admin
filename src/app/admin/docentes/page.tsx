@@ -18,7 +18,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
+  SheetFooter,
 } from '@/components/ui/sheet'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 
 // Mock data for teachers
 const teachers = [
@@ -61,6 +65,12 @@ const teachers = [
 
 export default function DocentesPage() {
   const [isOpen, setIsOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    department: '',
+    isActive: true,
+  })
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
@@ -137,7 +147,7 @@ export default function DocentesPage() {
           </Table>
         </CardContent>
       </Card>
-      {/* Deslizador lateral */}
+      {/* Deslizador lateral con formulario */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader>
@@ -146,7 +156,49 @@ export default function DocentesPage() {
               Complete el formulario para registrar un nuevo docente en el sistema.
             </SheetDescription>
           </SheetHeader>
-          {/* El contenido del formulario se agregará en el siguiente commit */}
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Nombre completo</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Ingrese el nombre completo"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Correo electrónico</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="correo@ejemplo.com"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="department">Departamento</Label>
+              <Input
+                id="department"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                placeholder="Ej: Matemáticas"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="status">Estado activo</Label>
+              <Switch
+                id="status"
+                checked={formData.isActive}
+                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+              />
+            </div>
+          </div>
+          <SheetFooter>
+            <Button className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white">
+              Registrar Docente
+            </Button>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
     </div>
