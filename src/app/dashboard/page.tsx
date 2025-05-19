@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { AppSidebar } from '@/components/app-sidebar'
 import {
   Breadcrumb,
@@ -10,7 +11,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
-export default function Page() {
+export default React.memo(function DashboardPage() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -43,4 +44,4 @@ export default function Page() {
       </SidebarInset>
     </SidebarProvider>
   )
-}
+})

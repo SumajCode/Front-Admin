@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { BadgeCheck, Bell, ChevronsUpDown, LogOut } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -19,7 +20,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
-export function NavUser({
+function NavUserComponent({
   user,
 }: {
   user: {
@@ -90,3 +91,5 @@ export function NavUser({
     </SidebarMenu>
   )
 }
+
+export const NavUser = React.memo(NavUserComponent)

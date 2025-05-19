@@ -33,6 +33,7 @@ import { Switch } from '@/components/ui/switch'
 import { DocenteForm } from '@/components/docente-form'
 import { useToast } from '@/hooks/use-toast'
 import type { Docente } from '@/types/docente'
+import { useCallback } from 'react'
 
 // Mock data for teachers
 const initialTeachers: Docente[] = [
@@ -87,51 +88,45 @@ export default function DocentesPage() {
   const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const { toast } = useToast()
 
-  const handleSuccess = (success: boolean) => {
-    setIsOpen(false)
+  const handleSuccess = useCallback(
+    (success: boolean) => {
+      setIsOpen(false)
 
-    if (success) {
       toast({
         title: isEditMode ? 'Docente actualizado' : 'Docente registrado',
         description: isEditMode
           ? 'El docente ha sido actualizado correctamente.'
           : 'El docente ha sido registrado correctamente.',
-        variant: 'success',
+        variant: success ? 'success' : 'destructive',
       })
-    } else {
-      toast({
-        title: isEditMode ? 'Error al actualizar' : 'Error al registrar',
-        description: isEditMode
-          ? 'No se pudo actualizar el docente. Intente nuevamente.'
-          : 'No se pudo registrar el docente. Intente nuevamente.',
-        variant: 'destructive',
-      })
-    }
-  }
+    },
+    [isEditMode, toast],
+  )
 
-  const handleNewDocente = () => {
+  const handleNewDocente = useCallback(() => {
     setIsEditMode(false)
     setCurrentDocente(null)
     setIsOpen(true)
-  }
+  }, [])
 
-  const handleEditDocente = (docente: Docente) => {
+  const handleEditDocente = useCallback((docente: Docente) => {
     setIsEditMode(true)
     setCurrentDocente(docente)
     setIsOpen(true)
-  }
+  }, [])
 
-  const handleDeleteClick = (docente: Docente) => {
+  const handleDeleteClick = useCallback((docente: Docente) => {
     setCurrentDocente(docente)
     setIsDeleteDialogOpen(true)
-  }
+  }, [])
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = useCallback(() => {
     setIsDeleteDialogOpen(false)
 
     if (simulateDeleteSuccess && currentDocente) {
-      // Simulamos la eliminación del docente
-      setTeachers(teachers.filter((teacher) => teacher.id !== currentDocente.id))
+      setTeachers((prevTeachers) =>
+        prevTeachers.filter((teacher) => teacher.id !== currentDocente.id),
+      )
 
       toast({
         title: 'Docente eliminado',
@@ -147,7 +142,7 @@ export default function DocentesPage() {
     }
 
     setCurrentDocente(null)
-  }
+  }, [currentDocente, simulateDeleteSuccess, toast])
 
   return (
     <div className="container mx-auto py-6">

@@ -14,3 +14,13 @@ export interface DocenteFormData {
   telefono: string
   facultades: string[]
 }
+
+export type DocenteStatus = 'Activo' | 'Inactivo'
+
+export interface DocenteHistorial {
+  id: number
+  name: string
+  action: 'Creación' | 'Edición' | 'Baja'
+  date: string
+  user: string
+}

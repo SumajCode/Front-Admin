@@ -13,20 +13,21 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
+import * as React from 'react'
 
-export function NavMain({
+function NavMainComponent({
   items,
 }: {
-  items: {
+  items: Array<{
     title: string
     url: string
     icon?: LucideIcon
     isActive?: boolean
-    items?: {
+    items?: Array<{
       title: string
       url: string
-    }[]
-  }[]
+    }>
+  }>
 }) {
   return (
     <SidebarGroup>
@@ -70,3 +71,5 @@ export function NavMain({
     </SidebarGroup>
   )
 }
+
+export const NavMain = React.memo(NavMainComponent)

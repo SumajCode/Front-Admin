@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { Docente, DocenteFormData } from '@/types/docente'
+import React from 'react'
 
 // Lista de facultades disponibles
 const facultades = [
@@ -73,12 +74,11 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
   const getNombreApellido = useCallback(() => {
     if (!docente || !docente.name) return { nombre: '', apellido: '' }
 
-    const parts = docente.name.split(' ')
-    if (parts.length === 1) return { nombre: parts[0], apellido: '' }
-
-    const nombre = parts[0]
-    const apellido = parts.slice(1).join(' ')
-    return { nombre, apellido }
+    const nameParts = docente.name.split(' ')
+    return {
+      nombre: nameParts[0] || '',
+      apellido: nameParts.slice(1).join(' ') || '',
+    }
   }, [docente])
 
   const { nombre, apellido } = getNombreApellido()
@@ -108,19 +108,19 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
     }
   }, [docente, isEditMode, form, getNombreApellido])
 
-  function handleSubmit(values: DocenteFormData) {
-    // Simulamos el envío del formulario
-    console.log(values)
-
-    // Llamamos a la función onSubmit con el valor del interruptor
-    setTimeout(() => {
-      onSubmit(simulateSuccess)
-    }, 500)
-  }
+  const handleSubmit = useCallback(
+    (values: DocenteFormData) => {
+      console.log(values)
+      setTimeout(() => onSubmit(simulateSuccess), 500)
+    },
+    [onSubmit, simulateSuccess],
+  )
 
   // Filtrar facultades basado en el término de búsqueda
-  const filteredFacultades = facultades.filter((facultad) =>
-    facultad.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredFacultades = React.useMemo(
+    () =>
+      facultades.filter((facultad) => facultad.toLowerCase().includes(searchTerm.toLowerCase())),
+    [searchTerm],
   )
 
   return (

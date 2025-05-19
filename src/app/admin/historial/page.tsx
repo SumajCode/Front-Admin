@@ -7,9 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import type { DocenteHistorial } from '@/types/docente'
 
 // Mock data for teacher history
-const teacherHistory = [
+const teacherHistory: DocenteHistorial[] = [
   {
     id: 1,
     name: 'Juan Pérez',

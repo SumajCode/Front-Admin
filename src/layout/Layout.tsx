@@ -1,10 +1,12 @@
 import { AppSidebar } from '@/components/app-sidebar'
-import { Toaster } from '@/components/ui/toaster'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import * as React from 'react'
 
-import { ReactNode } from 'react'
+interface LayoutProps {
+  children: React.ReactNode
+}
 
-export default function Layout({ children }: { children: ReactNode }) {
+function LayoutComponent({ children }: LayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -16,7 +18,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
       </SidebarInset>
-      <Toaster />
     </SidebarProvider>
   )
 }
+
+export default React.memo(LayoutComponent)
