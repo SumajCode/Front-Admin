@@ -43,18 +43,28 @@ const facultades = [
 ]
 
 const formSchema = z.object({
-  nombre: z.string().min(2, {
-    message: 'El nombre debe tener al menos 2 caracteres.',
-  }),
-  apellido: z.string().min(2, {
-    message: 'El apellido debe tener al menos 2 caracteres.',
-  }),
+  nombre: z
+    .string()
+    .min(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
+      message: 'El nombre solo debe contener letras y espacios.',
+    }),
+  apellido: z
+    .string()
+    .min(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
+      message: 'El apellido solo debe contener letras y espacios.',
+    }),
   email: z.string().email({
     message: 'Ingrese un correo electrónico válido.',
   }),
-  telefono: z.string().min(8, {
-    message: 'Ingrese un número de célular válido.',
-  }),
+  telefono: z
+    .string()
+    .min(8, { message: 'Ingrese un número de célular válido.' })
+    .max(8, { message: 'El número de teléfono debe tener exactamente 8 dígitos.' })
+    .regex(/^[0-9]+$/, {
+      message: 'El teléfono solo debe contener números.',
+    }),
   facultades: z.array(z.string()).min(1, {
     message: 'Seleccione al menos una facultad.',
   }),
