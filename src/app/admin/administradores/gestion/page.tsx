@@ -19,6 +19,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import { AdministradorForm } from '@/components/administradores/administrador-form'
 import type { Administrador } from '@/types/administrador'
@@ -54,7 +65,14 @@ const initialAdmins: Administrador[] = [
 export default function GestionAdministradoresPage() {
   const [admins, setAdmins] = useState<Administrador[]>(initialAdmins)
   const [isOpen, setIsOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isSecurityDialogOpen, setIsSecurityDialogOpen] = useState(false)
+  const [currentAdmin, setCurrentAdmin] = useState<Administrador | null>(null)
+  const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const { toast } = useToast()
+
+  // Contar administradores activos
+  const activeAdminsCount = admins.filter((admin) => admin.status === 'Activo').length
 
   const handleSuccess = useCallback(
     (success: boolean) => {
@@ -86,6 +104,42 @@ export default function GestionAdministradoresPage() {
   const handleNewAdmin = useCallback(() => {
     setIsOpen(true)
   }, [])
+
+  const handleDeleteClick = useCallback(
+    (admin: Administrador) => {
+      setCurrentAdmin(admin)
+
+      // Verificar si hay suficientes administradores activos
+      if (activeAdminsCount <= 2 && admin.status === 'Activo') {
+        setIsSecurityDialogOpen(true)
+      } else {
+        setIsDeleteDialogOpen(true)
+      }
+    },
+    [activeAdminsCount],
+  )
+
+  const handleDeleteConfirm = useCallback(() => {
+    setIsDeleteDialogOpen(false)
+
+    if (simulateDeleteSuccess && currentAdmin) {
+      setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== currentAdmin.id))
+
+      toast({
+        title: 'Administrador eliminado',
+        description: 'El administrador ha sido eliminado correctamente.',
+        variant: 'success',
+      })
+    } else {
+      toast({
+        title: 'Error al eliminar',
+        description: 'No se pudo eliminar el administrador. Intente nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setCurrentAdmin(null)
+  }, [currentAdmin, simulateDeleteSuccess, toast])
 
   return (
     <div className="container mx-auto py-6">
@@ -141,6 +195,7 @@ export default function GestionAdministradoresPage() {
                         variant="outline"
                         size="sm"
                         className="text-red-500 hover:text-red-700 border-red-500 hover:bg-red-50"
+                        onClick={() => handleDeleteClick(admin)}
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Eliminar</span>
@@ -167,6 +222,61 @@ export default function GestionAdministradoresPage() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Diálogo de confirmación para eliminar */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Está seguro de eliminar este administrador?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El administrador será eliminado permanentemente del
+              sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="flex items-center space-x-2 py-4">
+            <Switch
+              id="simulate-delete-success"
+              checked={simulateDeleteSuccess}
+              onCheckedChange={setSimulateDeleteSuccess}
+            />
+            <label
+              htmlFor="simulate-delete-success"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {simulateDeleteSuccess
+                ? 'Simular eliminación exitosa'
+                : 'Simular error de eliminación'}
+            </label>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Diálogo de seguridad para evitar eliminar cuando hay pocos administradores */}
+      <AlertDialog open={isSecurityDialogOpen} onOpenChange={setIsSecurityDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>No se puede eliminar el administrador</AlertDialogTitle>
+            <AlertDialogDescription>
+              Por razones de seguridad, no es posible eliminar este administrador. El sistema debe
+              mantener al menos 2 administradores activos en todo momento.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Entendido</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
