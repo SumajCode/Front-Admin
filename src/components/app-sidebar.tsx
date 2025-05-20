@@ -1,7 +1,17 @@
 'use client'
 
 import * as React from 'react'
-import { BookUser, Command, Frame, LifeBuoy, Map, Newspaper, PieChart, Send } from 'lucide-react'
+import {
+  BookUser,
+  Command,
+  Frame,
+  LifeBuoy,
+  Map,
+  Newspaper,
+  PieChart,
+  Send,
+  Users,
+} from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
 import { NavSecondary } from '@/components/nav-secondary'
@@ -38,7 +48,23 @@ const data = {
           url: '/admin/docentes/historial',
         },
       ],
-    } /*Por si es necesario
+    },
+    {
+      title: 'Administradores',
+      url: '#',
+      icon: Users,
+      items: [
+        {
+          title: 'Gestionar Administradores',
+          url: '/admin/administradores/gestion',
+        },
+        {
+          title: 'Historial de Administradores',
+          url: '/admin/administradores/historial',
+        },
+      ],
+    },
+    /*Por si es necesario
     {
       title: 'Models',
       url: '#',
@@ -57,7 +83,7 @@ const data = {
           url: '#',
         },
       ],
-    },*/,
+    },*/
   ],
   navSecondary: [
     {
