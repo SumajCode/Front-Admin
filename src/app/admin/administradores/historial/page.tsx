@@ -7,70 +7,82 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import type { AdministradorHistorial } from '@/types/administrador'
 
-// Mock data for teacher history
-const teacherHistory = [
+// Mock data para el historial de administradores
+const adminHistory: AdministradorHistorial[] = [
   {
     id: 1,
-    name: 'Juan Pérez',
+    name: 'Admin Principal',
     action: 'Creación',
-    date: '15/04/2023',
-    user: 'admin@gmail.com',
+    date: '10/01/2023',
+    user: 'sistema@gmail.com',
   },
   {
     id: 2,
-    name: 'María González',
+    name: 'Carlos Mendoza',
     action: 'Creación',
-    date: '20/04/2023',
+    date: '15/01/2023',
     user: 'admin@gmail.com',
   },
   {
     id: 3,
-    name: 'Carlos Rodríguez',
+    name: 'Laura Sánchez',
     action: 'Creación',
-    date: '25/04/2023',
+    date: '20/02/2023',
+    user: 'admin@gmail.com',
+  },
+  {
+    id: 3,
+    name: 'Laura Sánchez',
+    action: 'Edición',
+    date: '15/03/2023',
     user: 'admin@gmail.com',
   },
   {
     id: 4,
-    name: 'Ana Martínez',
+    name: 'Roberto Gómez',
     action: 'Creación',
-    date: '30/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 4,
-    name: 'Ana Martínez',
-    action: 'Baja',
-    date: '15/05/2023',
+    date: '10/04/2023',
     user: 'admin@gmail.com',
   },
   {
     id: 5,
-    name: 'Roberto Sánchez',
+    name: 'Ana Martínez',
     action: 'Creación',
-    date: '10/05/2023',
+    date: '05/05/2023',
     user: 'admin@gmail.com',
   },
 ]
 
-export default function HistorialPage() {
+// Función para convertir fecha en formato DD/MM/YYYY a objeto Date para ordenar
+const parseDate = (dateString: string) => {
+  const [day, month, year] = dateString.split('/').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+export default function HistorialAdministradoresPage() {
+  // Ordenar los registros por fecha descendente (más recientes primero)
+  const sortedHistory = [...adminHistory].sort((a, b) => {
+    return parseDate(b.date).getTime() - parseDate(a.date).getTime()
+  })
+
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-3xl font-bold mb-6">Historial de Docentes</h1>
+      <h1 className="text-3xl font-bold mb-6">Historial de Administradores</h1>
 
       <Card>
         <CardHeader>
           <CardTitle>Registro de Actividades</CardTitle>
           <CardDescription>
-            Historial de todas las acciones realizadas sobre los docentes.
+            Historial de todas las acciones realizadas sobre los administradores del sistema.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>№</TableHead>
                 <TableHead>Nombre</TableHead>
                 <TableHead>Acción</TableHead>
                 <TableHead>Fecha</TableHead>
@@ -78,17 +90,17 @@ export default function HistorialPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teacherHistory.map((record, index) => (
+              {sortedHistory.map((record, index) => (
                 <TableRow key={index}>
-                  <TableCell>{record.id}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell className="font-medium">{record.name}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         record.action === 'Creación'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-[#00bf7d]/20 text-[#00bf7d]'
                           : record.action === 'Edición'
-                            ? 'bg-blue-100 text-blue-800'
+                            ? 'bg-[#0073e6]/20 text-[#0073e6]'
                             : 'bg-red-100 text-red-800'
                       }`}
                     >

@@ -1,7 +1,17 @@
 'use client'
 
 import * as React from 'react'
-import { BookUser, Command, Frame, LifeBuoy, Map, Newspaper, PieChart, Send } from 'lucide-react'
+import {
+  BookUser,
+  Command,
+  Frame,
+  LifeBuoy,
+  Map,
+  Newspaper,
+  PieChart,
+  Send,
+  Users,
+} from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
 import { NavSecondary } from '@/components/nav-secondary'
@@ -31,14 +41,30 @@ const data = {
       items: [
         {
           title: 'Gestionar Docentes',
-          url: '/admin/docentes',
+          url: '/admin/docentes/gestion',
         },
         {
           title: 'Historial de Docentes',
-          url: '/admin/historial',
+          url: '/admin/docentes/historial',
         },
       ],
-    } /*Por si es necesario
+    },
+    {
+      title: 'Administradores',
+      url: '#',
+      icon: Users,
+      items: [
+        {
+          title: 'Gestionar Administradores',
+          url: '/admin/administradores/gestion',
+        },
+        {
+          title: 'Historial de Administradores',
+          url: '/admin/administradores/historial',
+        },
+      ],
+    },
+    /*Por si es necesario
     {
       title: 'Models',
       url: '#',
@@ -57,12 +83,12 @@ const data = {
           url: '#',
         },
       ],
-    },*/,
+    },*/
   ],
   navSecondary: [
     {
       title: 'Noticias y Anuncios',
-      url: '/admin/noticias',
+      url: '/noticias',
       icon: Newspaper,
     },
     {
@@ -95,7 +121,7 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -103,7 +129,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="bg-[#2546f0] text-white flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -126,3 +152,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+
+export const AppSidebar = React.memo(AppSidebarComponent)
