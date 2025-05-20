@@ -1,10 +1,12 @@
 import { AppSidebar } from '@/components/app-sidebar'
-
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import * as React from 'react'
 
-import { ReactNode } from 'react'
+interface LayoutProps {
+  children: React.ReactNode
+}
 
-export default function Layout({ children }: { children: ReactNode }) {
+function LayoutComponent({ children }: LayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -19,3 +21,5 @@ export default function Layout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   )
 }
+
+export default React.memo(LayoutComponent)

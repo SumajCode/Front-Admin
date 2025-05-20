@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { type LucideIcon } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 import {
   SidebarGroup,
@@ -9,15 +9,15 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-export function NavSecondary({
+function NavSecondaryComponent({
   items,
   ...props
 }: {
-  items: {
+  items: Array<{
     title: string
     url: string
     icon: LucideIcon
-  }[]
+  }>
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
@@ -25,9 +25,13 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="sm">
+              <SidebarMenuButton
+                asChild
+                size="sm"
+                className="hover:bg-[#5928ed]/20 hover:text-white"
+              >
                 <a href={item.url}>
-                  <item.icon />
+                  <item.icon className="text-[#00b4c5]" />
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>
@@ -38,3 +42,5 @@ export function NavSecondary({
     </SidebarGroup>
   )
 }
+
+export const NavSecondary = React.memo(NavSecondaryComponent)

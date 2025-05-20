@@ -39,31 +39,48 @@ Una aplicación web construida con Next. **TypeScript**, que muestra la gestión
 
 ```
 front-docente/
-├─ public/           # Archivos estáticos (imagenes, favicon)
-├─ src/
-│  ├─ app/           # Rutas de Next.js (App Router)
-│  │  ├─ admin/      # Sección de administración
-│  │  │  ├─ docentes/    # Gestión de docentes
-│  │  │  │  └─ page.tsx  # Página de listado de docentes
-│  │  │  ├─ historial/   # Historial de docentes
-│  │  │  │  └─ page.tsx  # Página de historial
-│  │  │  └─ noticias/    # Noticias y anuncios
-│  │  │     └─ page.tsx  # Página de noticias
-│  │  ├─ dashboard/      # Dashboard principal
-│  │  │  └─ page.tsx     # Página del dashboard
-│  │  ├─ globals.css     # Estilos globales con Tailwind
-│  │  ├─ layout.tsx      # Layout global
-│  │  └─ page.tsx        # Página principal
-│  ├─ components/   # Componentes reutilizables
-│  │  └─ ui/        # Biblioteca de UI (botones, tarjetas, etc.)
-│  ├─ hooks/        # Hooks personalizados (por ejemplo, use-mobile)
-│  └─ lib/          # Utilidades globales
-├─ components.json       # Configuración de shadcn/ui
-├─ eslint.config.mjs     # Configuración de ESLint
-├─ next.config.ts        # Configuración de Next.js
-├─ tsconfig.json         # Configuración de TypeScript
-└─ package.json          # Scripts y dependencias
-```
+├── public/                          # Archivos estáticos (favicon, imágenes, etc.)
+├── src/
+│   ├── app/                         # Rutas con App Router de Next.js
+│   │   ├── admin/                   # Panel de administración
+│   │   │   ├── docentes/
+│   │   │   │   ├── gestion/         # Página principal (listado + modales)
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── historial/       # Historial de docentes
+│   │   │   │       └── page.tsx
+│   │   │   ├── dashboard/           # Dashboard del panel admin
+│   │   │   │   └── page.tsx
+│   │   │   ├── noticias/            # Noticias y anuncios
+│   │   │   │   └── page.tsx
+│   │   │   └── layout.tsx           # Layout persistente del admin (sidebar, etc.)
+│   │   │
+│   │   ├── favicon.ico
+│   │   ├── globals.css              # Estilos globales (Tailwind u otros)
+│   │   ├── layout.tsx               # Layout general del sitio
+│   │   └── page.tsx                 # Página principal del sitio
+│   ├── components/                  # Componentes reutilizables y específicos
+│   │   ├── ui/                      # Botones, inputs, modales reutilizables
+│   │   ├── docentes/               # Componentes específicos del módulo docentes
+│   │   │   └── docente-form.tsx
+│   │   ├── layout/                 # Navbar, Sidebar, Footer, etc.
+│   │   │   ├── app-sidebar.tsx
+│   │   │   ├── nav-main.tsx
+│   │   │   ├── nav-secondary.tsx
+│   │   │   └── nav-user.tsx
+│   ├── hooks/                       # Custom hooks (useMobile, etc.)
+│   ├── lib/                         # Funciones utilitarias y lógica compartida
+│   └── types/                       # Tipos e interfaces TypeScript globales
+├── .gitignore
+├── .prettierrc
+├── components.json                 # Configuración de shadcn/ui
+├── eslint.config.mjs
+├── next.config.ts
+├── next-env.d.ts
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── README.md
+└── tsconfig.json
 
 ---
 
@@ -71,6 +88,7 @@ front-docente/
 
 - **App Router**: Se basa en la carpeta `src/app`. Cada carpeta anidada define una ruta.
 - **Componentes globales**: En `src/components/ui` encontrarás controles estilizados reutilizables.
+- **Componentes globales**:  Cada módulo tiene su propia carpeta en src/components/[modulo], por ejemplo: docentes
 - **Estilos globales**: En `src/app/globals.css` y `postcss.config.mjs`.
 
 ---
@@ -80,4 +98,5 @@ front-docente/
 1. Añadir nuevas rutas: crea carpetas y archivos `.tsx` en `src/app`.
 2. Crear componentes : úsalos en `src/components` y agrégalos a la UI.
 3. Escribir hooks/funciones: en `src/hooks` o `src/lib` según su alcance.
-4. Gestionar datos: define archivos de datos en `src/modules/*`.
+4. Gestionar datos: Centraliza tipos en `src/types/` y constantes en `src/constants/`.
+```
