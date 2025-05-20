@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { PlusCircle, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { useToast } from '@/hooks/use-toast'
+import { AdministradorForm } from '@/components/administradores/administrador-form'
 import type { Administrador } from '@/types/administrador'
 
 // Mock data para administradores
@@ -43,13 +52,49 @@ const initialAdmins: Administrador[] = [
 ]
 
 export default function GestionAdministradoresPage() {
-  const [admins] = useState<Administrador[]>(initialAdmins)
+  const [admins, setAdmins] = useState<Administrador[]>(initialAdmins)
+  const [isOpen, setIsOpen] = useState(false)
+  const { toast } = useToast()
+
+  const handleSuccess = useCallback(
+    (success: boolean) => {
+      setIsOpen(false)
+
+      toast({
+        title: 'Administrador registrado',
+        description: 'El administrador ha sido registrado correctamente.',
+        variant: success ? 'success' : 'destructive',
+      })
+
+      if (success) {
+        // Simular la adición de un nuevo administrador
+        const newId = Math.max(...admins.map((admin) => admin.id)) + 1
+        setAdmins((prevAdmins) => [
+          ...prevAdmins,
+          {
+            id: newId,
+            name: 'Nuevo Administrador',
+            email: 'nuevo.admin@example.com',
+            status: 'Activo',
+          },
+        ])
+      }
+    },
+    [admins, toast],
+  )
+
+  const handleNewAdmin = useCallback(() => {
+    setIsOpen(true)
+  }, [])
 
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Gestión de Administradores</h1>
-        <Button className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white">
+        <Button
+          className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white"
+          onClick={handleNewAdmin}
+        >
           <PlusCircle className="h-4 w-4" />
           Nuevo Administrador
         </Button>
@@ -108,6 +153,20 @@ export default function GestionAdministradoresPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
+          <SheetHeader>
+            <SheetTitle>Nuevo Administrador</SheetTitle>
+            <SheetDescription>
+              Complete el formulario para registrar un nuevo administrador.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="py-6">
+            <AdministradorForm onSubmit={handleSuccess} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
