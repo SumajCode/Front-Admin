@@ -18,7 +18,7 @@ export type AdministradorStatus = 'Activo' | 'Inactivo'
 export interface AdministradorHistorial {
   id: number
   name: string
-  action: 'Creación' | 'Eliminación'
+  action: 'Creación' | 'Edición' | 'Baja'
   date: string
   user: string
 }
