@@ -31,11 +31,11 @@ const data = {
       items: [
         {
           title: 'Gestionar Docentes',
-          url: '/admin/docentes',
+          url: '/admin/docentes/gestion',
         },
         {
           title: 'Historial de Docentes',
-          url: '/admin/historial',
+          url: '/admin/docentes/historial',
         },
       ],
     } /*Por si es necesario
@@ -62,7 +62,7 @@ const data = {
   navSecondary: [
     {
       title: 'Noticias y Anuncios',
-      url: '/admin/noticias',
+      url: '/noticias',
       icon: Newspaper,
     },
     {

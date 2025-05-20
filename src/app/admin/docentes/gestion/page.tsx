@@ -30,7 +30,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Switch } from '@/components/ui/switch'
-import { DocenteForm } from '@/components/docente-form'
+import { DocenteForm } from '@/components/docentes/docente-form'
 import { useToast } from '@/hooks/use-toast'
 import type { Docente } from '@/types/docente'
 import { useCallback } from 'react'
