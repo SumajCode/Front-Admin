@@ -42,7 +42,10 @@ function NavMainComponent({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} className="hover:bg-[#2546f0]/10">
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  className="hover:bg-[#2546f0]/10 hover:text-white"
+                >
                   {item.icon && <item.icon className="text-[#00bf7d]" />}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 text-[#00b4c5]" />

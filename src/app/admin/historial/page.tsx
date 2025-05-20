@@ -26,10 +26,24 @@ const teacherHistory: DocenteHistorial[] = [
     user: 'admin@gmail.com',
   },
   {
+    id: 1,
+    name: 'Juan Pérez',
+    action: 'Edición',
+    date: '22/04/2023',
+    user: 'admin@gmail.com',
+  },
+  {
     id: 3,
     name: 'Carlos Rodríguez',
     action: 'Creación',
     date: '25/04/2023',
+    user: 'admin@gmail.com',
+  },
+  {
+    id: 2,
+    name: 'María González',
+    action: 'Edición',
+    date: '28/04/2023',
     user: 'admin@gmail.com',
   },
   {
@@ -53,9 +67,27 @@ const teacherHistory: DocenteHistorial[] = [
     date: '10/05/2023',
     user: 'admin@gmail.com',
   },
+  {
+    id: 5,
+    name: 'Roberto Sánchez',
+    action: 'Edición',
+    date: '12/05/2023',
+    user: 'admin@gmail.com',
+  },
 ]
 
+// Función para convertir fecha en formato DD/MM/YYYY a objeto Date para ordenar
+const parseDate = (dateString: string) => {
+  const [day, month, year] = dateString.split('/').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 export default function HistorialPage() {
+  // Ordenar los registros por fecha descendente (más recientes primero)
+  const sortedHistory = [...teacherHistory].sort((a, b) => {
+    return parseDate(b.date).getTime() - parseDate(a.date).getTime()
+  })
+
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-3xl font-bold mb-6">Historial de Docentes</h1>
@@ -71,7 +103,7 @@ export default function HistorialPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>№</TableHead>
                 <TableHead>Nombre</TableHead>
                 <TableHead>Acción</TableHead>
                 <TableHead>Fecha</TableHead>
@@ -79,9 +111,9 @@ export default function HistorialPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teacherHistory.map((record, index) => (
+              {sortedHistory.map((record, index) => (
                 <TableRow key={index}>
-                  <TableCell>{record.id}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell className="font-medium">{record.name}</TableCell>
                   <TableCell>
                     <span
