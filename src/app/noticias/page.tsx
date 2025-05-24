@@ -4,14 +4,28 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PlusCircle } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import * as React from 'react'
 import noticiasData from '@/data/noticias.json'
+import type { Noticia } from '@/types/noticia'
 
-interface Noticia {
-  id: number
-  title: string
-  date: string
-  content: string
+// Función para verificar si una noticia está vencida
+const isNoticiaVencida = (fechaVencimiento: string | null): boolean => {
+  if (!fechaVencimiento) return false
+
+  const [day, month, year] = fechaVencimiento.split('/').map(Number)
+  const fechaVenc = new Date(year, month - 1, day)
+  const hoy = new Date()
+
+  return fechaVenc < hoy
+}
+
+// Función para obtener el color de la categoría
+const getCategoriaColor = (categoria: string): string => {
+  if (categoria === 'Universidad Mayor de San Simón') {
+    return 'bg-[#2546f0]/20 text-[#2546f0]'
+  }
+  return 'bg-[#5928ed]/20 text-[#5928ed]'
 }
 
 export default React.memo(function NoticiasPage() {
@@ -19,37 +33,78 @@ export default React.memo(function NoticiasPage() {
 
   // Cargar datos al montar el componente
   useEffect(() => {
-    setNews(noticiasData.noticias)
+    const noticias = noticiasData.noticias as Noticia[]
+
+    // Filtrar noticias activas y no vencidas
+    const noticiasVisibles = noticias.filter((noticia) => {
+      if (!noticia.activo) return false
+      return !isNoticiaVencida(noticia.fechaVencimiento)
+    })
+
+    setNews(noticiasVisibles)
   }, [])
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Noticias y Anuncios</h1>
-        <Button className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white">
+    <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Noticias y Anuncios</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Mantente informado sobre las últimas noticias de la universidad
+          </p>
+        </div>
+        <Button className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white w-full sm:w-auto">
           <PlusCircle className="h-4 w-4" />
           Nueva Noticia
         </Button>
       </div>
 
-      <div className="grid gap-6">
-        {news.map((item) => (
-          <Card key={item.id} className="border-[#0073e6]/20 hover:shadow-md transition-shadow">
-            <CardHeader className="bg-gradient-to-r from-[#00bf7d]/5 to-transparent">
-              <div className="flex justify-between items-start">
-                <CardTitle>{item.title}</CardTitle>
-                <span className="text-sm text-muted-foreground bg-[#5928ed]/10 px-2 py-1 rounded-full">
-                  {item.date}
-                </span>
-              </div>
-              <CardDescription>Anuncio para todos los docentes</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>{item.content}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {news.length === 0 ? (
+        <Card className="text-center py-12">
+          <CardContent>
+            <p className="text-muted-foreground">No hay noticias disponibles en este momento.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6">
+          {news.map((item) => (
+            <Card key={item.id} className="border-[#0073e6]/20 hover:shadow-md transition-shadow">
+              <CardHeader className="bg-gradient-to-r from-[#00bf7d]/5 to-transparent">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg sm:text-xl">{item.title}</CardTitle>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
+                      <Badge
+                        variant="secondary"
+                        className={`${getCategoriaColor(item.categoria)} text-xs w-fit`}
+                      >
+                        {item.categoria}
+                      </Badge>
+                      {item.fechaVencimiento && (
+                        <span className="text-xs text-muted-foreground">
+                          Válido hasta: {item.fechaVencimiento}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-sm text-muted-foreground bg-[#5928ed]/10 px-3 py-1 rounded-full whitespace-nowrap">
+                    {item.date}
+                  </span>
+                </div>
+                <CardDescription className="mt-2">
+                  Anuncio para{' '}
+                  {item.categoria === 'Universidad Mayor de San Simón'
+                    ? 'toda la universidad'
+                    : item.categoria}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <p className="text-sm sm:text-base leading-relaxed">{item.content}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 })

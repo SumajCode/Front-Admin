@@ -4,19 +4,46 @@
       "id": 1,
       "title": "Inicio del año académico",
       "date": "01/03/2023",
-      "content": "El inicio del año académico será el 15 de marzo. Todos los docentes deben presentarse el 10 de marzo para la reunión de planificación."
+      "content": "El inicio del año académico será el 15 de marzo. Todos los docentes deben presentarse el 10 de marzo para la reunión de planificación.",
+      "categoria": "Universidad Mayor de San Simón",
+      "fechaVencimiento": "15/03/2023",
+      "activo": true
     },
     {
       "id": 2,
-      "title": "Capacitación docente",
+      "title": "Capacitación docente en metodologías",
       "date": "15/02/2023",
-      "content": "Se realizará una capacitación docente sobre nuevas metodologías de enseñanza el 20 de febrero. La asistencia es obligatoria."
+      "content": "Se realizará una capacitación docente sobre nuevas metodologías de enseñanza el 20 de febrero. La asistencia es obligatoria.",
+      "categoria": "Facultad de Ciencias y Tecnología",
+      "fechaVencimiento": "20/02/2023",
+      "activo": false
     },
     {
       "id": 3,
       "title": "Actualización de plataforma educativa",
       "date": "10/01/2023",
-      "content": "Se ha actualizado la plataforma educativa. Se recomienda a todos los docentes familiarizarse con las nuevas funcionalidades."
+      "content": "Se ha actualizado la plataforma educativa. Se recomienda a todos los docentes familiarizarse con las nuevas funcionalidades.",
+      "categoria": "Universidad Mayor de San Simón",
+      "fechaVencimiento": null,
+      "activo": true
+    },
+    {
+      "id": 4,
+      "title": "Seminario de investigación médica",
+      "date": "05/03/2023",
+      "content": "La Facultad de Medicina invita a todos los estudiantes y docentes al seminario de investigación que se realizará el próximo viernes.",
+      "categoria": "Facultad de Medicina",
+      "fechaVencimiento": "10/03/2023",
+      "activo": true
+    },
+    {
+      "id": 5,
+      "title": "Convocatoria para proyectos de ingeniería",
+      "date": "12/02/2023",
+      "content": "Se abre la convocatoria para presentar proyectos de innovación tecnológica. Fecha límite: 30 de marzo.",
+      "categoria": "Facultad de Ciencias y Tecnología",
+      "fechaVencimiento": "30/03/2023",
+      "activo": true
     }
   ]
 }
