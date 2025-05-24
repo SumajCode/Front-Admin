@@ -10,8 +10,19 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { PlusCircle, Pencil } from 'lucide-react'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import { NoticiaForm } from '@/components/noticias/noticia-form'
 import * as React from 'react'
@@ -42,6 +53,8 @@ export default React.memo(function NoticiasPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentNoticia, setCurrentNoticia] = useState<Noticia | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const { toast } = useToast()
 
   // Cargar datos al montar el componente
@@ -110,6 +123,33 @@ export default React.memo(function NoticiasPage() {
     setIsOpen(true)
   }, [])
 
+  const handleDeleteClick = useCallback((noticia: Noticia) => {
+    setCurrentNoticia(noticia)
+    setIsDeleteDialogOpen(true)
+  }, [])
+
+  const handleDeleteConfirm = useCallback(() => {
+    setIsDeleteDialogOpen(false)
+
+    if (simulateDeleteSuccess && currentNoticia) {
+      setNews((prevNews) => prevNews.filter((noticia) => noticia.id !== currentNoticia.id))
+
+      toast({
+        title: 'Noticia eliminada',
+        description: 'La noticia ha sido eliminada correctamente.',
+        variant: 'success',
+      })
+    } else {
+      toast({
+        title: 'Error al eliminar',
+        description: 'No se pudo eliminar la noticia. Intente nuevamente.',
+        variant: 'destructive',
+      })
+    }
+
+    setCurrentNoticia(null)
+  }, [currentNoticia, simulateDeleteSuccess, toast])
+
   return (
     <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
@@ -156,7 +196,7 @@ export default React.memo(function NoticiasPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="sm"
@@ -165,6 +205,15 @@ export default React.memo(function NoticiasPage() {
                     >
                       <Pencil className="h-4 w-4" />
                       <span className="sr-only sm:not-sr-only sm:ml-2">Editar</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-red-500 hover:text-red-700 border-red-500 hover:bg-red-50"
+                      onClick={() => handleDeleteClick(item)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only sm:not-sr-only sm:ml-2">Eliminar</span>
                     </Button>
                     <span className="text-sm text-muted-foreground bg-[#5928ed]/10 px-3 py-1 rounded-full whitespace-nowrap">
                       {item.date}
@@ -205,6 +254,44 @@ export default React.memo(function NoticiasPage() {
           </div>
         </SheetContent>
       </Sheet>
+      {/* Diálogo de confirmación para eliminar */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Está seguro de eliminar esta noticia?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La noticia será eliminada permanentemente del
+              sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="flex items-center space-x-2 py-4">
+            <Switch
+              id="simulate-delete-success"
+              checked={simulateDeleteSuccess}
+              onCheckedChange={setSimulateDeleteSuccess}
+            />
+            <label
+              htmlFor="simulate-delete-success"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {simulateDeleteSuccess
+                ? 'Simular eliminación exitosa'
+                : 'Simular error de eliminación'}
+            </label>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 })
