@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -8,73 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { DocenteHistorial } from '@/types/docente'
-
-// Mock data for teacher history
-const teacherHistory: DocenteHistorial[] = [
-  {
-    id: 1,
-    name: 'Juan Pérez',
-    action: 'Creación',
-    date: '15/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 2,
-    name: 'María González',
-    action: 'Creación',
-    date: '20/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 1,
-    name: 'Juan Pérez',
-    action: 'Edición',
-    date: '22/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 3,
-    name: 'Carlos Rodríguez',
-    action: 'Creación',
-    date: '25/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 2,
-    name: 'María González',
-    action: 'Edición',
-    date: '28/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 4,
-    name: 'Ana Martínez',
-    action: 'Creación',
-    date: '30/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 4,
-    name: 'Ana Martínez',
-    action: 'Baja',
-    date: '15/05/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 5,
-    name: 'Roberto Sánchez',
-    action: 'Creación',
-    date: '10/05/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 5,
-    name: 'Roberto Sánchez',
-    action: 'Edición',
-    date: '12/05/2023',
-    user: 'admin@gmail.com',
-  },
-]
+import historialData from '@/data/docentes-historial.json'
 
 // Función para convertir fecha en formato DD/MM/YYYY a objeto Date para ordenar
 const parseDate = (dateString: string) => {
@@ -83,6 +20,13 @@ const parseDate = (dateString: string) => {
 }
 
 export default function HistorialPage() {
+  const [teacherHistory, setTeacherHistory] = useState<DocenteHistorial[]>([])
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    setTeacherHistory(historialData.historial as DocenteHistorial[])
+  }, [])
+
   // Ordenar los registros por fecha descendente (más recientes primero)
   const sortedHistory = [...teacherHistory].sort((a, b) => {
     return parseDate(b.date).getTime() - parseDate(a.date).getTime()

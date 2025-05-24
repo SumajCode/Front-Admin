@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,59 +34,21 @@ import { DocenteForm } from '@/components/docentes/docente-form'
 import { useToast } from '@/hooks/use-toast'
 import type { Docente } from '@/types/docente'
 import { useCallback } from 'react'
-
-// Mock data for teachers
-const initialTeachers: Docente[] = [
-  {
-    id: 1,
-    name: 'Juan Pérez',
-    email: 'juan.perez@example.com',
-    telefono: '60436897',
-    facultades: ['Facultad de Ciencias y Tecnología', 'Facultad de Ciencias Económicas'],
-    status: 'Activo',
-  },
-  {
-    id: 2,
-    name: 'María González',
-    email: 'maria.gonzalez@example.com',
-    telefono: '70125896',
-    facultades: ['Facultad de Ciencias Jurídicas y Políticas'],
-    status: 'Activo',
-  },
-  {
-    id: 3,
-    name: 'Carlos Rodríguez',
-    email: 'carlos.rodriguez@example.com',
-    telefono: '65478932',
-    facultades: ['Facultad de Ciencias Bioquímicas y Farmacéuticas'],
-    status: 'Activo',
-  },
-  {
-    id: 4,
-    name: 'Ana Martínez',
-    email: 'ana.martinez@example.com',
-    telefono: '71452369',
-    facultades: ['Facultad de Ciencias y Tecnología'],
-    status: 'Inactivo',
-  },
-  {
-    id: 5,
-    name: 'Roberto Sánchez',
-    email: 'roberto.sanchez@example.com',
-    telefono: '60789541',
-    facultades: ['Facultad de Medicina', 'Facultad de Ciencias Sociales'],
-    status: 'Activo',
-  },
-]
+import docentesData from '@/data/docentes.json'
 
 export default function DocentesPage() {
-  const [teachers, setTeachers] = useState<Docente[]>(initialTeachers)
+  const [teachers, setTeachers] = useState<Docente[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentDocente, setCurrentDocente] = useState<Docente | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const { toast } = useToast()
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    setTeachers(docentesData.docentes as Docente[])
+  }, [])
 
   const handleSuccess = useCallback(
     (success: boolean) => {

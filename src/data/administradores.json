@@ -1,0 +1,28 @@
+{
+  "administradores": [
+    {
+      "id": 1,
+      "name": "Admin Principal",
+      "email": "admin@gmail.com",
+      "status": "Activo"
+    },
+    {
+      "id": 2,
+      "name": "Carlos Mendoza",
+      "email": "carlos.mendoza@example.com",
+      "status": "Activo"
+    },
+    {
+      "id": 4,
+      "name": "Roberto Gómez",
+      "email": "roberto.gomez@example.com",
+      "status": "Activo"
+    },
+    {
+      "id": 5,
+      "name": "Ana Martínez",
+      "email": "ana.martinez@example.com",
+      "status": "Inactivo"
+    }
+  ]
+}

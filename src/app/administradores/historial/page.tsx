@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -8,52 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import type { AdministradorHistorial } from '@/types/administrador'
-
-// Mock data para el historial de administradores
-const adminHistory: AdministradorHistorial[] = [
-  {
-    id: 1,
-    name: 'Admin Principal',
-    action: 'Creación',
-    date: '10/01/2023',
-    user: 'sistema@gmail.com',
-  },
-  {
-    id: 2,
-    name: 'Carlos Mendoza',
-    action: 'Creación',
-    date: '15/01/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 3,
-    name: 'Laura Sánchez',
-    action: 'Creación',
-    date: '20/02/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 3,
-    name: 'Laura Sánchez',
-    action: 'Edición',
-    date: '15/03/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 4,
-    name: 'Roberto Gómez',
-    action: 'Creación',
-    date: '10/04/2023',
-    user: 'admin@gmail.com',
-  },
-  {
-    id: 5,
-    name: 'Ana Martínez',
-    action: 'Creación',
-    date: '05/05/2023',
-    user: 'admin@gmail.com',
-  },
-]
+import historialData from '@/data/administradores-historial.json'
 
 // Función para convertir fecha en formato DD/MM/YYYY a objeto Date para ordenar
 const parseDate = (dateString: string) => {
@@ -62,6 +20,13 @@ const parseDate = (dateString: string) => {
 }
 
 export default function HistorialAdministradoresPage() {
+  const [adminHistory, setAdminHistory] = useState<AdministradorHistorial[]>([])
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    setAdminHistory(historialData.historial as AdministradorHistorial[])
+  }, [])
+
   // Ordenar los registros por fecha descendente (más recientes primero)
   const sortedHistory = [...adminHistory].sort((a, b) => {
     return parseDate(b.date).getTime() - parseDate(a.date).getTime()

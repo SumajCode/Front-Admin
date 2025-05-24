@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { PlusCircle, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,43 +33,21 @@ import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import { AdministradorForm } from '@/components/administradores/administrador-form'
 import type { Administrador } from '@/types/administrador'
-
-// Mock data para administradores
-const initialAdmins: Administrador[] = [
-  {
-    id: 1,
-    name: 'Admin Principal',
-    email: 'admin@gmail.com',
-    status: 'Activo',
-  },
-  {
-    id: 2,
-    name: 'Carlos Mendoza',
-    email: 'carlos.mendoza@example.com',
-    status: 'Activo',
-  },
-  {
-    id: 4,
-    name: 'Roberto Gómez',
-    email: 'roberto.gomez@example.com',
-    status: 'Activo',
-  },
-  {
-    id: 5,
-    name: 'Ana Martínez',
-    email: 'ana.martinez@example.com',
-    status: 'Inactivo',
-  },
-]
+import administradoresData from '@/data/administradores.json'
 
 export default function GestionAdministradoresPage() {
-  const [admins, setAdmins] = useState<Administrador[]>(initialAdmins)
+  const [admins, setAdmins] = useState<Administrador[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isSecurityDialogOpen, setIsSecurityDialogOpen] = useState(false)
   const [currentAdmin, setCurrentAdmin] = useState<Administrador | null>(null)
   const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const { toast } = useToast()
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    setAdmins(administradoresData.administradores as Administrador[])
+  }, [])
 
   // Contar administradores activos
   const activeAdminsCount = admins.filter((admin) => admin.status === 'Activo').length
