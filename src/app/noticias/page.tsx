@@ -1,10 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { PlusCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useToast } from '@/hooks/use-toast'
+import { NoticiaForm } from '@/components/noticias/noticia-form'
 import * as React from 'react'
 import noticiasData from '@/data/noticias.json'
 import type { Noticia } from '@/types/noticia'
@@ -30,6 +39,8 @@ const getCategoriaColor = (categoria: string): string => {
 
 export default React.memo(function NoticiasPage() {
   const [news, setNews] = useState<Noticia[]>([])
+  const [isOpen, setIsOpen] = useState(false)
+  const { toast } = useToast()
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -44,6 +55,45 @@ export default React.memo(function NoticiasPage() {
     setNews(noticiasVisibles)
   }, [])
 
+  const handleSuccess = useCallback(
+    (success: boolean) => {
+      setIsOpen(false)
+
+      toast({
+        title: success ? 'Noticia publicada' : 'Error al publicar',
+        description: success
+          ? 'La noticia ha sido publicada correctamente.'
+          : 'No se pudo publicar la noticia. Intente nuevamente.',
+        variant: success ? 'success' : 'destructive',
+      })
+
+      if (success) {
+        // Simular la adición de una nueva noticia
+        const newId = Math.max(...news.map((noticia) => noticia.id)) + 1
+        const today = new Date()
+        const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`
+
+        setNews((prevNews) => [
+          {
+            id: newId,
+            title: 'Nueva noticia publicada',
+            date: formattedDate,
+            content: 'Esta es una nueva noticia que ha sido publicada exitosamente.',
+            categoria: 'Universidad Mayor de San Simón',
+            fechaVencimiento: null,
+            activo: true,
+          },
+          ...prevNews,
+        ])
+      }
+    },
+    [news, toast],
+  )
+
+  const handleNewNoticia = useCallback(() => {
+    setIsOpen(true)
+  }, [])
+
   return (
     <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
@@ -53,7 +103,10 @@ export default React.memo(function NoticiasPage() {
             Mantente informado sobre las últimas noticias de la universidad
           </p>
         </div>
-        <Button className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white w-full sm:w-auto">
+        <Button
+          className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white w-full sm:w-auto"
+          onClick={handleNewNoticia}
+        >
           <PlusCircle className="h-4 w-4" />
           Nueva Noticia
         </Button>
@@ -105,6 +158,20 @@ export default React.memo(function NoticiasPage() {
           ))}
         </div>
       )}
+
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
+          <SheetHeader>
+            <SheetTitle>Nueva Noticia</SheetTitle>
+            <SheetDescription>
+              Complete el formulario para publicar una nueva noticia o anuncio.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="py-6">
+            <NoticiaForm onSubmit={handleSuccess} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 })
