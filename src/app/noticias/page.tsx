@@ -10,7 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { PlusCircle } from 'lucide-react'
+import { PlusCircle, Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { NoticiaForm } from '@/components/noticias/noticia-form'
@@ -40,6 +40,8 @@ const getCategoriaColor = (categoria: string): string => {
 export default React.memo(function NoticiasPage() {
   const [news, setNews] = useState<Noticia[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [currentNoticia, setCurrentNoticia] = useState<Noticia | null>(null)
   const { toast } = useToast()
 
   // Cargar datos al montar el componente
@@ -60,14 +62,20 @@ export default React.memo(function NoticiasPage() {
       setIsOpen(false)
 
       toast({
-        title: success ? 'Noticia publicada' : 'Error al publicar',
+        title: success
+          ? isEditMode
+            ? 'Noticia actualizada'
+            : 'Noticia publicada'
+          : 'Error al procesar',
         description: success
-          ? 'La noticia ha sido publicada correctamente.'
-          : 'No se pudo publicar la noticia. Intente nuevamente.',
+          ? isEditMode
+            ? 'La noticia ha sido actualizada correctamente.'
+            : 'La noticia ha sido publicada correctamente.'
+          : 'No se pudo procesar la noticia. Intente nuevamente.',
         variant: success ? 'success' : 'destructive',
       })
 
-      if (success) {
+      if (success && !isEditMode) {
         // Simular la adición de una nueva noticia
         const newId = Math.max(...news.map((noticia) => noticia.id)) + 1
         const today = new Date()
@@ -87,10 +95,18 @@ export default React.memo(function NoticiasPage() {
         ])
       }
     },
-    [news, toast],
+    [news, toast, isEditMode],
   )
 
   const handleNewNoticia = useCallback(() => {
+    setIsEditMode(false)
+    setCurrentNoticia(null)
+    setIsOpen(true)
+  }, [])
+
+  const handleEditNoticia = useCallback((noticia: Noticia) => {
+    setIsEditMode(true)
+    setCurrentNoticia(noticia)
     setIsOpen(true)
   }, [])
 
@@ -140,9 +156,20 @@ export default React.memo(function NoticiasPage() {
                       )}
                     </div>
                   </div>
-                  <span className="text-sm text-muted-foreground bg-[#5928ed]/10 px-3 py-1 rounded-full whitespace-nowrap">
-                    {item.date}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-[#0073e6] hover:bg-[#0073e6]/10 text-[#0073e6]"
+                      onClick={() => handleEditNoticia(item)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only sm:not-sr-only sm:ml-2">Editar</span>
+                    </Button>
+                    <span className="text-sm text-muted-foreground bg-[#5928ed]/10 px-3 py-1 rounded-full whitespace-nowrap">
+                      {item.date}
+                    </span>
+                  </div>
                 </div>
                 <CardDescription className="mt-2">
                   Anuncio para{' '}
@@ -162,13 +189,19 @@ export default React.memo(function NoticiasPage() {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
           <SheetHeader>
-            <SheetTitle>Nueva Noticia</SheetTitle>
+            <SheetTitle>{isEditMode ? 'Editar Noticia' : 'Nueva Noticia'}</SheetTitle>
             <SheetDescription>
-              Complete el formulario para publicar una nueva noticia o anuncio.
+              {isEditMode
+                ? 'Modifique los datos de la noticia y guarde los cambios.'
+                : 'Complete el formulario para publicar una nueva noticia o anuncio.'}
             </SheetDescription>
           </SheetHeader>
           <div className="py-6">
-            <NoticiaForm onSubmit={handleSuccess} />
+            <NoticiaForm
+              onSubmit={handleSuccess}
+              noticia={currentNoticia}
+              isEditMode={isEditMode}
+            />
           </div>
         </SheetContent>
       </Sheet>

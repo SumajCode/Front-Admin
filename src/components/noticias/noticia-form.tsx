@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import type { NoticiaFormData } from '@/types/noticia'
+import type { NoticiaFormData, Noticia } from '@/types/noticia'
 import categoriasData from '@/data/categorias.json'
 
 const formSchema = z.object({
@@ -42,9 +42,11 @@ const formSchema = z.object({
 
 interface NoticiaFormProps {
   onSubmit: (success: boolean) => void
+  noticia?: Noticia | null
+  isEditMode?: boolean
 }
 
-export function NoticiaForm({ onSubmit }: NoticiaFormProps) {
+export function NoticiaForm({ onSubmit, noticia, isEditMode = false }: NoticiaFormProps) {
   const [simulateSuccess, setSimulateSuccess] = useState(true)
   const [categorias, setCategorias] = useState<string[]>([])
 
@@ -53,16 +55,36 @@ export function NoticiaForm({ onSubmit }: NoticiaFormProps) {
     setCategorias(categoriasData.categorias as string[])
   }, [])
 
+  // Función para convertir fecha DD/MM/YYYY a YYYY-MM-DD
+  const convertToInputDate = useCallback((dateString: string | null): string => {
+    if (!dateString) return ''
+    const [day, month, year] = dateString.split('/')
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+  }, [])
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: '',
-      content: '',
-      categoria: '',
-      fechaVencimiento: '',
-      esPermanente: false,
+      title: isEditMode && noticia ? noticia.title : '',
+      content: isEditMode && noticia ? noticia.content : '',
+      categoria: isEditMode && noticia ? noticia.categoria : '',
+      fechaVencimiento: isEditMode && noticia ? convertToInputDate(noticia.fechaVencimiento) : '',
+      esPermanente: isEditMode && noticia ? !noticia.fechaVencimiento : false,
     },
   })
+
+  // Actualizar el formulario cuando cambian los datos de la noticia
+  useEffect(() => {
+    if (isEditMode && noticia) {
+      form.reset({
+        title: noticia.title,
+        content: noticia.content,
+        categoria: noticia.categoria,
+        fechaVencimiento: convertToInputDate(noticia.fechaVencimiento),
+        esPermanente: !noticia.fechaVencimiento,
+      })
+    }
+  }, [noticia, isEditMode, form, convertToInputDate])
 
   const esPermanente = form.watch('esPermanente')
 
@@ -104,7 +126,7 @@ export function NoticiaForm({ onSubmit }: NoticiaFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Categoría</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccione una categoría" />
@@ -167,7 +189,7 @@ export function NoticiaForm({ onSubmit }: NoticiaFormProps) {
               <FormItem>
                 <FormLabel>Fecha de vencimiento</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} />
+                  <Input type="date" {...field} value={field.value ?? ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -190,7 +212,7 @@ export function NoticiaForm({ onSubmit }: NoticiaFormProps) {
         </div>
 
         <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4">
-          Publicar Noticia
+          {isEditMode ? 'Actualizar Noticia' : 'Publicar Noticia'}
         </Button>
       </form>
     </Form>
