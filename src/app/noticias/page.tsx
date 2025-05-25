@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/hooks/use-toast'
 import { NoticiaForm } from '@/components/noticias/noticia-form'
+import { FiltrosNoticias } from '@/components/noticias/filtros-noticias'
 import * as React from 'react'
 import noticiasData from '@/data/noticias.json'
 import type { Noticia } from '@/types/noticia'
@@ -49,7 +50,8 @@ const getCategoriaColor = (categoria: string): string => {
 }
 
 export default React.memo(function NoticiasPage() {
-  const [news, setNews] = useState<Noticia[]>([])
+  const [allNews, setAllNews] = useState<Noticia[]>([])
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<string[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentNoticia, setCurrentNoticia] = useState<Noticia | null>(null)
@@ -67,8 +69,17 @@ export default React.memo(function NoticiasPage() {
       return !isNoticiaVencida(noticia.fechaVencimiento)
     })
 
-    setNews(noticiasVisibles)
+    setAllNews(noticiasVisibles)
   }, [])
+
+  // Filtrar noticias según las categorías seleccionadas
+  const filteredNews = useMemo(() => {
+    if (categoriasSeleccionadas.length === 0) {
+      return allNews
+    }
+
+    return allNews.filter((noticia) => categoriasSeleccionadas.includes(noticia.categoria))
+  }, [allNews, categoriasSeleccionadas])
 
   const handleSuccess = useCallback(
     (success: boolean) => {
@@ -90,11 +101,11 @@ export default React.memo(function NoticiasPage() {
 
       if (success && !isEditMode) {
         // Simular la adición de una nueva noticia
-        const newId = Math.max(...news.map((noticia) => noticia.id)) + 1
+        const newId = Math.max(...allNews.map((noticia) => noticia.id)) + 1
         const today = new Date()
         const formattedDate = `${today.getDate().toString().padStart(2, '0')}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getFullYear()}`
 
-        setNews((prevNews) => [
+        setAllNews((prevNews) => [
           {
             id: newId,
             title: 'Nueva noticia publicada',
@@ -108,7 +119,7 @@ export default React.memo(function NoticiasPage() {
         ])
       }
     },
-    [news, toast, isEditMode],
+    [allNews, toast, isEditMode],
   )
 
   const handleNewNoticia = useCallback(() => {
@@ -132,7 +143,7 @@ export default React.memo(function NoticiasPage() {
     setIsDeleteDialogOpen(false)
 
     if (simulateDeleteSuccess && currentNoticia) {
-      setNews((prevNews) => prevNews.filter((noticia) => noticia.id !== currentNoticia.id))
+      setAllNews((prevNews) => prevNews.filter((noticia) => noticia.id !== currentNoticia.id))
 
       toast({
         title: 'Noticia eliminada',
@@ -168,15 +179,34 @@ export default React.memo(function NoticiasPage() {
         </Button>
       </div>
 
-      {news.length === 0 ? (
+      {/* Filtros */}
+      <FiltrosNoticias
+        categoriasSeleccionadas={categoriasSeleccionadas}
+        onCategoriasChange={setCategoriasSeleccionadas}
+      />
+
+      {/* Resultados */}
+      <div className="mb-4">
+        <p className="text-sm text-muted-foreground">
+          {categoriasSeleccionadas.length > 0
+            ? `Mostrando ${filteredNews.length} noticia(s) de ${categoriasSeleccionadas.length} categoría(s) seleccionada(s)`
+            : `Mostrando todas las noticias (${filteredNews.length})`}
+        </p>
+      </div>
+
+      {filteredNews.length === 0 ? (
         <Card className="text-center py-12">
           <CardContent>
-            <p className="text-muted-foreground">No hay noticias disponibles en este momento.</p>
+            <p className="text-muted-foreground">
+              {categoriasSeleccionadas.length > 0
+                ? 'No hay noticias disponibles para las categorías seleccionadas.'
+                : 'No hay noticias disponibles en este momento.'}
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-6">
-          {news.map((item) => (
+          {filteredNews.map((item) => (
             <Card key={item.id} className="border-[#0073e6]/20 hover:shadow-md transition-shadow">
               <CardHeader className="bg-gradient-to-r from-[#00bf7d]/5 to-transparent">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -254,6 +284,7 @@ export default React.memo(function NoticiasPage() {
           </div>
         </SheetContent>
       </Sheet>
+
       {/* Diálogo de confirmación para eliminar */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>

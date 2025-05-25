@@ -36,7 +36,7 @@ const formSchema = z.object({
     .min(10, { message: 'El contenido debe tener al menos 10 caracteres.' })
     .max(1000, { message: 'El contenido no puede exceder 1000 caracteres.' }),
   categoria: z.string().min(1, { message: 'Seleccione una categoría.' }),
-  fechaVencimiento: z.string().nullable().optional(),
+  fechaVencimiento: z.string().optional(),
   esPermanente: z.boolean(),
 })
 
@@ -189,7 +189,7 @@ export function NoticiaForm({ onSubmit, noticia, isEditMode = false }: NoticiaFo
               <FormItem>
                 <FormLabel>Fecha de vencimiento</FormLabel>
                 <FormControl>
-                  <Input type="date" {...field} value={field.value ?? ''} />
+                  <Input type="date" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
