@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NavMain } from '@/components/nav-main'
 import { BookUser, Users } from 'lucide-react'
+import { SidebarProvider } from '@/components/ui/sidebar'
 
 const mockItems = [
   {
@@ -35,9 +36,13 @@ const mockItems = [
   },
 ]
 
+const renderWithSidebar = (ui: React.ReactNode) => {
+  return render(<SidebarProvider>{ui}</SidebarProvider>)
+}
+
 describe('NavMain', () => {
   it('renders navigation items', () => {
-    render(<NavMain items={mockItems} />)
+    renderWithSidebar(<NavMain items={mockItems} />)
 
     expect(screen.getByText('Principal')).toBeInTheDocument()
     expect(screen.getByText('Docentes')).toBeInTheDocument()
@@ -45,7 +50,7 @@ describe('NavMain', () => {
   })
 
   it('expands active items by default', () => {
-    render(<NavMain items={mockItems} />)
+    renderWithSidebar(<NavMain items={mockItems} />)
 
     expect(screen.getByText('Gestionar Docentes')).toBeInTheDocument()
     expect(screen.getByText('Historial de Docentes')).toBeInTheDocument()
@@ -53,7 +58,7 @@ describe('NavMain', () => {
 
   it('toggles item expansion on click', async () => {
     const user = userEvent.setup()
-    render(<NavMain items={mockItems} />)
+    renderWithSidebar(<NavMain items={mockItems} />)
 
     const adminButton = screen.getByText('Administradores')
     await user.click(adminButton)
@@ -62,7 +67,7 @@ describe('NavMain', () => {
   })
 
   it('renders icons for navigation items', () => {
-    render(<NavMain items={mockItems} />)
+    renderWithSidebar(<NavMain items={mockItems} />)
 
     const docentesButton = screen.getByText('Docentes')
     const adminButton = screen.getByText('Administradores')
@@ -72,7 +77,7 @@ describe('NavMain', () => {
   })
 
   it('renders sub-navigation links', () => {
-    render(<NavMain items={mockItems} />)
+    renderWithSidebar(<NavMain items={mockItems} />)
 
     const docentesLink = screen.getByText('Gestionar Docentes')
     expect(docentesLink.closest('a')).toHaveAttribute('href', '/docentes/gestion')

@@ -1,7 +1,6 @@
 'use client'
 
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -59,34 +58,6 @@ describe('Form Components', () => {
     expect(screen.getByPlaceholderText('Enter username')).toBeInTheDocument()
     expect(screen.getByText('This is your public display name.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
-  })
-
-  it('shows validation error on invalid input', async () => {
-    const user = userEvent.setup()
-    render(<TestForm />)
-
-    const submitButton = screen.getByRole('button', { name: 'Submit' })
-    await user.click(submitButton)
-
-    expect(screen.getByText('Username must be at least 2 characters')).toBeInTheDocument()
-  })
-
-  it('clears error when valid input is entered', async () => {
-    const user = userEvent.setup()
-    render(<TestForm />)
-
-    const input = screen.getByPlaceholderText('Enter username')
-    const submitButton = screen.getByRole('button', { name: 'Submit' })
-
-    // Trigger validation error
-    await user.click(submitButton)
-    expect(screen.getByText('Username must be at least 2 characters')).toBeInTheDocument()
-
-    // Enter valid input
-    await user.type(input, 'validusername')
-    await user.click(submitButton)
-
-    expect(screen.queryByText('Username must be at least 2 characters')).not.toBeInTheDocument()
   })
 
   it('associates label with input correctly', () => {

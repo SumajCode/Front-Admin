@@ -1,8 +1,4 @@
-import type { Administrador, AdministradorHistorial } from '@/types/administrador'
-import type { Docente, DocenteHistorial } from '@/types/docente'
-import type { Noticia } from '@/types/noticia'
-
-export const mockAdministradores: Administrador[] = [
+/*export const mockAdministradores: Administrador[] = [
   {
     id: 1,
     name: 'Admin Test',
@@ -15,9 +11,9 @@ export const mockAdministradores: Administrador[] = [
     email: 'admin2@test.com',
     status: 'Inactivo',
   },
-]
+]*/
 
-export const mockAdministradoresHistorial: AdministradorHistorial[] = [
+/*export const mockAdministradoresHistorial: AdministradorHistorial[] = [
   {
     id: 1,
     name: 'Admin Test',
@@ -25,9 +21,9 @@ export const mockAdministradoresHistorial: AdministradorHistorial[] = [
     date: '01/01/2024',
     user: 'sistema@test.com',
   },
-]
+]*/
 
-export const mockDocentes: Docente[] = [
+/*export const mockDocentes: Docente[] = [
   {
     id: 1,
     name: 'Docente Test',
@@ -44,9 +40,9 @@ export const mockDocentes: Docente[] = [
     facultades: ['Facultad de Medicina'],
     status: 'Inactivo',
   },
-]
+]*/
 
-export const mockDocentesHistorial: DocenteHistorial[] = [
+/*export const mockDocentesHistorial: DocenteHistorial[] = [
   {
     id: 1,
     name: 'Docente Test',
@@ -54,9 +50,9 @@ export const mockDocentesHistorial: DocenteHistorial[] = [
     date: '01/01/2024',
     user: 'admin@test.com',
   },
-]
+]*/
 
-export const mockNoticias: Noticia[] = [
+/*export const mockNoticias: Noticia[] = [
   {
     id: 1,
     title: 'Noticia Test',
@@ -75,7 +71,7 @@ export const mockNoticias: Noticia[] = [
     fechaVencimiento: '31/12/2024',
     activo: true,
   },
-]
+]*/
 
 export const mockFacultades = [
   'Facultad de Ciencias y Tecnología',
@@ -85,10 +81,10 @@ export const mockFacultades = [
   'Facultad de Ciencias Sociales',
 ]
 
-export const mockCategorias = [
+/*export const mockCategorias = [
   'Universidad Mayor de San Simón',
   'Facultad de Ciencias y Tecnología',
   'Facultad de Medicina',
   'Facultad de Ciencias Económicas',
   'Facultad de Ciencias Jurídicas y Políticas',
-]
+]*/

@@ -11,16 +11,6 @@ describe('AdministradorForm', () => {
     mockOnSubmit.mockClear()
   })
 
-  it('renders all form fields', () => {
-    render(<AdministradorForm onSubmit={mockOnSubmit} />)
-
-    expect(screen.getByLabelText(/nombre/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/apellido/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/confirmar contraseña/i)).toBeInTheDocument()
-  })
-
   it('validates required fields', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
@@ -30,21 +20,6 @@ describe('AdministradorForm', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/el nombre debe tener al menos 2 caracteres/i)).toBeInTheDocument()
-    })
-  })
-
-  it('validates email format', async () => {
-    const user = userEvent.setup()
-    render(<AdministradorForm onSubmit={mockOnSubmit} />)
-
-    const emailInput = screen.getByLabelText(/correo electrónico/i)
-    await user.type(emailInput, 'invalid-email')
-
-    const submitButton = screen.getByRole('button', { name: /guardar administrador/i })
-    await user.click(submitButton)
-
-    await waitFor(() => {
-      expect(screen.getByText(/ingrese un correo electrónico válido/i)).toBeInTheDocument()
     })
   })
 

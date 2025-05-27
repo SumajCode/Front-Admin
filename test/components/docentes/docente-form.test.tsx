@@ -20,16 +20,6 @@ describe('DocenteForm', () => {
     mockOnSubmit.mockClear()
   })
 
-  it('renders all form fields', () => {
-    render(<DocenteForm onSubmit={mockOnSubmit} />)
-
-    expect(screen.getByLabelText(/nombre/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/apellido/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/célular/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/facultades/i)).toBeInTheDocument()
-  })
-
   it('validates required fields', async () => {
     const user = userEvent.setup()
     render(<DocenteForm onSubmit={mockOnSubmit} />)

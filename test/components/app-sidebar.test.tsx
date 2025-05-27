@@ -3,6 +3,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppSidebar } from '@/components/app-sidebar'
+import { SidebarProvider } from '@/components/ui/sidebar'
 
 // Mock de los datos de usuario
 jest.mock('@/data/usuario.json', () => ({
@@ -15,21 +16,32 @@ jest.mock('@/data/usuario.json', () => ({
 
 describe('AppSidebar', () => {
   it('renders sidebar with company branding', () => {
-    render(<AppSidebar />)
-
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
     expect(screen.getByText('SumajCode')).toBeInTheDocument()
     expect(screen.getByText('Generacion de Software')).toBeInTheDocument()
   })
 
   it('renders main navigation items', () => {
-    render(<AppSidebar />)
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
 
     expect(screen.getByText('Docentes')).toBeInTheDocument()
     expect(screen.getByText('Administradores')).toBeInTheDocument()
   })
 
   it('renders secondary navigation items', () => {
-    render(<AppSidebar />)
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
 
     expect(screen.getByText('Noticias y Anuncios')).toBeInTheDocument()
     expect(screen.getByText('Support')).toBeInTheDocument()
@@ -37,14 +49,22 @@ describe('AppSidebar', () => {
   })
 
   it('renders user information', () => {
-    render(<AppSidebar />)
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
 
     expect(screen.getByText('Admin Test')).toBeInTheDocument()
     expect(screen.getByText('admin@test.com')).toBeInTheDocument()
   })
 
   it('expands docentes submenu by default', () => {
-    render(<AppSidebar />)
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
 
     expect(screen.getByText('Gestionar Docentes')).toBeInTheDocument()
     expect(screen.getByText('Historial de Docentes')).toBeInTheDocument()
@@ -52,7 +72,11 @@ describe('AppSidebar', () => {
 
   it('can expand administradores submenu', async () => {
     const user = userEvent.setup()
-    render(<AppSidebar />)
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
 
     const adminButton = screen.getByText('Administradores')
     await user.click(adminButton)
@@ -62,7 +86,11 @@ describe('AppSidebar', () => {
   })
 
   it('renders navigation links with correct hrefs', () => {
-    render(<AppSidebar />)
+    render(
+      <SidebarProvider>
+        <AppSidebar />
+      </SidebarProvider>,
+    )
 
     const docentesGestionLink = screen.getByText('Gestionar Docentes')
     expect(docentesGestionLink.closest('a')).toHaveAttribute('href', '/docentes/gestion')

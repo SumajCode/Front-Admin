@@ -1,10 +1,17 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import HistorialPage from '@/app/docentes/historial/page'
-import { mockDocentesHistorial } from '../../mocks/data'
 
 // Mock de los datos
 jest.mock('@/data/docentes-historial.json', () => ({
-  historial: mockDocentesHistorial,
+  historial: [
+    {
+      id: 1,
+      name: 'Docente Test',
+      action: 'Creación',
+      date: '01/01/2024',
+      user: 'admin@test.com',
+    },
+  ],
 }))
 
 describe('HistorialDocentesPage', () => {

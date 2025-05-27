@@ -13,6 +13,12 @@ const eslintConfig = [
     'next/typescript',
     'prettier', // Desactiva reglas de ESLint que pueden entrar en conflicto con Prettier
   ),
+  {
+    files: ['*.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off', // ✅ Desactiva para .js
+    },
+  },
 ]
 
 export default eslintConfig

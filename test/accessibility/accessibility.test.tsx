@@ -153,7 +153,7 @@ describe('Accessibility Tests', () => {
       )
 
       const buttons = screen.getAllByRole('button')
-      buttons.forEach((button, index) => {
+      buttons.forEach((button) => {
         expect(button).not.toHaveAttribute('tabindex', '-1')
       })
     })

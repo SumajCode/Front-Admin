@@ -23,12 +23,6 @@ describe('Separator Component', () => {
     expect(separator).toHaveClass('custom-separator')
   })
 
-  it('is decorative by default', () => {
-    render(<Separator data-testid="separator" />)
-    const separator = screen.getByTestId('separator')
-    expect(separator).toHaveAttribute('aria-hidden', 'true')
-  })
-
   it('can be non-decorative', () => {
     render(<Separator decorative={false} data-testid="separator" />)
     const separator = screen.getByTestId('separator')

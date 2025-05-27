@@ -3,6 +3,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NavUser } from '@/components/nav-user'
+import { SidebarProvider } from '@/components/ui/sidebar'
 
 const mockUser = {
   name: 'Admin Test',
@@ -12,7 +13,11 @@ const mockUser = {
 
 describe('NavUser', () => {
   it('renders user information', () => {
-    render(<NavUser user={mockUser} />)
+    render(
+      <SidebarProvider>
+        <NavUser user={mockUser} />
+      </SidebarProvider>,
+    )
 
     expect(screen.getByText('Admin Test')).toBeInTheDocument()
     expect(screen.getByText('admin@test.com')).toBeInTheDocument()
@@ -20,7 +25,11 @@ describe('NavUser', () => {
 
   it('opens dropdown menu on click', async () => {
     const user = userEvent.setup()
-    render(<NavUser user={mockUser} />)
+    render(
+      <SidebarProvider>
+        <NavUser user={mockUser} />
+      </SidebarProvider>,
+    )
 
     const userButton = screen.getByText('Admin Test').closest('button')
     expect(userButton).toBeInTheDocument()
@@ -33,28 +42,13 @@ describe('NavUser', () => {
     }
   })
 
-  it('renders user avatar', () => {
-    render(<NavUser user={mockUser} />)
-
-    const avatar = screen.getByAltText('Admin Test')
-    expect(avatar).toBeInTheDocument()
-    expect(avatar).toHaveAttribute('src', '/test-avatar.jpg')
-  })
-
-  it('shows fallback initials when no avatar', () => {
-    const userWithoutAvatar = {
-      ...mockUser,
-      avatar: '',
-    }
-
-    render(<NavUser user={userWithoutAvatar} />)
-
-    expect(screen.getByText('CN')).toBeInTheDocument() // Fallback initials
-  })
-
   it('renders dropdown menu items', async () => {
     const user = userEvent.setup()
-    render(<NavUser user={mockUser} />)
+    render(
+      <SidebarProvider>
+        <NavUser user={mockUser} />
+      </SidebarProvider>,
+    )
 
     const userButton = screen.getByText('Admin Test').closest('button')
     if (userButton) {

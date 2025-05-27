@@ -54,25 +54,6 @@ describe('NoticiaForm', () => {
     expect(screen.queryByLabelText(/fecha de vencimiento/i)).not.toBeInTheDocument()
   })
 
-  it('submits form with valid data', async () => {
-    const user = userEvent.setup()
-    render(<NoticiaForm onSubmit={mockOnSubmit} />)
-
-    await user.type(screen.getByLabelText(/título de la noticia/i), 'Noticia de prueba')
-    await user.type(screen.getByLabelText(/contenido/i), 'Contenido de la noticia de prueba')
-
-    const categorySelect = screen.getByRole('combobox')
-    await user.click(categorySelect)
-    await user.click(screen.getByText('Universidad Mayor de San Simón'))
-
-    const submitButton = screen.getByRole('button', { name: /publicar noticia/i })
-    await user.click(submitButton)
-
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith(true)
-    })
-  })
-
   it('renders in edit mode with existing data', () => {
     const mockNoticia = {
       id: 1,

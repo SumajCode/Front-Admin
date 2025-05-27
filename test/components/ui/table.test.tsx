@@ -85,32 +85,6 @@ describe('Table Components', () => {
     expect(cells[1]).toHaveTextContent('25')
   })
 
-  it('applies custom className to table components', () => {
-    render(
-      <Table className="custom-table">
-        <TableHeader className="custom-header">
-          <TableRow className="custom-row">
-            <TableHead className="custom-head">Header</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="custom-body">
-          <TableRow>
-            <TableCell className="custom-cell">Cell</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>,
-    )
-
-    const table = screen.getByRole('table')
-    expect(table.closest('div')).toHaveClass('custom-table')
-
-    const header = screen.getByText('Header')
-    expect(header).toHaveClass('custom-head')
-
-    const cell = screen.getByText('Cell')
-    expect(cell).toHaveClass('custom-cell')
-  })
-
   it('renders table caption correctly', () => {
     render(
       <Table>

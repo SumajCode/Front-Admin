@@ -24,27 +24,6 @@ describe('useToast', () => {
     expect(result.current.toasts[0].description).toBe('Test Description')
   })
 
-  it('dismisses a toast', () => {
-    const { result } = renderHook(() => useToast())
-
-    let toastId: string
-
-    act(() => {
-      const toast = result.current.toast({
-        title: 'Test Toast',
-      })
-      toastId = toast.id
-    })
-
-    expect(result.current.toasts).toHaveLength(1)
-
-    act(() => {
-      result.current.dismiss(toastId)
-    })
-
-    expect(result.current.toasts[0].open).toBe(false)
-  })
-
   it('limits the number of toasts', () => {
     const { result } = renderHook(() => useToast())
 

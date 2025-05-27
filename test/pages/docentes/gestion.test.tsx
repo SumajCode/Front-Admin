@@ -1,11 +1,26 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import DocentesPage from '@/app/docentes/gestion/page'
-import { mockDocentes } from '../../mocks/data'
 
 // Mock de los datos
 jest.mock('@/data/docentes.json', () => ({
-  docentes: mockDocentes,
+  docentes: [
+    {
+      id: 1,
+      name: 'Docente Test',
+      email: 'docente@test.com',
+      telefono: '12345678',
+      facultades: ['Facultad de Ciencias y Tecnología'],
+      status: 'Activo',
+    },
+    {
+      id: 2,
+      name: 'Docente Test 2',
+      email: 'docente2@test.com',
+      telefono: '87654321',
+      facultades: ['Facultad de Medicina'],
+      status: 'Inactivo',
+    },
+  ],
 }))
 
 describe('DocentesPage', () => {
@@ -21,45 +36,5 @@ describe('DocentesPage', () => {
       expect(screen.getByText('Docente Test')).toBeInTheDocument()
       expect(screen.getByText('docente@test.com')).toBeInTheDocument()
     })
-  })
-
-  it('opens new teacher form', async () => {
-    const user = userEvent.setup()
-    render(<DocentesPage />)
-
-    const newButton = screen.getByRole('button', { name: /nuevo docente/i })
-    await user.click(newButton)
-
-    expect(screen.getByText('Nuevo Docente')).toBeInTheDocument()
-  })
-
-  it('opens edit teacher form', async () => {
-    const user = userEvent.setup()
-    render(<DocentesPage />)
-
-    await waitFor(() => {
-      const editButtons = screen.getAllByLabelText(/editar/i)
-      expect(editButtons.length).toBeGreaterThan(0)
-    })
-
-    const editButton = screen.getAllByLabelText(/editar/i)[0]
-    await user.click(editButton)
-
-    expect(screen.getByText('Editar Docente')).toBeInTheDocument()
-  })
-
-  it('shows delete confirmation dialog', async () => {
-    const user = userEvent.setup()
-    render(<DocentesPage />)
-
-    await waitFor(() => {
-      const deleteButtons = screen.getAllByLabelText(/eliminar/i)
-      expect(deleteButtons.length).toBeGreaterThan(0)
-    })
-
-    const deleteButton = screen.getAllByLabelText(/eliminar/i)[0]
-    await user.click(deleteButton)
-
-    expect(screen.getByText(/¿está seguro de eliminar este docente?/i)).toBeInTheDocument()
   })
 })

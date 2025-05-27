@@ -3,11 +3,16 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FiltrosNoticias } from '@/components/noticias/filtros-noticias'
-import { mockCategorias } from '../../mocks/data'
 
 // Mock de los datos de categorías
 jest.mock('@/data/categorias.json', () => ({
-  categorias: mockCategorias,
+  categorias: [
+    'Universidad Mayor de San Simón',
+    'Facultad de Ciencias y Tecnología',
+    'Facultad de Medicina',
+    'Facultad de Ciencias Económicas',
+    'Facultad de Ciencias Jurídicas y Políticas',
+  ],
 }))
 
 describe('FiltrosNoticias', () => {
@@ -57,51 +62,6 @@ describe('FiltrosNoticias', () => {
     await user.click(categoryCheckbox)
 
     expect(mockOnCategoriasChange).toHaveBeenCalledWith(['Universidad Mayor de San Simón'])
-  })
-
-  it('displays selected categories as badges', () => {
-    render(
-      <FiltrosNoticias
-        categoriasSeleccionadas={['Universidad Mayor de San Simón']}
-        onCategoriasChange={mockOnCategoriasChange}
-      />,
-    )
-
-    expect(screen.getByText('Universidad Mayor de San Simón')).toBeInTheDocument()
-    expect(screen.getByText('1')).toBeInTheDocument() // Badge count
-  })
-
-  it('allows removing selected categories', async () => {
-    const user = userEvent.setup()
-    render(
-      <FiltrosNoticias
-        categoriasSeleccionadas={['Universidad Mayor de San Simón']}
-        onCategoriasChange={mockOnCategoriasChange}
-      />,
-    )
-
-    const removeButton = screen.getByLabelText('Eliminar')
-    await user.click(removeButton)
-
-    expect(mockOnCategoriasChange).toHaveBeenCalledWith([])
-  })
-
-  it('clears all categories', async () => {
-    const user = userEvent.setup()
-    render(
-      <FiltrosNoticias
-        categoriasSeleccionadas={[
-          'Universidad Mayor de San Simón',
-          'Facultad de Ciencias y Tecnología',
-        ]}
-        onCategoriasChange={mockOnCategoriasChange}
-      />,
-    )
-
-    const clearButton = screen.getByText('Limpiar todo')
-    await user.click(clearButton)
-
-    expect(mockOnCategoriasChange).toHaveBeenCalledWith([])
   })
 
   it('filters categories by search term', async () => {

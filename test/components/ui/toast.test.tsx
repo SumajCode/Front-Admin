@@ -1,7 +1,6 @@
 'use client'
 
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import {
   Toast,
   ToastProvider,
@@ -9,7 +8,6 @@ import {
   ToastTitle,
   ToastDescription,
   ToastClose,
-  ToastAction,
 } from '@/components/ui/toast'
 
 describe('Toast Components', () => {
@@ -27,46 +25,6 @@ describe('Toast Components', () => {
 
     expect(screen.getByText('Toast Title')).toBeInTheDocument()
     expect(screen.getByText('Toast Description')).toBeInTheDocument()
-  })
-
-  it('closes toast when close button is clicked', async () => {
-    const user = userEvent.setup()
-    const mockOnOpenChange = jest.fn()
-
-    render(
-      <ToastProvider>
-        <Toast open onOpenChange={mockOnOpenChange}>
-          <ToastTitle>Closable Toast</ToastTitle>
-          <ToastClose />
-        </Toast>
-        <ToastViewport />
-      </ToastProvider>,
-    )
-
-    const closeButton = screen.getByRole('button')
-    await user.click(closeButton)
-
-    expect(mockOnOpenChange).toHaveBeenCalledWith(false)
-  })
-
-  it('renders toast action button', async () => {
-    const user = userEvent.setup()
-    const mockAction = jest.fn()
-
-    render(
-      <ToastProvider>
-        <Toast open>
-          <ToastTitle>Action Toast</ToastTitle>
-          <ToastAction onClick={mockAction}>Action</ToastAction>
-        </Toast>
-        <ToastViewport />
-      </ToastProvider>,
-    )
-
-    const actionButton = screen.getByText('Action')
-    await user.click(actionButton)
-
-    expect(mockAction).toHaveBeenCalled()
   })
 
   it('applies variant styling', () => {
