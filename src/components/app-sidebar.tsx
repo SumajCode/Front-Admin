@@ -1,17 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {
-  BookUser,
-  Command,
-  Frame,
-  LifeBuoy,
-  Map,
-  Newspaper,
-  PieChart,
-  Send,
-  Users,
-} from 'lucide-react'
+import { BookUser, Command, LifeBuoy, Newspaper, Send, Users } from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
 import { NavSecondary } from '@/components/nav-secondary'
@@ -25,103 +15,63 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import usuarioData from '@/data/usuario.json'
 
-const data = {
-  user: {
-    name: 'Admin',
-    email: 'admin@gmail.com',
-    avatar: '/avatars/shadcn.jpg',
+const navMainData = [
+  {
+    title: 'Docentes',
+    url: '#',
+    icon: BookUser,
+    isActive: true,
+    items: [
+      {
+        title: 'Gestionar Docentes',
+        url: '/docentes/gestion',
+      },
+      {
+        title: 'Historial de Docentes',
+        url: '/docentes/historial',
+      },
+    ],
   },
-  navMain: [
-    {
-      title: 'Docentes',
-      url: '#',
-      icon: BookUser,
-      isActive: true,
-      items: [
-        {
-          title: 'Gestionar Docentes',
-          url: '/admin/docentes/gestion',
-        },
-        {
-          title: 'Historial de Docentes',
-          url: '/admin/docentes/historial',
-        },
-      ],
-    },
-    {
-      title: 'Administradores',
-      url: '#',
-      icon: Users,
-      items: [
-        {
-          title: 'Gestionar Administradores',
-          url: '/admin/administradores/gestion',
-        },
-        {
-          title: 'Historial de Administradores',
-          url: '/admin/administradores/historial',
-        },
-      ],
-    },
-    /*Por si es necesario
-    {
-      title: 'Models',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Genesis',
-          url: '#',
-        },
-        {
-          title: 'Explorer',
-          url: '#',
-        },
-        {
-          title: 'Quantum',
-          url: '#',
-        },
-      ],
-    },*/
-  ],
-  navSecondary: [
-    {
-      title: 'Noticias y Anuncios',
-      url: '/noticias',
-      icon: Newspaper,
-    },
-    {
-      title: 'Support',
-      url: '#',
-      icon: LifeBuoy,
-    },
-    {
-      title: 'Feedback',
-      url: '#',
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
-    },
-  ],
-}
+  {
+    title: 'Administradores',
+    url: '#',
+    icon: Users,
+    items: [
+      {
+        title: 'Gestionar Administradores',
+        url: '/administradores/gestion',
+      },
+      {
+        title: 'Historial de Administradores',
+        url: '/administradores/historial',
+      },
+    ],
+  },
+]
+
+const navSecondaryData = [
+  {
+    title: 'Noticias y Anuncios',
+    url: '/noticias',
+    icon: Newspaper,
+  },
+  {
+    title: 'Support',
+    url: '#',
+    icon: LifeBuoy,
+  },
+  {
+    title: 'Feedback',
+    url: '#',
+    icon: Send,
+  },
+]
 
 function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = usuarioData.usuario
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -142,12 +92,11 @@ function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>)
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navMainData} />
+        <NavSecondary items={navSecondaryData} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

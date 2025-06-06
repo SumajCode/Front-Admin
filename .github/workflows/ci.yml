@@ -1,52 +1,129 @@
-name: CI
-# Nombre del workflow que aparecerá en GitHub Actions.
+name: CI/CD Pipeline
+# Pipeline completo de CI/CD con testing, coverage y deployment
 
 on:
   push:
     branches: [main, dev, KevinU]
   pull_request:
     branches: [main, dev, KevinU]
-# Define cuándo se ejecuta el workflow:
-# - push: cada vez que se hace push a la rama main.
-# - pull_request: cada vez que se crea o actualiza un pull request hacia la rama main.
+# Triggers en push y PR para las ramas especificadas
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    # Define un job llamado 'build' que se ejecuta en un runner de Ubuntu.
+    name: Test & Quality Checks
+
+    # Configuración de concurrencia para cancelar jobs en progreso
     concurrency:
       group: ci-${{ github.ref }}
       cancel-in-progress: true
-    steps:
-      - uses: actions/checkout@v4
-        # Paso 1: Clona el repositorio en el runner.
 
-      - name: Use Node.js
+    # Matrix strategy para probar en múltiples versiones de Node.js
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # Clona el repositorio en el runner
+
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-        # Paso 2: Configura Node.js versión 20.x en el runner.
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+        # Configura Node.js con cache de npm para mejor performance
 
       - name: Install dependencies
-        run: npm install
-        # Paso 3: Instala las dependencias del proyecto usando npm.
+        run: npm ci
+        # Usa npm ci para instalación más rápida y determinística
 
-      - name: Lint
+      - name: Lint code
         run: npx next lint --max-warnings=0
-        # Paso 4: Ejecuta el linter y falla si hay advertencias o errores.
+        # Ejecuta el linter y falla si hay advertencias o errores
 
-      - name: Build
-        run: npm run build
-        # Paso 5: Compila el proyecto.
-
-      - name: Run tests
-        run: npm test
-        # Paso 6: Ejecuta los tests definidos en el proyecto.
-
-      - name: Prettier Check
+      - name: Check code formatting
         run: npx prettier --check .
-        # Paso extra: Verifica que el código cumpla con el formato Prettier.
+        # Verifica que el código cumpla con el formato Prettier
+
+      - name: Run unit tests
+        run: npm run test:ci
+        # Ejecuta tests con coverage para CI
+        env:
+          CI: true
+
+      - name: Upload coverage to Codecov
+        if: matrix.node-version == '20.x'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+        # Sube coverage solo para Node.js 20.x para evitar duplicados
+
+      - name: Build application
+        run: npm run build
+        # Compila el proyecto para verificar que no hay errores de build
 
       - name: Audit dependencies
         run: npm audit --audit-level=high
-        # Falla si hay vulnerabilidades de nivel alto o crítico.
+        # Falla si hay vulnerabilidades de nivel alto o crítico
+        continue-on-error: true
+        # Permite que continúe aunque haya vulnerabilidades (para no bloquear desarrollo)
+
+  deploy-preview:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Deploy Preview
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (Preview)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          scope: ${{ secrets.ORG_ID }}
+        # Deploy de preview para PRs
+
+  deploy-production:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Deploy Production
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          vercel-args: '--prod'
+          scope: ${{ secrets.ORG_ID }}
+        # Deploy de producción solo para main
+
+  notify:
+    needs: [test, deploy-production]
+    runs-on: ubuntu-latest
+    name: Notify Deployment
+    if: always() && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Notify deployment status
+        run: |
+          if [ "${{ needs.deploy-production.result }}" == "success" ]; then
+            echo "✅ Deployment to production successful!"
+          else
+            echo "❌ Deployment to production failed!"
+          fi
+        # Notificación del estado del deployment

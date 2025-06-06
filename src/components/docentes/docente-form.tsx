@@ -21,26 +21,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { Docente, DocenteFormData } from '@/types/docente'
 import React from 'react'
-
-// Lista de facultades disponibles
-const facultades = [
-  'Facultad de Arquitectura y Ciencias del Hábitat',
-  'Facultad de Ciencias Agrícolas y Pecuarias',
-  'Facultad de Ciencias Bioquímicas y Farmacéuticas',
-  'Facultad de Ciencias Económicas',
-  'Facultad de Ciencias Jurídicas y Políticas',
-  'Facultad de Ciencias Sociales',
-  'Facultad de Ciencias y Tecnología',
-  'Facultad de Desarrollo Rural y Territorial',
-  'Facultad de Enfermería',
-  'Facultad de Humanidades y Ciencias de la Educación',
-  'Facultad de Medicina',
-  'Facultad de Odontología',
-  'Facultad Politécnica del Valle Alto',
-  'Facultad de Ciencias Veterinarias',
-  'Escuela de Ciencias Forestales',
-  'Unidad Desconcentrada del Valle de Sacta',
-]
+import facultadesData from '@/data/facultades.json'
 
 const formSchema = z.object({
   nombre: z
@@ -79,6 +60,12 @@ interface DocenteFormProps {
 export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFormProps) {
   const [simulateSuccess, setSimulateSuccess] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [facultades, setFacultades] = useState<string[]>([])
+
+  // Cargar facultades al montar el componente
+  useEffect(() => {
+    setFacultades(facultadesData.facultades as string[])
+  }, [])
 
   // Extraer nombre y apellido del nombre completo si estamos en modo edición
   const getNombreApellido = useCallback(() => {
@@ -130,7 +117,7 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
   const filteredFacultades = React.useMemo(
     () =>
       facultades.filter((facultad) => facultad.toLowerCase().includes(searchTerm.toLowerCase())),
-    [searchTerm],
+    [searchTerm, facultades],
   )
 
   return (

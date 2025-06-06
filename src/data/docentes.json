@@ -1,0 +1,44 @@
+{
+  "docentes": [
+    {
+      "id": 1,
+      "name": "Juan Pérez",
+      "email": "juan.perez@example.com",
+      "telefono": "60436897",
+      "facultades": ["Facultad de Ciencias y Tecnología", "Facultad de Ciencias Económicas"],
+      "status": "Activo"
+    },
+    {
+      "id": 2,
+      "name": "María González",
+      "email": "maria.gonzalez@example.com",
+      "telefono": "70125896",
+      "facultades": ["Facultad de Ciencias Jurídicas y Políticas"],
+      "status": "Activo"
+    },
+    {
+      "id": 3,
+      "name": "Carlos Rodríguez",
+      "email": "carlos.rodriguez@example.com",
+      "telefono": "65478932",
+      "facultades": ["Facultad de Ciencias Bioquímicas y Farmacéuticas"],
+      "status": "Activo"
+    },
+    {
+      "id": 4,
+      "name": "Ana Martínez",
+      "email": "ana.martinez@example.com",
+      "telefono": "71452369",
+      "facultades": ["Facultad de Ciencias y Tecnología"],
+      "status": "Inactivo"
+    },
+    {
+      "id": 5,
+      "name": "Roberto Sánchez",
+      "email": "roberto.sanchez@example.com",
+      "telefono": "60789541",
+      "facultades": ["Facultad de Medicina", "Facultad de Ciencias Sociales"],
+      "status": "Activo"
+    }
+  ]
+}
