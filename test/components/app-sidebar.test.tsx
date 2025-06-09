@@ -18,7 +18,7 @@ const renderSidebar = async () => {
     render(
       <SidebarProvider>
         <AppSidebar />
-      </SidebarProvider>
+      </SidebarProvider>,
     )
   })
 }
@@ -67,8 +67,17 @@ describe('AppSidebar', () => {
   it('renders navigation links with correct hrefs', async () => {
     await renderSidebar()
 
-    expect(screen.getByText('Gestionar Docentes').closest('a')).toHaveAttribute('href', '/docentes/gestion')
-    expect(screen.getByText('Historial de Docentes').closest('a')).toHaveAttribute('href', '/docentes/historial')
-    expect(screen.getByText('Noticias y Anuncios').closest('a')).toHaveAttribute('href', '/noticias')
+    expect(screen.getByText('Gestionar Docentes').closest('a')).toHaveAttribute(
+      'href',
+      '/docentes/gestion',
+    )
+    expect(screen.getByText('Historial de Docentes').closest('a')).toHaveAttribute(
+      'href',
+      '/docentes/historial',
+    )
+    expect(screen.getByText('Noticias y Anuncios').closest('a')).toHaveAttribute(
+      'href',
+      '/noticias',
+    )
   })
 })
