@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
-import { act } from 'react-dom/test-utils'
+import { act } from '@testing-library/react'
+
 
 // Mock de los datos de usuario
 jest.mock('@/data/usuario.json', () => ({
