@@ -4,7 +4,6 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { act } from '@testing-library/react'
 
-
 // Mock de los datos de usuario
 jest.mock('@/data/usuario.json', () => ({
   usuario: {
