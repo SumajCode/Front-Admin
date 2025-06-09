@@ -53,15 +53,14 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
 }))
 
 // Mock console.error to avoid noise in tests
-const originalError = console.error;
+const originalError = console.error
 console.error = (...args) => {
-  const message = args[0];
+  const message = args[0]
   if (typeof message === 'string' && message.includes('not wrapped in act')) {
-    return; // ⚠️ Silenciar solo este warning
+    return // ⚠️ Silenciar solo este warning
   }
-  originalError(...args); // No usar .call aquí
-};
-
+  originalError(...args) // No usar .call aquí
+}
 
 afterAll(() => {
   console.error = originalError
