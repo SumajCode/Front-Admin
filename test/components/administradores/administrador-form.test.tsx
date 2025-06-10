@@ -41,7 +41,7 @@ describe('AdministradorForm', () => {
     })
   })
 
-  it('submits form with valid data', async () => {
+  it('submits form with valid data (simulateSuccess true)', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
 
@@ -59,6 +59,27 @@ describe('AdministradorForm', () => {
     })
   })
 
+  it('submits form with simulateSuccess false', async () => {
+    const user = userEvent.setup()
+    render(<AdministradorForm onSubmit={mockOnSubmit} />)
+
+    const toggle = screen.getByRole('switch')
+    await user.click(toggle)
+
+    await user.type(screen.getByLabelText(/nombre/i), 'Ana')
+    await user.type(screen.getByLabelText(/apellido/i), 'Gómez')
+    await user.type(screen.getByLabelText(/correo electrónico/i), 'ana@example.com')
+    await user.type(screen.getByLabelText(/^contraseña$/i), 'Password123!')
+    await user.type(screen.getByLabelText(/confirmar contraseña/i), 'Password123!')
+
+    const submitButton = screen.getByRole('button', { name: /guardar administrador/i })
+    await user.click(submitButton)
+
+    await waitFor(() => {
+      expect(mockOnSubmit).toHaveBeenCalledWith(false)
+    })
+  })
+
   it('toggles password visibility', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
@@ -73,5 +94,21 @@ describe('AdministradorForm', () => {
 
     await user.click(screen.getAllByText(/ocultar/i)[0])
     expect(passwordInput).toHaveAttribute('type', 'password')
+  })
+
+  it('toggles confirm password visibility', async () => {
+    const user = userEvent.setup()
+    render(<AdministradorForm onSubmit={mockOnSubmit} />)
+
+    const confirmPasswordInput = screen.getByLabelText(/confirmar contraseña/i)
+    const toggleButton = screen.getAllByText(/mostrar/i)[1]
+
+    expect(confirmPasswordInput).toHaveAttribute('type', 'password')
+
+    await user.click(toggleButton)
+    expect(confirmPasswordInput).toHaveAttribute('type', 'text')
+
+    await user.click(screen.getAllByText(/ocultar/i)[1])
+    expect(confirmPasswordInput).toHaveAttribute('type', 'password')
   })
 })
