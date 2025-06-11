@@ -5,6 +5,13 @@ import userEvent from '@testing-library/user-event'
 import { NavUser } from '@/components/nav-user'
 import { SidebarProvider } from '@/components/ui/sidebar'
 
+// Variante sin avatar para cubrir AvatarFallback
+const mockUserWithoutAvatar = {
+  name: 'Sin Avatar',
+  email: 'sin.avatar@test.com',
+  avatar: '',
+}
+
 const mockUser = {
   name: 'Admin Test',
   email: 'admin@test.com',
@@ -21,6 +28,16 @@ describe('NavUser', () => {
 
     expect(screen.getByText('Admin Test')).toBeInTheDocument()
     expect(screen.getByText('admin@test.com')).toBeInTheDocument()
+  })
+
+  it('renders avatar fallback when no avatar is provided', () => {
+    render(
+      <SidebarProvider>
+        <NavUser user={mockUserWithoutAvatar} />
+      </SidebarProvider>,
+    )
+
+    expect(screen.getByText('CN')).toBeInTheDocument()
   })
 
   it('opens dropdown menu on click', async () => {

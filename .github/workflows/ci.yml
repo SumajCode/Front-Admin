@@ -13,11 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Test & Quality Checks
 
-    # Configuración de concurrencia para cancelar jobs en progreso
-    concurrency:
-      group: ci-${{ github.ref }}
-      cancel-in-progress: true
-
     # Matrix strategy para probar en múltiples versiones de Node.js
     strategy:
       matrix:

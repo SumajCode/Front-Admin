@@ -54,14 +54,13 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
 
 // Mock console.error to avoid noise in tests
 const originalError = console.error
-beforeAll(() => {
-  console.error = (...args) => {
-    if (typeof args[0] === 'string' && args[0].includes('Warning: ReactDOM.render is deprecated')) {
-      return
-    }
-    originalError.call(console, ...args)
+console.error = (...args) => {
+  const message = args[0]
+  if (typeof message === 'string' && message.includes('not wrapped in act')) {
+    return // ⚠️ Silenciar solo este warning
   }
-})
+  originalError(...args) // No usar .call aquí
+}
 
 afterAll(() => {
   console.error = originalError
