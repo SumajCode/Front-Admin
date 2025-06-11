@@ -13,8 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Test & Quality Checks
 
-    
-
     # Matrix strategy para probar en múltiples versiones de Node.js
     strategy:
       matrix:
