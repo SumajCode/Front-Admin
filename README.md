@@ -70,6 +70,18 @@ front-docente/
 │   ├── hooks/                       # Custom hooks (useMobile, etc.)
 │   ├── lib/                         # Funciones utilitarias y lógica compartida
 │   └── types/                       # Tipos e interfaces TypeScript globales
+├──test/
+│  ├── components/           # Tests de componentes
+│  │   ├── ui/              # Tests de componentes UI
+│  │   ├── administradores/ # Tests específicos de administradores
+│  │   ├── docentes/        # Tests específicos de docentes
+│  │   └── noticias/        # Tests específicos de noticias
+│  ├── hooks/               # Tests de hooks personalizados
+│  ├── pages/               # Tests de páginas
+│  ├── lib/                 # Tests de utilidades
+│  ├── types/               # Tests de tipos TypeScript
+│  ├── mocks/               # Datos mock para testing
+│  └── setup/               # Configuración de testing
 ├── .gitignore
 ├── .prettierrc
 ├── components.json                 # Configuración de shadcn/ui
