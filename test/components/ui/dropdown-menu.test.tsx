@@ -12,6 +12,10 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu'
 
 describe('DropdownMenu Components', () => {
@@ -113,5 +117,46 @@ describe('DropdownMenu Components', () => {
     const item = screen.getByText('Delete Item')
 
     expect(item).toHaveAttribute('data-variant', 'destructive')
+  })
+
+  it('renders DropdownMenuShortcut correctly', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            Save
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+
+    await user.click(screen.getByText('Open'))
+    expect(screen.getByText('⌘S')).toBeInTheDocument()
+  })
+
+  it('renders DropdownMenuSub with sub content', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>Sub Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Sub Item 2</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+
+    await user.click(screen.getByText('Open'))
+    expect(screen.getByText('More Options')).toBeInTheDocument()
   })
 })
