@@ -1,7 +1,9 @@
-import type React from 'react'
-import './globals.css'
-import Layout from '@/layout/Layout'
-import { Toaster } from '@/components/ui/toaster'
+import type React from "react"
+import "./globals.css"
+import Layout from "@/layout/Layout"
+import { Toaster } from "@/components/ui/toaster"
+import { AuthProvider } from "@/contexts/AuthContext"
+import { AuthRedirectHandler } from "@/components/auth/AuthRedirectHandler"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,8 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <title>FrontAdmin - Panel de Administración</title>
       </head>
       <body>
-        <Layout>{children}</Layout>
-        <Toaster />
+        <AuthProvider>
+          <AuthRedirectHandler />
+          <Layout>{children}</Layout>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   )
