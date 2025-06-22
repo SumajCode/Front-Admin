@@ -1,8 +1,6 @@
-// Exportar todos los tipos
+// Exportar solo los tipos de datos, no las declaraciones globales
 export * from './administrador'
 export * from './docente'
 export * from './noticia'
 
-// Importar declaraciones globales
-import './global'
-import './web-components'
+// Las declaraciones globales (.d.ts) no se importan, se cargan automáticamente

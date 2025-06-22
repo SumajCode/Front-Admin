@@ -1,5 +1,4 @@
 import type React from 'react'
-// Declaraciones globales para TypeScript
 
 // Eventos personalizados
 interface CustomEventMap {
@@ -66,5 +65,11 @@ declare global {
         HTMLElement
       >
     }
+  }
+
+  interface HTMLElementTagNameMap {
+    'auth-guard': HTMLElement
+    'logout-button': HTMLElement
+    'user-info': HTMLElement
   }
 }
