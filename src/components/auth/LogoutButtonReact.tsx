@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import React from "react"
-import { useEffect, useRef } from "react"
-import "@/components/auth/LogoutButton"
+import React from 'react'
+import { useEffect, useRef } from 'react'
+import '@/components/auth/LogoutButton'
 
 interface LogoutButtonProps {
   text?: string
@@ -16,8 +16,8 @@ interface LogoutButtonProps {
 }
 
 export function LogoutButtonReact({
-  text = "Cerrar Sesión",
-  className = "logout-btn",
+  text = 'Cerrar Sesión',
+  className = 'logout-btn',
   showIcon = true,
   confirm = false,
   style,
@@ -43,31 +43,31 @@ export function LogoutButtonReact({
 
     const handleLogoutError = (event: Event) => {
       const customEvent = event as CustomEvent<{ error: string; timestamp: string }>
-      onLogoutError?.(customEvent.detail?.error || "Error desconocido")
+      onLogoutError?.(customEvent.detail?.error || 'Error desconocido')
     }
 
-    element.addEventListener("beforeLogout", handleBeforeLogout)
-    element.addEventListener("logoutComplete", handleLogoutComplete)
-    element.addEventListener("logoutError", handleLogoutError)
+    element.addEventListener('beforeLogout', handleBeforeLogout)
+    element.addEventListener('logoutComplete', handleLogoutComplete)
+    element.addEventListener('logoutError', handleLogoutError)
 
     return () => {
-      element.removeEventListener("beforeLogout", handleBeforeLogout)
-      element.removeEventListener("logoutComplete", handleLogoutComplete)
-      element.removeEventListener("logoutError", handleLogoutError)
+      element.removeEventListener('beforeLogout', handleBeforeLogout)
+      element.removeEventListener('logoutComplete', handleLogoutComplete)
+      element.removeEventListener('logoutError', handleLogoutError)
     }
   }, [onBeforeLogout, onLogoutComplete, onLogoutError])
 
   // Crear el elemento usando React.createElement para evitar problemas de tipos
-  return React.createElement("logout-button", {
+  return React.createElement('logout-button', {
     ref: elementRef,
     text,
     class: className,
-    "show-icon": showIcon.toString(),
+    'show-icon': showIcon.toString(),
     confirm: confirm.toString(),
     style: style
       ? Object.entries(style)
-          .map(([key, value]) => `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}: ${value}`)
-          .join("; ")
+          .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`)
+          .join('; ')
       : undefined,
   })
 }

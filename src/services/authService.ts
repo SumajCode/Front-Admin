@@ -1,24 +1,24 @@
 // Configuración de URLs y endpoints
 const CONFIG = {
-  LOGIN_URL: "https://front-loginv1-kevinurena82-6772s-projects.vercel.app",
-  ADMIN_URL: "https://front-adminv1.vercel.app",
-  API_BASE_URL: "https://microservice-admin.onrender.com/api",
+  LOGIN_URL: 'https://front-loginv1-kevinurena82-6772s-projects.vercel.app',
+  ADMIN_URL: 'https://front-adminv1.vercel.app',
+  API_BASE_URL: 'https://microservice-admin.onrender.com/api',
 
   ENDPOINTS: {
-    LOGIN: "/auth/login",
-    REFRESH: "/auth/refresh",
-    ME: "/auth/me",
-    LOGOUT: "/auth/logout",
+    LOGIN: '/auth/login',
+    REFRESH: '/auth/refresh',
+    ME: '/auth/me',
+    LOGOUT: '/auth/logout',
   },
 
   TOKEN_CONFIG: {
     ACCESS_DURATION: 3600, // 1 hora
     REFRESH_DURATION: 2592000, // 30 días
     STORAGE_KEYS: {
-      ACCESS_TOKEN: "access_token",
-      REFRESH_TOKEN: "refresh_token",
-      USER_DATA: "user_data",
-      USER_ROLE: "user_role",
+      ACCESS_TOKEN: 'access_token',
+      REFRESH_TOKEN: 'refresh_token',
+      USER_DATA: 'user_data',
+      USER_ROLE: 'user_role',
     },
   },
 }
@@ -61,7 +61,7 @@ class AuthService {
     const userRole = localStorage.getItem(CONFIG.TOKEN_CONFIG.STORAGE_KEYS.USER_ROLE)
 
     return {
-      isAuthenticated: !!(accessToken && userData && userRole === "administrador"),
+      isAuthenticated: !!(accessToken && userData && userRole === 'administrador'),
       user: userData ? JSON.parse(userData) : null,
       token: accessToken,
       role: userRole,
@@ -80,7 +80,7 @@ class AuthService {
       const response = await fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.ME}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       })
 
@@ -91,7 +91,7 @@ class AuthService {
 
       return response.ok
     } catch {
-      console.error("Error validating token")
+      console.error('Error validating token')
       return false
     }
   }
@@ -122,10 +122,10 @@ class AuthService {
   private async performTokenRefresh(refreshToken: string): Promise<boolean> {
     try {
       const response = await fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.REFRESH}`, {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${refreshToken}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       })
 
@@ -135,7 +135,7 @@ class AuthService {
 
         // Emitir evento de token renovado
         window.dispatchEvent(
-          new CustomEvent("tokenRefreshed", {
+          new CustomEvent('tokenRefreshed', {
             detail: { newToken: data.data.access_token },
           }),
         )
@@ -147,7 +147,7 @@ class AuthService {
       this.logout()
       return false
     } catch {
-      console.error("Error refreshing token")
+      console.error('Error refreshing token')
       this.logout()
       return false
     }
@@ -160,7 +160,7 @@ class AuthService {
     if (!token) return false
 
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]))
+      const payload = JSON.parse(atob(token.split('.')[1]))
       const currentTime = Math.floor(Date.now() / 1000)
 
       return payload.exp > currentTime
@@ -194,14 +194,14 @@ class AuthService {
     if (accessToken) {
       try {
         await fetch(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.LOGOUT}`, {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         })
       } catch {
-        console.error("Error during logout")
+        console.error('Error during logout')
       }
     }
 
@@ -209,7 +209,7 @@ class AuthService {
     this.cleanupSession()
 
     // Emitir evento de logout
-    window.dispatchEvent(new CustomEvent("userLoggedOut"))
+    window.dispatchEvent(new CustomEvent('userLoggedOut'))
 
     // Redirigir al Front-Login
     window.location.href = CONFIG.LOGIN_URL
@@ -244,7 +244,7 @@ class AuthService {
     const userRole = localStorage.getItem(CONFIG.TOKEN_CONFIG.STORAGE_KEYS.USER_ROLE)
     const userData = this.getCurrentUser()
 
-    return userRole === requiredRole && userData?.role === "admin"
+    return userRole === requiredRole && userData?.role === 'admin'
   }
 }
 

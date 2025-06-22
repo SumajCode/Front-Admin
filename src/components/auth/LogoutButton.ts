@@ -1,11 +1,11 @@
 // Solo registrar el Web Component en el cliente
-if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
+if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
   class LogoutButton extends HTMLElement {
     private isLoggingOut = false
 
     constructor() {
       super()
-      this.attachShadow({ mode: "open" })
+      this.attachShadow({ mode: 'open' })
     }
 
     connectedCallback() {
@@ -14,9 +14,9 @@ if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
     }
 
     private render() {
-      const buttonText = this.getAttribute("text") || "Cerrar Sesión"
-      const buttonClass = this.getAttribute("class") || "logout-btn"
-      const showIcon = this.getAttribute("show-icon") !== "false"
+      const buttonText = this.getAttribute('text') || 'Cerrar Sesión'
+      const buttonClass = this.getAttribute('class') || 'logout-btn'
+      const showIcon = this.getAttribute('show-icon') !== 'false'
 
       this.shadowRoot!.innerHTML = `
         <style>
@@ -100,32 +100,32 @@ if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
           }
         </style>
         
-        <button class="${buttonClass}" ${this.isLoggingOut ? "disabled" : ""}>
+        <button class="${buttonClass}" ${this.isLoggingOut ? 'disabled' : ''}>
           ${
             this.isLoggingOut
               ? '<div class="spinner"></div>'
               : showIcon
                 ? '<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>'
-                : ""
+                : ''
           }
-          <span>${this.isLoggingOut ? "Cerrando sesión..." : buttonText}</span>
+          <span>${this.isLoggingOut ? 'Cerrando sesión...' : buttonText}</span>
         </button>
       `
     }
 
     private setupEventListeners() {
-      const button = this.shadowRoot!.querySelector("button")
-      button?.addEventListener("click", this.handleLogout.bind(this))
+      const button = this.shadowRoot!.querySelector('button')
+      button?.addEventListener('click', this.handleLogout.bind(this))
     }
 
     private async handleLogout() {
       if (this.isLoggingOut) return
 
       // Confirmar logout si está habilitado
-      const confirmLogout = this.getAttribute("confirm") === "true"
+      const confirmLogout = this.getAttribute('confirm') === 'true'
 
       if (confirmLogout) {
-        const confirmed = confirm("¿Estás seguro de que quieres cerrar sesión?")
+        const confirmed = confirm('¿Estás seguro de que quieres cerrar sesión?')
         if (!confirmed) return
       }
 
@@ -135,35 +135,38 @@ if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
       try {
         // Emitir evento antes del logout
         this.dispatchEvent(
-          new CustomEvent("beforeLogout", {
+          new CustomEvent('beforeLogout', {
             bubbles: true,
             detail: { timestamp: new Date().toISOString() },
           }),
         )
 
         // Importar dinámicamente el servicio de auth
-        const { default: authService } = await import("@/services/authService")
+        const { default: authService } = await import('@/services/authService')
         await authService.logout()
 
         // El logout redirige automáticamente, pero por si acaso:
         this.dispatchEvent(
-          new CustomEvent("logoutComplete", {
+          new CustomEvent('logoutComplete', {
             bubbles: true,
             detail: { timestamp: new Date().toISOString() },
           }),
         )
       } catch (error) {
-        console.error("Error during logout:", error)
+        console.error('Error during logout:', error)
 
         // En caso de error, limpiar sesión localmente y redirigir
-        const { default: authService } = await import("@/services/authService")
+        const { default: authService } = await import('@/services/authService')
         authService.cleanupSession()
         authService.redirectToLogin()
 
         this.dispatchEvent(
-          new CustomEvent("logoutError", {
+          new CustomEvent('logoutError', {
             bubbles: true,
-            detail: { error: (error instanceof Error ? error.message : String(error)), timestamp: new Date().toISOString() },
+            detail: {
+              error: error instanceof Error ? error.message : String(error),
+              timestamp: new Date().toISOString(),
+            },
           }),
         )
       } finally {
@@ -178,9 +181,9 @@ if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
   }
 
   // Registrar el Web Component solo si no está ya registrado
-  if (!customElements.get("logout-button")) {
-    customElements.define("logout-button", LogoutButton)
+  if (!customElements.get('logout-button')) {
+    customElements.define('logout-button', LogoutButton)
   }
 }
 
-export default typeof window !== "undefined" ? customElements.get("logout-button") : null
+export default typeof window !== 'undefined' ? customElements.get('logout-button') : null
