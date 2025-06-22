@@ -1,32 +1,32 @@
 // Solo registrar el Web Component en el cliente
-if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
-  console.log("🚪 LogoutButton: Registering Web Component...")
+if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
+  console.log('🚪 LogoutButton: Registering Web Component...')
 
   class LogoutButton extends HTMLElement {
     private isLoggingOut = false
 
     constructor() {
       super()
-      console.log("🚪 LogoutButton: Constructor called")
-      this.attachShadow({ mode: "open" })
+      console.log('🚪 LogoutButton: Constructor called')
+      this.attachShadow({ mode: 'open' })
     }
 
     connectedCallback() {
-      console.log("🚪 LogoutButton: Connected to DOM")
+      console.log('🚪 LogoutButton: Connected to DOM')
       this.render()
       this.setupEventListeners()
     }
 
     private render() {
-      console.log("🚪 LogoutButton: Rendering component...")
+      console.log('🚪 LogoutButton: Rendering component...')
 
-      const buttonText = this.getAttribute("text") || "Cerrar Sesión"
-      const buttonClass = this.getAttribute("class") || "logout-btn"
-      const showIcon = this.getAttribute("show-icon") !== "false"
+      const buttonText = this.getAttribute('text') || 'Cerrar Sesión'
+      const buttonClass = this.getAttribute('class') || 'logout-btn'
+      const showIcon = this.getAttribute('show-icon') !== 'false'
 
-      console.log("🚪 LogoutButton: Button text:", buttonText)
-      console.log("🚪 LogoutButton: Show icon:", showIcon)
-      console.log("🚪 LogoutButton: Is logging out:", this.isLoggingOut)
+      console.log('🚪 LogoutButton: Button text:', buttonText)
+      console.log('🚪 LogoutButton: Show icon:', showIcon)
+      console.log('🚪 LogoutButton: Is logging out:', this.isLoggingOut)
 
       this.shadowRoot!.innerHTML = `
         <style>
@@ -110,85 +110,85 @@ if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
           }
         </style>
         
-        <button class="${buttonClass}" ${this.isLoggingOut ? "disabled" : ""}>
+        <button class="${buttonClass}" ${this.isLoggingOut ? 'disabled' : ''}>
           ${
             this.isLoggingOut
               ? '<div class="spinner"></div>'
               : showIcon
                 ? '<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>'
-                : ""
+                : ''
           }
-          <span>${this.isLoggingOut ? "Cerrando sesión..." : buttonText}</span>
+          <span>${this.isLoggingOut ? 'Cerrando sesión...' : buttonText}</span>
         </button>
       `
     }
 
     private setupEventListeners() {
-      console.log("🚪 LogoutButton: Setting up event listeners...")
-      const button = this.shadowRoot!.querySelector("button")
-      button?.addEventListener("click", this.handleLogout.bind(this))
-      console.log("🚪 LogoutButton: Click listener added")
+      console.log('🚪 LogoutButton: Setting up event listeners...')
+      const button = this.shadowRoot!.querySelector('button')
+      button?.addEventListener('click', this.handleLogout.bind(this))
+      console.log('🚪 LogoutButton: Click listener added')
     }
 
     private async handleLogout() {
-      console.log("🚪 LogoutButton: Logout button clicked")
+      console.log('🚪 LogoutButton: Logout button clicked')
 
       if (this.isLoggingOut) {
-        console.log("🚪 LogoutButton: Already logging out, ignoring click")
+        console.log('🚪 LogoutButton: Already logging out, ignoring click')
         return
       }
 
       // Confirmar logout si está habilitado
-      const confirmLogout = this.getAttribute("confirm") === "true"
-      console.log("🚪 LogoutButton: Confirm required:", confirmLogout)
+      const confirmLogout = this.getAttribute('confirm') === 'true'
+      console.log('🚪 LogoutButton: Confirm required:', confirmLogout)
 
       if (confirmLogout) {
-        const confirmed = confirm("¿Estás seguro de que quieres cerrar sesión?")
-        console.log("🚪 LogoutButton: User confirmation:", confirmed)
+        const confirmed = confirm('¿Estás seguro de que quieres cerrar sesión?')
+        console.log('🚪 LogoutButton: User confirmation:', confirmed)
         if (!confirmed) return
       }
 
-      console.log("🚪 LogoutButton: Starting logout process...")
+      console.log('🚪 LogoutButton: Starting logout process...')
       this.isLoggingOut = true
       this.render() // Re-renderizar con estado de loading
 
       try {
         // Emitir evento antes del logout
-        console.log("🚪 LogoutButton: Emitting beforeLogout event")
+        console.log('🚪 LogoutButton: Emitting beforeLogout event')
         this.dispatchEvent(
-          new CustomEvent("beforeLogout", {
+          new CustomEvent('beforeLogout', {
             bubbles: true,
             detail: { timestamp: new Date().toISOString() },
           }),
         )
 
-        // Importar dinámicamente el servicio de auth
-        console.log("🚪 LogoutButton: Importing authService...")
-        const { default: authService } = await import("@/services/authService")
+        // Importar dinámicamente las utilidades de auth
+        console.log('🚪 LogoutButton: Importing authUtils...')
+        const { logoutAndRedirect } = await import('../../utils/authUtils')
 
-        console.log("🚪 LogoutButton: Calling authService.logout()...")
-        await authService.logout()
+        console.log('🚪 LogoutButton: Calling logoutAndRedirect()...')
+        await logoutAndRedirect()
 
         // El logout redirige automáticamente, pero por si acaso:
-        console.log("🚪 LogoutButton: Emitting logoutComplete event")
+        console.log('🚪 LogoutButton: Emitting logoutComplete event')
         this.dispatchEvent(
-          new CustomEvent("logoutComplete", {
+          new CustomEvent('logoutComplete', {
             bubbles: true,
             detail: { timestamp: new Date().toISOString() },
           }),
         )
       } catch (error) {
-        console.error("❌ LogoutButton: Error during logout:", error)
+        console.error('❌ LogoutButton: Error during logout:', error)
 
         // En caso de error, limpiar sesión localmente y redirigir
-        console.log("🚪 LogoutButton: Fallback cleanup and redirect...")
-        const { default: authService } = await import("@/services/authService")
-        authService.cleanupSession()
-        authService.redirectToLogin()
+        console.log('🚪 LogoutButton: Fallback cleanup and redirect...')
+        const { clearAuthData, redirectToLogin } = await import('../../utils/authUtils')
+        clearAuthData()
+        redirectToLogin()
 
-        console.log("🚪 LogoutButton: Emitting logoutError event")
+        console.log('🚪 LogoutButton: Emitting logoutError event')
         this.dispatchEvent(
-          new CustomEvent("logoutError", {
+          new CustomEvent('logoutError', {
             bubbles: true,
             detail: {
               error: error instanceof Error ? error.message : String(error),
@@ -197,27 +197,27 @@ if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
           }),
         )
       } finally {
-        console.log("🚪 LogoutButton: Logout process completed")
+        console.log('🚪 LogoutButton: Logout process completed')
         this.isLoggingOut = false
       }
     }
 
     // Método público para triggear logout programáticamente
     async triggerLogout() {
-      console.log("🚪 LogoutButton: Programmatic logout triggered")
+      console.log('🚪 LogoutButton: Programmatic logout triggered')
       await this.handleLogout()
     }
   }
 
   // Registrar el Web Component solo si no está ya registrado
-  if (!customElements.get("logout-button")) {
-    customElements.define("logout-button", LogoutButton)
-    console.log("✅ LogoutButton: Web Component registered successfully")
+  if (!customElements.get('logout-button')) {
+    customElements.define('logout-button', LogoutButton)
+    console.log('✅ LogoutButton: Web Component registered successfully')
   } else {
-    console.log("ℹ️ LogoutButton: Web Component already registered")
+    console.log('ℹ️ LogoutButton: Web Component already registered')
   }
 } else {
-  console.log("⚠️ LogoutButton: Not in browser environment, skipping registration")
+  console.log('⚠️ LogoutButton: Not in browser environment, skipping registration')
 }
 
-export default typeof window !== "undefined" ? customElements.get("logout-button") : null
+export default typeof window !== 'undefined' ? customElements.get('logout-button') : null
