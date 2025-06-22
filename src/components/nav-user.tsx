@@ -44,6 +44,8 @@ function NavUserComponent({
     console.error('Error durante logout:', error)
   }
 
+  const avatarSrc = user.avatar && user.avatar.trim() !== '' ? user.avatar : '/placeholder.svg'
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -55,8 +57,14 @@ function NavUserComponent({
             >
               <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
                 <AvatarImage
-                  src={user.avatar && user.avatar.trim() !== '' ? user.avatar : '/placeholder.svg'}
+                  src={avatarSrc}
                   alt={user.name}
+                  onError={(e) => {
+                    const fallback = '/placeholder.svg'
+                    if (!e.currentTarget.src.includes(fallback)) {
+                      e.currentTarget.src = fallback
+                    }
+                  }}
                 />
                 <AvatarFallback className="rounded-lg bg-[#2546f0] text-white">
                   {user.name?.charAt(0).toUpperCase() || 'U'}
@@ -79,13 +87,18 @@ function NavUserComponent({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
-                    src={user.avatar && user.avatar.trim() !== '' ? user.avatar : '/placeholder.svg'}
+                    src={avatarSrc}
                     alt={user.name}
                     onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg'
+                      const fallback = '/placeholder.svg'
+                      if (!e.currentTarget.src.includes(fallback)) {
+                        e.currentTarget.src = fallback
+                      }
                     }}
                   />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg bg-[#2546f0] text-white">
+                    {user.name?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
