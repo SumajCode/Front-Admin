@@ -1,0 +1,7 @@
+<!-- public/placeholder.svg -->
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="64" height="64" rx="32" fill="#E2E8F0"></rect>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="24" font-family="sans-serif" fill="#94A3B8">
+    👤
+  </text>
+</svg>
