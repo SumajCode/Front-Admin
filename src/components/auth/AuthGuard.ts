@@ -1,8 +1,9 @@
 // Solo registrar el Web Component en el cliente
-if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
+if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
+  console.log("🛡️ AuthGuard: Registering Web Component...")
+
   interface AuthData {
     isAuthenticated: boolean
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     user: any
     token: string | null
     role: string | null
@@ -19,7 +20,8 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
 
     constructor() {
       super()
-      this.attachShadow({ mode: 'open' })
+      console.log("🛡️ AuthGuard: Constructor called")
+      this.attachShadow({ mode: "open" })
 
       // Bind handlers para poder removerlos correctamente
       this.boundHandlers = {
@@ -30,72 +32,100 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
     }
 
     connectedCallback() {
+      console.log("🛡️ AuthGuard: Connected to DOM")
       this.initializeAuth()
       this.setupEventListeners()
       this.startTokenValidation()
     }
 
     disconnectedCallback() {
+      console.log("🛡️ AuthGuard: Disconnected from DOM")
       this.cleanup()
     }
 
     private async initializeAuth() {
+      console.log("🛡️ AuthGuard: Initializing authentication...")
+
       try {
-        const { default: authService } = await import('@/services/authService')
+        console.log("🛡️ AuthGuard: Importing authService...")
+        const { default: authService } = await import("@/services/authService")
 
         // 1. Verificar autenticación básica
+        console.log("🛡️ AuthGuard: Step 1 - Basic authentication check")
         this.authData = authService.checkAuthentication()
+        console.log("🛡️ AuthGuard: Basic auth result:", this.authData.isAuthenticated)
 
         if (!this.authData.isAuthenticated) {
+          console.log("❌ AuthGuard: Not authenticated, redirecting to login")
           this.redirectToLogin()
           return
         }
 
         // 2. Validar token con backend
+        console.log("🛡️ AuthGuard: Step 2 - Backend token validation")
         const isValid = await authService.validateTokenWithBackend()
+        console.log("🛡️ AuthGuard: Backend validation result:", isValid)
 
         if (!isValid) {
+          console.log("❌ AuthGuard: Backend validation failed, redirecting to login")
           this.redirectToLogin()
           return
         }
 
         // 3. Verificar rol de administrador
-        if (!authService.validateUserRole('administrador')) {
+        console.log("🛡️ AuthGuard: Step 3 - Role validation")
+        const roleValid = authService.validateUserRole("administrador")
+        console.log("🛡️ AuthGuard: Role validation result:", roleValid)
+
+        if (!roleValid) {
+          console.log("❌ AuthGuard: Role validation failed, showing unauthorized message")
           this.showUnauthorizedMessage()
           return
         }
 
         // 4. Autenticación exitosa, emitir evento
+        console.log("✅ AuthGuard: Authentication successful!")
         this.emitAuthSuccess()
       } catch (error) {
-        console.error('Error initializing auth:', error)
+        console.error("❌ AuthGuard: Error initializing auth:", error)
         this.redirectToLogin()
       }
     }
 
     private setupEventListeners() {
+      console.log("🛡️ AuthGuard: Setting up event listeners...")
+
       // Escuchar eventos de renovación de token
-      window.addEventListener('tokenRefreshed', this.boundHandlers.tokenRefreshed)
+      window.addEventListener("tokenRefreshed", this.boundHandlers.tokenRefreshed)
+      console.log("🛡️ AuthGuard: tokenRefreshed listener added")
 
       // Escuchar eventos de logout
-      window.addEventListener('userLoggedOut', this.boundHandlers.logout)
+      window.addEventListener("userLoggedOut", this.boundHandlers.logout)
+      console.log("🛡️ AuthGuard: userLoggedOut listener added")
 
       // Escuchar cambios en localStorage (para detectar logout en otras pestañas)
-      window.addEventListener('storage', this.boundHandlers.storageChange)
+      window.addEventListener("storage", this.boundHandlers.storageChange)
+      console.log("🛡️ AuthGuard: storage listener added")
     }
 
     private startTokenValidation() {
+      console.log("🛡️ AuthGuard: Starting periodic token validation (5 min intervals)")
+
       // Validar token cada 5 minutos
       this.checkInterval = window.setInterval(
         async () => {
+          console.log("🛡️ AuthGuard: Periodic token validation...")
           try {
-            const { default: authService } = await import('@/services/authService')
+            const { default: authService } = await import("@/services/authService")
             const isValid = await authService.validateTokenWithBackend()
+            console.log("🛡️ AuthGuard: Periodic validation result:", isValid)
+
             if (!isValid) {
+              console.log("❌ AuthGuard: Periodic validation failed, redirecting")
               this.redirectToLogin()
             }
           } catch (error) {
-            console.error('Error validating token:', error)
+            console.error("❌ AuthGuard: Error in periodic validation:", error)
           }
         },
         5 * 60 * 1000,
@@ -103,36 +133,43 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
     }
 
     private handleTokenRefreshed(_event: Event) {
+      console.log("🛡️ AuthGuard: Token refreshed event received")
       const customEvent = _event as CustomEvent<{ newToken: string }>
-      console.log('Token refreshed successfully:', customEvent.detail?.newToken)
+      console.log("🛡️ AuthGuard: New token received:", customEvent.detail?.newToken?.substring(0, 20) + "...")
       // Actualizar datos de autenticación
       this.loadAuthData()
     }
 
     private async loadAuthData() {
+      console.log("🛡️ AuthGuard: Loading auth data...")
       try {
-        const { default: authService } = await import('@/services/authService')
+        const { default: authService } = await import("@/services/authService")
         this.authData = authService.checkAuthentication()
+        console.log("🛡️ AuthGuard: Auth data loaded:", this.authData.isAuthenticated)
       } catch (error) {
-        console.error('Error loading auth data:', error)
+        console.error("❌ AuthGuard: Error loading auth data:", error)
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private handleLogout(_event: Event) {
+      console.log("🛡️ AuthGuard: Logout event received")
       this.cleanup()
       this.redirectToLogin()
     }
 
     private handleStorageChange(event: StorageEvent) {
+      console.log("🛡️ AuthGuard: Storage change detected:", event.key)
       // Si se eliminó el token en otra pestaña, cerrar sesión aquí también
-      if (event.key === 'access_token' && !event.newValue) {
+      if (event.key === "access_token" && !event.newValue) {
+        console.log("🛡️ AuthGuard: Access token removed in another tab, logging out")
         this.handleLogout(event)
       }
     }
 
     private emitAuthSuccess() {
-      const authSuccessEvent = new CustomEvent('authGuardSuccess', {
+      console.log("🛡️ AuthGuard: Emitting auth success event...")
+
+      const authSuccessEvent = new CustomEvent("authGuardSuccess", {
         detail: {
           user: this.authData?.user,
           token: this.authData?.token,
@@ -144,19 +181,23 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
 
       this.dispatchEvent(authSuccessEvent)
       window.dispatchEvent(authSuccessEvent)
+      console.log("✅ AuthGuard: Auth success event emitted")
     }
 
     private async redirectToLogin() {
+      console.log("🛡️ AuthGuard: Redirecting to login...")
       try {
-        const { default: authService } = await import('@/services/authService')
+        const { default: authService } = await import("@/services/authService")
         authService.redirectToLogin()
       } catch (error) {
-        console.error('Error redirecting to login:', error)
-        window.location.href = 'https://front-loginv1-kevinurena82-6772s-projects.vercel.app'
+        console.error("❌ AuthGuard: Error redirecting to login:", error)
+        console.log("🛡️ AuthGuard: Fallback redirect to login URL")
+        window.location.href = "https://front-loginv1-kevinurena82-6772s-projects.vercel.app"
       }
     }
 
     private showUnauthorizedMessage() {
+      console.log("🛡️ AuthGuard: Showing unauthorized message")
       this.shadowRoot!.innerHTML = `
         <style>
           .unauthorized {
@@ -205,37 +246,52 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
     }
 
     private cleanup() {
+      console.log("🛡️ AuthGuard: Cleaning up...")
+
       if (this.checkInterval) {
+        console.log("🛡️ AuthGuard: Clearing interval")
         clearInterval(this.checkInterval)
         this.checkInterval = null
       }
 
-      window.removeEventListener('tokenRefreshed', this.boundHandlers.tokenRefreshed)
-      window.removeEventListener('userLoggedOut', this.boundHandlers.logout)
-      window.removeEventListener('storage', this.boundHandlers.storageChange)
+      console.log("🛡️ AuthGuard: Removing event listeners")
+      window.removeEventListener("tokenRefreshed", this.boundHandlers.tokenRefreshed)
+      window.removeEventListener("userLoggedOut", this.boundHandlers.logout)
+      window.removeEventListener("storage", this.boundHandlers.storageChange)
+
+      console.log("✅ AuthGuard: Cleanup completed")
     }
 
     // Método público para obtener datos de autenticación
     getAuthData(): AuthData | null {
+      console.log("🛡️ AuthGuard: Getting auth data:", this.authData?.isAuthenticated)
       return this.authData
     }
 
     // Método público para forzar validación
     async forceValidation(): Promise<boolean> {
+      console.log("🛡️ AuthGuard: Force validation requested")
       try {
-        const { default: authService } = await import('@/services/authService')
-        return await authService.validateTokenWithBackend()
+        const { default: authService } = await import("@/services/authService")
+        const result = await authService.validateTokenWithBackend()
+        console.log("🛡️ AuthGuard: Force validation result:", result)
+        return result
       } catch (error) {
-        console.error('Error forcing validation:', error)
+        console.error("❌ AuthGuard: Error forcing validation:", error)
         return false
       }
     }
   }
 
   // Registrar el Web Component solo si no está ya registrado
-  if (!customElements.get('auth-guard')) {
-    customElements.define('auth-guard', AuthGuard)
+  if (!customElements.get("auth-guard")) {
+    customElements.define("auth-guard", AuthGuard)
+    console.log("✅ AuthGuard: Web Component registered successfully")
+  } else {
+    console.log("ℹ️ AuthGuard: Web Component already registered")
   }
+} else {
+  console.log("⚠️ AuthGuard: Not in browser environment, skipping registration")
 }
 
-export default typeof window !== 'undefined' ? customElements.get('auth-guard') : null
+export default typeof window !== "undefined" ? customElements.get("auth-guard") : null
