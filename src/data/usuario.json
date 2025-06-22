@@ -2,6 +2,6 @@
   "usuario": {
     "name": "Admin",
     "email": "admin@gmail.com",
-    "avatar": "/avatars/shadcn.jpg"
+    "avatar": "/placeholder.svg?height=32&width=32"
   }
 }
