@@ -31,13 +31,13 @@ export function LogoutButtonReact({
     const element = elementRef.current
     if (!element) return
 
-    const handleBeforeLogout = (event: Event) => {
-      const customEvent = event as CustomEvent<{ timestamp: string }>
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleBeforeLogout = (_event: Event) => {
       onBeforeLogout?.()
     }
 
-    const handleLogoutComplete = (event: Event) => {
-      const customEvent = event as CustomEvent<{ timestamp: string }>
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleLogoutComplete = (_event: Event) => {
       onLogoutComplete?.()
     }
 

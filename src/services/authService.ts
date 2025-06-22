@@ -90,8 +90,8 @@ class AuthService {
       }
 
       return response.ok
-    } catch (error) {
-      console.error('Error validating token:', error)
+    } catch {
+      console.error('Error validating token')
       return false
     }
   }
@@ -146,8 +146,8 @@ class AuthService {
       // Refresh token también expiró
       this.logout()
       return false
-    } catch (error) {
-      console.error('Error refreshing token:', error)
+    } catch {
+      console.error('Error refreshing token')
       this.logout()
       return false
     }
@@ -164,7 +164,7 @@ class AuthService {
       const currentTime = Math.floor(Date.now() / 1000)
 
       return payload.exp > currentTime
-    } catch (error) {
+    } catch {
       return false
     }
   }
@@ -200,8 +200,8 @@ class AuthService {
             'Content-Type': 'application/json',
           },
         })
-      } catch (error) {
-        console.error('Error during logout:', error)
+      } catch {
+        console.error('Error during logout')
       }
     }
 

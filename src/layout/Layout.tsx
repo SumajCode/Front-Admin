@@ -4,8 +4,7 @@ import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import * as React from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import '@/components/auth/AuthGuard'
-import '@/types/web-components'
+import { useEffect, useState } from 'react'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -13,9 +12,26 @@ interface LayoutProps {
 
 function LayoutComponent({ children }: LayoutProps) {
   const { isAuthenticated, isLoading } = useAuth()
+  const [webComponentsLoaded, setWebComponentsLoaded] = useState(false)
 
-  // Mostrar loading mientras se verifica la autenticación
-  if (isLoading) {
+  useEffect(() => {
+    // Cargar Web Components de forma asíncrona
+    const loadComponents = async () => {
+      try {
+        const { loadWebComponents } = await import('@/lib/webComponents')
+        await loadWebComponents()
+        setWebComponentsLoaded(true)
+      } catch (error) {
+        console.error('Error loading web components:', error)
+        setWebComponentsLoaded(true) // Continuar sin Web Components
+      }
+    }
+
+    loadComponents()
+  }, [])
+
+  // Mostrar loading mientras se verifica la autenticación o se cargan los componentes
+  if (isLoading || !webComponentsLoaded) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00bf7d]"></div>
@@ -23,7 +39,7 @@ function LayoutComponent({ children }: LayoutProps) {
     )
   }
 
-  // Si no está autenticado, el AuthGuard se encargará de la redirección
+  // Si no está autenticado, mostrar el AuthGuard
   if (!isAuthenticated) {
     return React.createElement('auth-guard')
   }

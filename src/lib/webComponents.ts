@@ -1,13 +1,27 @@
-// Importar todos los Web Components
-import '@/components/auth/AuthGuard'
-import '@/components/auth/LogoutButton'
-import '@/components/auth/UserInfo'
+// Función para cargar Web Components de forma segura
+export async function loadWebComponents() {
+  if (typeof window === 'undefined') {
+    return // No cargar en el servidor
+  }
 
-// Importar tipos
-import '@/types/web-components'
+  try {
+    // Importar dinámicamente los Web Components
+    await Promise.all([
+      import('@/components/auth/AuthGuard'),
+      import('@/components/auth/LogoutButton'),
+      import('@/components/auth/UserInfo'),
+    ])
+
+    console.log('Web Components de autenticación cargados')
+  } catch (error) {
+    console.error('Error cargando Web Components:', error)
+  }
+}
 
 // Función para verificar si los Web Components están disponibles
 export function areWebComponentsReady(): boolean {
+  if (typeof window === 'undefined') return false
+
   return !!(
     customElements.get('auth-guard') &&
     customElements.get('logout-button') &&
@@ -38,9 +52,11 @@ export function waitForWebComponents(): Promise<void> {
   })
 }
 
-// Inicializar Web Components cuando el DOM esté listo
+// Cargar automáticamente cuando el DOM esté listo
 if (typeof window !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('Web Components de autenticación cargados')
-  })
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadWebComponents)
+  } else {
+    loadWebComponents()
+  }
 }

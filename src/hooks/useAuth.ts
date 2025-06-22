@@ -24,14 +24,15 @@ export function useAuth(): UseAuthReturn {
   const [isLoading, setIsLoading] = useState(true)
 
   // Handlers con tipos correctos
-  const handleTokenRefreshed = useCallback((event: Event) => {
-    const customEvent = event as CustomEvent<{ newToken: string }>
+  const handleTokenRefreshed = useCallback((_event: Event) => {
+    const customEvent = _event as CustomEvent<{ newToken: string }>
     console.log('Token refreshed:', customEvent.detail?.newToken)
     const newAuthData = authService.checkAuthentication()
     setAuthData(newAuthData)
   }, [])
 
-  const handleLogout = useCallback((event: Event) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleLogout = useCallback((_event: Event) => {
     setAuthData({
       isAuthenticated: false,
       user: null,

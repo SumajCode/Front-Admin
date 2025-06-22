@@ -18,8 +18,7 @@
       "@/*": ["./src/*"],
       "@/test/*": ["./test/*"]
     },
-    "types": ["jest", "@testing-library/jest-dom", "node"],
-    "typeRoots": ["./node_modules/@types", "./src/types"]
+    "types": ["jest", "@testing-library/jest-dom", "node"]
   },
   "include": [
     "next-env.d.ts",
@@ -27,7 +26,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "test/setup/jest-dom.d.ts",
-    "src/types/**/*.d.ts"
+    "src/types/global.d.ts"
   ],
   "exclude": ["node_modules"]
 }
