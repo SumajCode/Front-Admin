@@ -1,5 +1,4 @@
 import '@/lib/webComponents'
-import '@/types'
 import type React from 'react'
 import './globals.css'
 import Layout from '@/layout/Layout'

@@ -72,7 +72,7 @@ class ApiService {
   /**
    * POST request autenticado
    */
-  async post(endpoint: string, data?: any): Promise<Response> {
+  async post(endpoint: string, data?: Record<string, unknown>): Promise<Response> {
     return this.authenticatedFetch(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -82,7 +82,7 @@ class ApiService {
   /**
    * PUT request autenticado
    */
-  async put(endpoint: string, data?: any): Promise<Response> {
+  async put(endpoint: string, data?: Record<string, unknown>): Promise<Response> {
     return this.authenticatedFetch(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,

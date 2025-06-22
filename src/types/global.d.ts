@@ -1,12 +1,23 @@
 import type React from 'react'
-// Declaraciones globales para TypeScript
+
+// Definir tipos específicos para los usuarios
+interface UserData {
+  _id: string
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  role: string
+  is_active: boolean
+  created_at: string
+}
 
 // Eventos personalizados
 interface CustomEventMap {
   tokenRefreshed: CustomEvent<{ newToken: string }>
   userLoggedOut: CustomEvent
   authGuardSuccess: CustomEvent<{
-    user: any
+    user: UserData
     token: string
     role: string
     timestamp: string
@@ -21,7 +32,7 @@ declare global {
   interface Window {
     addEventListener<K extends keyof CustomEventMap>(
       type: K,
-      listener: (this: Window, ev: CustomEventMap[K]) => any,
+      listener: (this: Window, ev: CustomEventMap[K]) => void,
       options?: boolean | AddEventListenerOptions,
     ): void
     addEventListener(
@@ -31,7 +42,7 @@ declare global {
     ): void
     removeEventListener<K extends keyof CustomEventMap>(
       type: K,
-      listener: (this: Window, ev: CustomEventMap[K]) => any,
+      listener: (this: Window, ev: CustomEventMap[K]) => void,
       options?: boolean | EventListenerOptions,
     ): void
     removeEventListener(
@@ -66,5 +77,11 @@ declare global {
         HTMLElement
       >
     }
+  }
+
+  interface HTMLElementTagNameMap {
+    'auth-guard': HTMLElement
+    'logout-button': HTMLElement
+    'user-info': HTMLElement
   }
 }
