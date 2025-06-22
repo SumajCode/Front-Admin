@@ -1,11 +1,11 @@
-import authService, { type UserData } from "@/services/authService"
+import authService, { type UserData } from '@/services/authService'
 
 class UserInfo extends HTMLElement {
   private user: UserData | null = null
 
   constructor() {
     super()
-    this.attachShadow({ mode: "open" })
+    this.attachShadow({ mode: 'open' })
   }
 
   connectedCallback() {
@@ -20,7 +20,7 @@ class UserInfo extends HTMLElement {
 
   private setupEventListeners() {
     // Actualizar cuando se renueve el token
-    window.addEventListener("tokenRefreshed", () => {
+    window.addEventListener('tokenRefreshed', () => {
       this.loadUserData()
       this.render()
     })
@@ -28,14 +28,14 @@ class UserInfo extends HTMLElement {
 
   private render() {
     if (!this.user) {
-      this.shadowRoot!.innerHTML = "<div>No hay información de usuario disponible</div>"
+      this.shadowRoot!.innerHTML = '<div>No hay información de usuario disponible</div>'
       return
     }
 
-    const showAvatar = this.getAttribute("show-avatar") !== "false"
-    const showEmail = this.getAttribute("show-email") !== "false"
-    const showRole = this.getAttribute("show-role") !== "false"
-    const layout = this.getAttribute("layout") || "horizontal" // horizontal | vertical
+    const showAvatar = this.getAttribute('show-avatar') !== 'false'
+    const showEmail = this.getAttribute('show-email') !== 'false'
+    const showRole = this.getAttribute('show-role') !== 'false'
+    const layout = this.getAttribute('layout') || 'horizontal' // horizontal | vertical
 
     this.shadowRoot!.innerHTML = `
       <style>
@@ -106,7 +106,7 @@ class UserInfo extends HTMLElement {
             ${this.getInitials()}
           </div>
         `
-            : ""
+            : ''
         }
         
         <div class="user-details">
@@ -121,7 +121,7 @@ class UserInfo extends HTMLElement {
               ${this.user.email}
             </div>
           `
-              : ""
+              : ''
           }
           
           ${
@@ -131,7 +131,7 @@ class UserInfo extends HTMLElement {
               Administrador
             </div>
           `
-              : ""
+              : ''
           }
         </div>
       </div>
@@ -139,12 +139,12 @@ class UserInfo extends HTMLElement {
   }
 
   private getInitials(): string {
-    if (!this.user) return "?"
+    if (!this.user) return '?'
 
-    const firstInitial = this.user.first_name?.charAt(0)?.toUpperCase() || ""
-    const lastInitial = this.user.last_name?.charAt(0)?.toUpperCase() || ""
+    const firstInitial = this.user.first_name?.charAt(0)?.toUpperCase() || ''
+    const lastInitial = this.user.last_name?.charAt(0)?.toUpperCase() || ''
 
-    return firstInitial + lastInitial || this.user.username?.charAt(0)?.toUpperCase() || "?"
+    return firstInitial + lastInitial || this.user.username?.charAt(0)?.toUpperCase() || '?'
   }
 
   // Método público para actualizar datos
@@ -155,6 +155,6 @@ class UserInfo extends HTMLElement {
 }
 
 // Registrar el Web Component
-customElements.define("user-info", UserInfo)
+customElements.define('user-info', UserInfo)
 
 export default UserInfo

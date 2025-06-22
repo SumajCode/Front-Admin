@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useState, useEffect, useCallback } from "react"
-import authService, { type AuthData, type UserData } from "@/services/authService"
+import { useState, useEffect, useCallback } from 'react'
+import authService, { type AuthData, type UserData } from '@/services/authService'
 
 interface UseAuthReturn {
   isAuthenticated: boolean
@@ -26,7 +26,7 @@ export function useAuth(): UseAuthReturn {
   // Handlers con tipos correctos
   const handleTokenRefreshed = useCallback((event: Event) => {
     const customEvent = event as CustomEvent<{ newToken: string }>
-    console.log("Token refreshed:", customEvent.detail?.newToken)
+    console.log('Token refreshed:', customEvent.detail?.newToken)
     const newAuthData = authService.checkAuthentication()
     setAuthData(newAuthData)
   }, [])
@@ -72,12 +72,12 @@ export function useAuth(): UseAuthReturn {
     checkAuth()
 
     // Escuchar eventos de autenticación
-    window.addEventListener("tokenRefreshed", handleTokenRefreshed)
-    window.addEventListener("userLoggedOut", handleLogout)
+    window.addEventListener('tokenRefreshed', handleTokenRefreshed)
+    window.addEventListener('userLoggedOut', handleLogout)
 
     return () => {
-      window.removeEventListener("tokenRefreshed", handleTokenRefreshed)
-      window.removeEventListener("userLoggedOut", handleLogout)
+      window.removeEventListener('tokenRefreshed', handleTokenRefreshed)
+      window.removeEventListener('userLoggedOut', handleLogout)
     }
   }, [handleTokenRefreshed, handleLogout])
 

@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import * as React from "react"
-import { useAuth } from "@/hooks/useAuth"
-import "@/components/auth/AuthGuard"
-import "@/types/web-components"
+import { AppSidebar } from '@/components/app-sidebar'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import * as React from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import '@/components/auth/AuthGuard'
+import '@/types/web-components'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -25,12 +25,12 @@ function LayoutComponent({ children }: LayoutProps) {
 
   // Si no está autenticado, el AuthGuard se encargará de la redirección
   if (!isAuthenticated) {
-    return React.createElement("auth-guard")
+    return React.createElement('auth-guard')
   }
 
   return (
     <>
-      {React.createElement("auth-guard")}
+      {React.createElement('auth-guard')}
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import type React from "react"
+import type React from 'react'
 
-import { useEffect, useState } from "react"
-import { useAuth } from "@/hooks/useAuth"
-import authService from "@/services/authService"
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import authService from '@/services/authService'
 
 interface AuthGuardReactProps {
   children: React.ReactNode
@@ -30,7 +30,7 @@ export function AuthGuardReact({ children }: AuthGuardReactProps) {
       }
 
       // Verificar rol de administrador
-      const hasRole = authService.validateUserRole("administrador")
+      const hasRole = authService.validateUserRole('administrador')
       setHasValidRole(hasRole)
       setIsValidating(false)
     }
@@ -58,7 +58,9 @@ export function AuthGuardReact({ children }: AuthGuardReactProps) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-gradient-to-br from-blue-600 to-purple-600 text-white">
         <h1 className="text-4xl font-bold mb-4">🚫 Acceso No Autorizado</h1>
-        <p className="text-xl mb-8 opacity-90">No tienes permisos para acceder a esta aplicación.</p>
+        <p className="text-xl mb-8 opacity-90">
+          No tienes permisos para acceder a esta aplicación.
+        </p>
         <button
           onClick={() => authService.redirectToLogin()}
           className="bg-white/20 border-2 border-white/30 text-white px-8 py-3 rounded-lg hover:bg-white/30 hover:border-white/50 transition-all duration-300"

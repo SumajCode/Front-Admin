@@ -1,4 +1,4 @@
-import authService, { type AuthData } from "@/services/authService"
+import authService, { type AuthData } from '@/services/authService'
 
 class AuthGuard extends HTMLElement {
   private authData: AuthData | null = null
@@ -11,7 +11,7 @@ class AuthGuard extends HTMLElement {
 
   constructor() {
     super()
-    this.attachShadow({ mode: "open" })
+    this.attachShadow({ mode: 'open' })
 
     // Bind handlers para poder removerlos correctamente
     this.boundHandlers = {
@@ -49,7 +49,7 @@ class AuthGuard extends HTMLElement {
     }
 
     // 3. Verificar rol de administrador
-    if (!authService.validateUserRole("administrador")) {
+    if (!authService.validateUserRole('administrador')) {
       this.showUnauthorizedMessage()
       return
     }
@@ -60,13 +60,13 @@ class AuthGuard extends HTMLElement {
 
   private setupEventListeners() {
     // Escuchar eventos de renovación de token
-    window.addEventListener("tokenRefreshed", this.boundHandlers.tokenRefreshed)
+    window.addEventListener('tokenRefreshed', this.boundHandlers.tokenRefreshed)
 
     // Escuchar eventos de logout
-    window.addEventListener("userLoggedOut", this.boundHandlers.logout)
+    window.addEventListener('userLoggedOut', this.boundHandlers.logout)
 
     // Escuchar cambios en localStorage (para detectar logout en otras pestañas)
-    window.addEventListener("storage", this.boundHandlers.storageChange)
+    window.addEventListener('storage', this.boundHandlers.storageChange)
   }
 
   private startTokenValidation() {
@@ -84,7 +84,7 @@ class AuthGuard extends HTMLElement {
 
   private handleTokenRefreshed(event: Event) {
     const customEvent = event as CustomEvent<{ newToken: string }>
-    console.log("Token refreshed successfully:", customEvent.detail?.newToken)
+    console.log('Token refreshed successfully:', customEvent.detail?.newToken)
     // Actualizar datos de autenticación
     this.authData = authService.checkAuthentication()
   }
@@ -96,13 +96,13 @@ class AuthGuard extends HTMLElement {
 
   private handleStorageChange(event: StorageEvent) {
     // Si se eliminó el token en otra pestaña, cerrar sesión aquí también
-    if (event.key === "access_token" && !event.newValue) {
+    if (event.key === 'access_token' && !event.newValue) {
       this.handleLogout(event)
     }
   }
 
   private emitAuthSuccess() {
-    const authSuccessEvent = new CustomEvent("authGuardSuccess", {
+    const authSuccessEvent = new CustomEvent('authGuardSuccess', {
       detail: {
         user: this.authData?.user,
         token: this.authData?.token,
@@ -174,9 +174,9 @@ class AuthGuard extends HTMLElement {
       this.checkInterval = null
     }
 
-    window.removeEventListener("tokenRefreshed", this.boundHandlers.tokenRefreshed)
-    window.removeEventListener("userLoggedOut", this.boundHandlers.logout)
-    window.removeEventListener("storage", this.boundHandlers.storageChange)
+    window.removeEventListener('tokenRefreshed', this.boundHandlers.tokenRefreshed)
+    window.removeEventListener('userLoggedOut', this.boundHandlers.logout)
+    window.removeEventListener('storage', this.boundHandlers.storageChange)
   }
 
   // Método público para obtener datos de autenticación
@@ -191,6 +191,6 @@ class AuthGuard extends HTMLElement {
 }
 
 // Registrar el Web Component
-customElements.define("auth-guard", AuthGuard)
+customElements.define('auth-guard', AuthGuard)
 
 export default AuthGuard

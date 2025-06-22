@@ -1,14 +1,18 @@
 // Importar todos los Web Components
-import "@/components/auth/AuthGuard"
-import "@/components/auth/LogoutButton"
-import "@/components/auth/UserInfo"
+import '@/components/auth/AuthGuard'
+import '@/components/auth/LogoutButton'
+import '@/components/auth/UserInfo'
 
 // Importar tipos
-import "@/types/web-components"
+import '@/types/web-components'
 
 // Función para verificar si los Web Components están disponibles
 export function areWebComponentsReady(): boolean {
-  return !!(customElements.get("auth-guard") && customElements.get("logout-button") && customElements.get("user-info"))
+  return !!(
+    customElements.get('auth-guard') &&
+    customElements.get('logout-button') &&
+    customElements.get('user-info')
+  )
 }
 
 // Función para esperar a que los Web Components estén listos
@@ -35,8 +39,8 @@ export function waitForWebComponents(): Promise<void> {
 }
 
 // Inicializar Web Components cuando el DOM esté listo
-if (typeof window !== "undefined") {
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log("Web Components de autenticación cargados")
+if (typeof window !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('Web Components de autenticación cargados')
   })
 }

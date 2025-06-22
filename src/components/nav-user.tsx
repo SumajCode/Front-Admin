@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { BadgeCheck, Bell, ChevronsUpDown } from "lucide-react"
+import * as React from 'react'
+import { BadgeCheck, Bell, ChevronsUpDown } from 'lucide-react'
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import { LogoutButtonReact } from "@/components/auth/LogoutButtonReact"
+} from '@/components/ui/dropdown-menu'
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar'
+import { LogoutButtonReact } from '@/components/auth/LogoutButtonReact'
 
 function NavUserComponent({
   user,
@@ -28,15 +33,15 @@ function NavUserComponent({
   const { isMobile } = useSidebar()
 
   const handleBeforeLogout = () => {
-    console.log("Iniciando proceso de logout...")
+    console.log('Iniciando proceso de logout...')
   }
 
   const handleLogoutComplete = () => {
-    console.log("Logout completado exitosamente")
+    console.log('Logout completado exitosamente')
   }
 
   const handleLogoutError = (error: string) => {
-    console.error("Error durante logout:", error)
+    console.error('Error durante logout:', error)
   }
 
   return (
@@ -44,9 +49,12 @@ function NavUserComponent({
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white">
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white"
+            >
               <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
-                <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                <AvatarImage src={user.avatar || '/placeholder.svg'} alt={user.name} />
                 <AvatarFallback className="rounded-lg bg-[#2546f0] text-white">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -58,14 +66,14 @@ function NavUserComponent({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                  <AvatarImage src={user.avatar || '/placeholder.svg'} alt={user.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -92,7 +100,7 @@ function NavUserComponent({
                 className="logout-btn minimal"
                 showIcon={true}
                 confirm={true}
-                style={{ width: "100%", justifyContent: "flex-start" }}
+                style={{ width: '100%', justifyContent: 'flex-start' }}
                 onBeforeLogout={handleBeforeLogout}
                 onLogoutComplete={handleLogoutComplete}
                 onLogoutError={handleLogoutError}

@@ -1,9 +1,9 @@
-import "@/lib/webComponents"
-import "@/types"
-import type React from "react"
-import "./globals.css"
-import Layout from "@/layout/Layout"
-import { Toaster } from "@/components/ui/toaster"
+import '@/lib/webComponents'
+import '@/types'
+import type React from 'react'
+import './globals.css'
+import Layout from '@/layout/Layout'
+import { Toaster } from '@/components/ui/toaster'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
