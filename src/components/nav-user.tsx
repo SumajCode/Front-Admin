@@ -30,21 +30,25 @@ function NavUserComponent({
     avatar: string
   }
 }) {
+  console.log('🟡 [NavUser] Rendering with user:', user)
+
   const { isMobile } = useSidebar()
+  console.log('📱 [NavUser] isMobile:', isMobile)
+
+  const avatarSrc = user.avatar && user.avatar.trim() !== '' ? user.avatar : '/placeholder.svg'
+  console.log('🖼️ [NavUser] avatarSrc:', avatarSrc)
 
   const handleBeforeLogout = () => {
-    console.log('Iniciando proceso de logout...')
+    console.log('🚪 [NavUser] Iniciando proceso de logout...')
   }
 
   const handleLogoutComplete = () => {
-    console.log('Logout completado exitosamente')
+    console.log('✅ [NavUser] Logout completado exitosamente')
   }
 
   const handleLogoutError = (error: string) => {
-    console.error('Error durante logout:', error)
+    console.error('❌ [NavUser] Error durante logout:', error)
   }
-
-  const avatarSrc = user.avatar && user.avatar.trim() !== '' ? user.avatar : '/placeholder.svg'
 
   return (
     <SidebarMenu>
@@ -55,13 +59,16 @@ function NavUserComponent({
               size="lg"
               className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white"
             >
+              console.log('🔽 [NavUser] Rendering sidebar menu button')
               <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
                 <AvatarImage
                   src={avatarSrc}
                   alt={user.name}
                   onError={(e) => {
                     const fallback = '/placeholder.svg'
+                    console.warn('⚠️ [AvatarImage] Error cargando imagen:', e.currentTarget.src)
                     if (!e.currentTarget.src.includes(fallback)) {
+                      console.log('🔁 [AvatarImage] Reemplazando con placeholder')
                       e.currentTarget.src = fallback
                     }
                   }}
@@ -83,6 +90,7 @@ function NavUserComponent({
             align="end"
             sideOffset={4}
           >
+            console.log('📂 [NavUser] Rendering dropdown menu')
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
@@ -91,7 +99,9 @@ function NavUserComponent({
                     alt={user.name}
                     onError={(e) => {
                       const fallback = '/placeholder.svg'
+                      console.warn('⚠️ [Dropdown AvatarImage] Error cargando imagen:', e.currentTarget.src)
                       if (!e.currentTarget.src.includes(fallback)) {
+                        console.log('🔁 [Dropdown AvatarImage] Reemplazando con placeholder')
                         e.currentTarget.src = fallback
                       }
                     }}
