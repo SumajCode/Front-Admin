@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useState, useEffect, useCallback } from "react"
-import authService, { type AuthData, type UserData } from "@/services/authService"
+import { useState, useEffect, useCallback } from 'react'
+import authService, { type AuthData, type UserData } from '@/services/authService'
 
 interface UseAuthReturn {
   isAuthenticated: boolean
@@ -15,7 +15,7 @@ interface UseAuthReturn {
 }
 
 export function useAuth(): UseAuthReturn {
-  console.log("🪝 useAuth: Hook initialized")
+  console.log('🪝 useAuth: Hook initialized')
 
   const [authData, setAuthData] = useState<AuthData>({
     isAuthenticated: false,
@@ -27,17 +27,18 @@ export function useAuth(): UseAuthReturn {
 
   // Handlers con tipos correctos
   const handleTokenRefreshed = useCallback((_event: Event) => {
-    console.log("🪝 useAuth: Token refreshed event received")
+    console.log('🪝 useAuth: Token refreshed event received')
     const customEvent = _event as CustomEvent<{ newToken: string }>
-    console.log("🪝 useAuth: New token:", customEvent.detail?.newToken?.substring(0, 20) + "...")
+    console.log('🪝 useAuth: New token:', customEvent.detail?.newToken?.substring(0, 20) + '...')
 
     const newAuthData = authService.checkAuthentication()
-    console.log("🪝 useAuth: Updated auth data:", newAuthData.isAuthenticated)
+    console.log('🪝 useAuth: Updated auth data:', newAuthData.isAuthenticated)
     setAuthData(newAuthData)
   }, [])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLogout = useCallback((_event: Event) => {
-    console.log("🪝 useAuth: Logout event received")
+    console.log('🪝 useAuth: Logout event received')
     setAuthData({
       isAuthenticated: false,
       user: null,
@@ -47,27 +48,27 @@ export function useAuth(): UseAuthReturn {
   }, [])
 
   useEffect(() => {
-    console.log("🪝 useAuth: Effect running - checking authentication")
+    console.log('🪝 useAuth: Effect running - checking authentication')
 
     // Verificar autenticación inicial
     const checkAuth = async () => {
-      console.log("🪝 useAuth: Starting authentication check...")
+      console.log('🪝 useAuth: Starting authentication check...')
       setIsLoading(true)
 
       const initialAuthData = authService.checkAuthentication()
-      console.log("🪝 useAuth: Initial auth data:", initialAuthData.isAuthenticated)
+      console.log('🪝 useAuth: Initial auth data:', initialAuthData.isAuthenticated)
 
       if (initialAuthData.isAuthenticated) {
-        console.log("🪝 useAuth: User appears authenticated, validating with backend...")
+        console.log('🪝 useAuth: User appears authenticated, validating with backend...')
         // Validar token con backend
         const isValid = await authService.validateTokenWithBackend()
-        console.log("🪝 useAuth: Backend validation result:", isValid)
+        console.log('🪝 useAuth: Backend validation result:', isValid)
 
         if (isValid) {
-          console.log("✅ useAuth: Authentication confirmed")
+          console.log('✅ useAuth: Authentication confirmed')
           setAuthData(initialAuthData)
         } else {
-          console.log("❌ useAuth: Backend validation failed, clearing auth data")
+          console.log('❌ useAuth: Backend validation failed, clearing auth data')
           // Token inválido, limpiar datos
           setAuthData({
             isAuthenticated: false,
@@ -77,54 +78,59 @@ export function useAuth(): UseAuthReturn {
           })
         }
       } else {
-        console.log("❌ useAuth: User not authenticated")
+        console.log('❌ useAuth: User not authenticated')
         setAuthData(initialAuthData)
       }
 
-      console.log("🪝 useAuth: Authentication check completed")
+      console.log('🪝 useAuth: Authentication check completed')
       setIsLoading(false)
     }
 
     checkAuth()
 
     // Escuchar eventos de autenticación
-    console.log("🪝 useAuth: Setting up event listeners")
-    window.addEventListener("tokenRefreshed", handleTokenRefreshed)
-    window.addEventListener("userLoggedOut", handleLogout)
+    console.log('🪝 useAuth: Setting up event listeners')
+    window.addEventListener('tokenRefreshed', handleTokenRefreshed)
+    window.addEventListener('userLoggedOut', handleLogout)
 
     return () => {
-      console.log("🪝 useAuth: Cleaning up event listeners")
-      window.removeEventListener("tokenRefreshed", handleTokenRefreshed)
-      window.removeEventListener("userLoggedOut", handleLogout)
+      console.log('🪝 useAuth: Cleaning up event listeners')
+      window.removeEventListener('tokenRefreshed', handleTokenRefreshed)
+      window.removeEventListener('userLoggedOut', handleLogout)
     }
   }, [handleTokenRefreshed, handleLogout])
 
   const logout = useCallback(async () => {
-    console.log("🪝 useAuth: Logout function called")
+    console.log('🪝 useAuth: Logout function called')
     await authService.logout()
   }, [])
 
   const refreshToken = useCallback(async () => {
-    console.log("🪝 useAuth: Refresh token function called")
+    console.log('🪝 useAuth: Refresh token function called')
     const success = await authService.refreshToken()
-    console.log("🪝 useAuth: Refresh token result:", success)
+    console.log('🪝 useAuth: Refresh token result:', success)
 
     if (success) {
       const newAuthData = authService.checkAuthentication()
-      console.log("🪝 useAuth: Updated auth data after refresh:", newAuthData.isAuthenticated)
+      console.log('🪝 useAuth: Updated auth data after refresh:', newAuthData.isAuthenticated)
       setAuthData(newAuthData)
     }
     return success
   }, [])
 
   const validateToken = useCallback(async () => {
-    console.log("🪝 useAuth: Validate token function called")
+    console.log('🪝 useAuth: Validate token function called')
     const result = await authService.validateTokenWithBackend()
-    console.log("🪝 useAuth: Token validation result:", result)
+    console.log('🪝 useAuth: Token validation result:', result)
     return result
   }, [])
 
-  console.log("🪝 useAuth: Current state - authenticated:", authData.isAuthenticated, "loading:", isLoading)
+  console.log(
+    '🪝 useAuth: Current state - authenticated:',
+    authData.isAuthenticated,
+    'loading:',
+    isLoading,
+  )
 
   return {
     isAuthenticated: authData.isAuthenticated,
