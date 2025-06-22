@@ -1,11 +1,23 @@
-import type React from 'react'
+import type React from "react"
+
+// Definir tipos específicos para los usuarios
+interface UserData {
+  _id: string
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  role: string
+  is_active: boolean
+  created_at: string
+}
 
 // Eventos personalizados
 interface CustomEventMap {
   tokenRefreshed: CustomEvent<{ newToken: string }>
   userLoggedOut: CustomEvent
   authGuardSuccess: CustomEvent<{
-    user: any
+    user: UserData
     token: string
     role: string
     timestamp: string
@@ -20,7 +32,7 @@ declare global {
   interface Window {
     addEventListener<K extends keyof CustomEventMap>(
       type: K,
-      listener: (this: Window, ev: CustomEventMap[K]) => any,
+      listener: (this: Window, ev: CustomEventMap[K]) => void,
       options?: boolean | AddEventListenerOptions,
     ): void
     addEventListener(
@@ -30,7 +42,7 @@ declare global {
     ): void
     removeEventListener<K extends keyof CustomEventMap>(
       type: K,
-      listener: (this: Window, ev: CustomEventMap[K]) => any,
+      listener: (this: Window, ev: CustomEventMap[K]) => void,
       options?: boolean | EventListenerOptions,
     ): void
     removeEventListener(
@@ -44,22 +56,22 @@ declare global {
   // Declarar los Web Components para JSX
   namespace JSX {
     interface IntrinsicElements {
-      'auth-guard': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
-      'logout-button': React.DetailedHTMLProps<
+      "auth-guard": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>
+      "logout-button": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & {
           text?: string
           class?: string
-          'show-icon'?: string
+          "show-icon"?: string
           confirm?: string
           style?: string
         },
         HTMLElement
       >
-      'user-info': React.DetailedHTMLProps<
+      "user-info": React.DetailedHTMLProps<
         React.HTMLAttributes<HTMLElement> & {
-          'show-avatar'?: string
-          'show-email'?: string
-          'show-role'?: string
+          "show-avatar"?: string
+          "show-email"?: string
+          "show-role"?: string
           layout?: string
         },
         HTMLElement
@@ -68,8 +80,8 @@ declare global {
   }
 
   interface HTMLElementTagNameMap {
-    'auth-guard': HTMLElement
-    'logout-button': HTMLElement
-    'user-info': HTMLElement
+    "auth-guard": HTMLElement
+    "logout-button": HTMLElement
+    "user-info": HTMLElement
   }
 }

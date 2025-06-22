@@ -1,4 +1,4 @@
-import authService from './authService'
+import authService from "./authService"
 
 interface RequestOptions extends RequestInit {
   headers?: Record<string, string>
@@ -6,7 +6,7 @@ interface RequestOptions extends RequestInit {
 
 class ApiService {
   private static instance: ApiService
-  private baseURL = 'https://microservice-admin.onrender.com/api'
+  private baseURL = "https://microservice-admin.onrender.com/api"
 
   static getInstance(): ApiService {
     if (!ApiService.instance) {
@@ -23,7 +23,7 @@ class ApiService {
 
     if (!accessToken) {
       authService.redirectToLogin()
-      throw new Error('No access token available')
+      throw new Error("No access token available")
     }
 
     // Primera llamada
@@ -32,7 +32,7 @@ class ApiService {
       headers: {
         ...options.headers,
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     })
 
@@ -49,13 +49,13 @@ class ApiService {
           headers: {
             ...options.headers,
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         })
       } else {
         // No se pudo renovar el token, redirigir al login
         authService.redirectToLogin()
-        throw new Error('Authentication failed')
+        throw new Error("Authentication failed")
       }
     }
 
@@ -66,15 +66,15 @@ class ApiService {
    * GET request autenticado
    */
   async get(endpoint: string): Promise<Response> {
-    return this.authenticatedFetch(endpoint, { method: 'GET' })
+    return this.authenticatedFetch(endpoint, { method: "GET" })
   }
 
   /**
    * POST request autenticado
    */
-  async post(endpoint: string, data?: any): Promise<Response> {
+  async post(endpoint: string, data?: Record<string, unknown>): Promise<Response> {
     return this.authenticatedFetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       body: data ? JSON.stringify(data) : undefined,
     })
   }
@@ -82,9 +82,9 @@ class ApiService {
   /**
    * PUT request autenticado
    */
-  async put(endpoint: string, data?: any): Promise<Response> {
+  async put(endpoint: string, data?: Record<string, unknown>): Promise<Response> {
     return this.authenticatedFetch(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
     })
   }
@@ -93,7 +93,7 @@ class ApiService {
    * DELETE request autenticado
    */
   async delete(endpoint: string): Promise<Response> {
-    return this.authenticatedFetch(endpoint, { method: 'DELETE' })
+    return this.authenticatedFetch(endpoint, { method: "DELETE" })
   }
 }
 

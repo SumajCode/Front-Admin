@@ -1,11 +1,18 @@
 // Solo registrar el Web Component en el cliente
-if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
+if (typeof window !== "undefined" && typeof HTMLElement !== "undefined") {
+  interface UserData {
+    first_name: string
+    last_name: string
+    email: string
+    username?: string
+  }
+
   class UserInfo extends HTMLElement {
-    private user: any = null
+    private user: UserData | null = null
 
     constructor() {
       super()
-      this.attachShadow({ mode: 'open' })
+      this.attachShadow({ mode: "open" })
     }
 
     connectedCallback() {
@@ -16,16 +23,16 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
 
     private async loadUserData() {
       try {
-        const { default: authService } = await import('@/services/authService')
+        const { default: authService } = await import("@/services/authService")
         this.user = authService.getCurrentUser()
       } catch (error) {
-        console.error('Error loading user data:', error)
+        console.error("Error loading user data:", error)
       }
     }
 
     private setupEventListeners() {
       // Actualizar cuando se renueve el token
-      window.addEventListener('tokenRefreshed', () => {
+      window.addEventListener("tokenRefreshed", () => {
         this.loadUserData()
         this.render()
       })
@@ -33,14 +40,14 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
 
     private render() {
       if (!this.user) {
-        this.shadowRoot!.innerHTML = '<div>No hay información de usuario disponible</div>'
+        this.shadowRoot!.innerHTML = "<div>No hay información de usuario disponible</div>"
         return
       }
 
-      const showAvatar = this.getAttribute('show-avatar') !== 'false'
-      const showEmail = this.getAttribute('show-email') !== 'false'
-      const showRole = this.getAttribute('show-role') !== 'false'
-      const layout = this.getAttribute('layout') || 'horizontal' // horizontal | vertical
+      const showAvatar = this.getAttribute("show-avatar") !== "false"
+      const showEmail = this.getAttribute("show-email") !== "false"
+      const showRole = this.getAttribute("show-role") !== "false"
+      const layout = this.getAttribute("layout") || "horizontal" // horizontal | vertical
 
       this.shadowRoot!.innerHTML = `
         <style>
@@ -111,7 +118,7 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
               ${this.getInitials()}
             </div>
           `
-              : ''
+              : ""
           }
           
           <div class="user-details">
@@ -126,7 +133,7 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
                 ${this.user.email}
               </div>
             `
-                : ''
+                : ""
             }
             
             ${
@@ -136,7 +143,7 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
                 Administrador
               </div>
             `
-                : ''
+                : ""
             }
           </div>
         </div>
@@ -144,12 +151,12 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
     }
 
     private getInitials(): string {
-      if (!this.user) return '?'
+      if (!this.user) return "?"
 
-      const firstInitial = this.user.first_name?.charAt(0)?.toUpperCase() || ''
-      const lastInitial = this.user.last_name?.charAt(0)?.toUpperCase() || ''
+      const firstInitial = this.user.first_name?.charAt(0)?.toUpperCase() || ""
+      const lastInitial = this.user.last_name?.charAt(0)?.toUpperCase() || ""
 
-      return firstInitial + lastInitial || this.user.username?.charAt(0)?.toUpperCase() || '?'
+      return firstInitial + lastInitial || this.user.username?.charAt(0)?.toUpperCase() || "?"
     }
 
     // Método público para actualizar datos
@@ -160,9 +167,9 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
   }
 
   // Registrar el Web Component solo si no está ya registrado
-  if (!customElements.get('user-info')) {
-    customElements.define('user-info', UserInfo)
+  if (!customElements.get("user-info")) {
+    customElements.define("user-info", UserInfo)
   }
 }
 
-export default typeof window !== 'undefined' ? customElements.get('user-info') : null
+export default typeof window !== "undefined" ? customElements.get("user-info") : null
