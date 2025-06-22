@@ -30,13 +30,8 @@ function NavUserComponent({
     avatar: string
   }
 }) {
-  console.log('🟡 [NavUser] Rendering with user:', user)
-
   const { isMobile } = useSidebar()
-  console.log('📱 [NavUser] isMobile:', isMobile)
-
   const avatarSrc = user.avatar && user.avatar.trim() !== '' ? user.avatar : '/placeholder.svg'
-  console.log('🖼️ [NavUser] avatarSrc:', avatarSrc)
 
   const handleBeforeLogout = () => {
     console.log('🚪 [NavUser] Iniciando proceso de logout...')
@@ -59,7 +54,6 @@ function NavUserComponent({
               size="lg"
               className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white"
             >
-              console.log('🔽 [NavUser] Rendering sidebar menu button')
               <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
                 <AvatarImage
                   src={avatarSrc}
