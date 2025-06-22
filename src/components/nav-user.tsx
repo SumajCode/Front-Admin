@@ -68,7 +68,6 @@ function NavUserComponent({
                     const fallback = '/placeholder.svg'
                     console.warn('⚠️ [AvatarImage] Error cargando imagen:', e.currentTarget.src)
                     if (!e.currentTarget.src.includes(fallback)) {
-                      console.log('🔁 [AvatarImage] Reemplazando con placeholder')
                       e.currentTarget.src = fallback
                     }
                   }}
@@ -90,7 +89,6 @@ function NavUserComponent({
             align="end"
             sideOffset={4}
           >
-            console.log('📂 [NavUser] Rendering dropdown menu')
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
@@ -101,7 +99,6 @@ function NavUserComponent({
                       const fallback = '/placeholder.svg'
                       console.warn('⚠️ [Dropdown AvatarImage] Error cargando imagen:', e.currentTarget.src)
                       if (!e.currentTarget.src.includes(fallback)) {
-                        console.log('🔁 [Dropdown AvatarImage] Reemplazando con placeholder')
                         e.currentTarget.src = fallback
                       }
                     }}
