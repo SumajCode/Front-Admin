@@ -117,7 +117,7 @@ function NavUserComponent({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <div className="p-1">
-              {/* <LogoutButtonReact
+              <LogoutButtonReact
                 text="Cerrar Sesión"
                 className="logout-btn minimal"
                 showIcon={true}
@@ -126,7 +126,7 @@ function NavUserComponent({
                 onBeforeLogout={handleBeforeLogout}
                 onLogoutComplete={handleLogoutComplete}
                 onLogoutError={handleLogoutError}
-              /> */}
+              />
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
