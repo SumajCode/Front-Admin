@@ -444,7 +444,7 @@ export function redirectToLogin(): void {
   const loginUrl = `${CONFIG.LOGIN_URL}?return_url=${returnUrl}`
 
   console.log('🔄 AuthUtils: Full login URL:', loginUrl)
-  window.location.href = `${CONFIG.LOGIN_URL}?logged_out=true`
+  window.location.href = loginUrl
 }
 
 /**
