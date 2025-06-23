@@ -1,61 +1,54 @@
-'use client'
+"use client"
 
-import { useState, useCallback } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import type { AdminFormData } from '@/types/admin'
+import { useState, useCallback } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import type { AdministradorFormData } from "@/types/administrador"
 
 const formSchema = z
   .object({
     username: z
       .string()
-      .min(3, { message: 'El nombre de usuario debe tener al menos 3 caracteres.' })
-      .max(50, { message: 'El nombre de usuario no puede exceder 50 caracteres.' })
+      .min(3, { message: "El nombre de usuario debe tener al menos 3 caracteres." })
+      .max(50, { message: "El nombre de usuario no puede exceder 50 caracteres." })
       .regex(/^[a-zA-Z0-9_]+$/, {
-        message: 'El nombre de usuario solo puede contener letras, números y guiones bajos.',
+        message: "El nombre de usuario solo puede contener letras, números y guiones bajos.",
       }),
     first_name: z
       .string()
-      .min(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
-      .max(50, { message: 'El nombre no puede exceder 50 caracteres.' })
+      .min(2, { message: "El nombre debe tener al menos 2 caracteres." })
+      .max(50, { message: "El nombre no puede exceder 50 caracteres." })
       .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-        message: 'El nombre solo debe contener letras y espacios.',
+        message: "El nombre solo debe contener letras y espacios.",
       }),
     last_name: z
       .string()
-      .min(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
-      .max(50, { message: 'El apellido no puede exceder 50 caracteres.' })
+      .min(2, { message: "El apellido debe tener al menos 2 caracteres." })
+      .max(50, { message: "El apellido no puede exceder 50 caracteres." })
       .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-        message: 'El apellido solo debe contener letras y espacios.',
+        message: "El apellido solo debe contener letras y espacios.",
       }),
     email: z
       .string()
-      .email({ message: 'Ingrese un correo electrónico válido.' })
-      .max(100, { message: 'El email no puede exceder 100 caracteres.' }),
+      .email({ message: "Ingrese un correo electrónico válido." })
+      .max(100, { message: "El email no puede exceder 100 caracteres." }),
     password: z
       .string()
-      .min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' })
-      .max(100, { message: 'La contraseña no puede exceder 100 caracteres.' }),
+      .min(6, { message: "La contraseña debe tener al menos 6 caracteres." })
+      .max(100, { message: "La contraseña no puede exceder 100 caracteres." }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path: ['confirmPassword'],
+    message: "Las contraseñas no coinciden",
+    path: ["confirmPassword"],
   })
 
 interface AdministradorFormProps {
-  onSubmit: (data: AdminFormData) => Promise<void>
+  onSubmit: (data: AdministradorFormData) => Promise<void>
   isLoading?: boolean
 }
 
@@ -66,27 +59,29 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: '',
-      first_name: '',
-      last_name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      username: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     },
   })
 
   const handleSubmit = useCallback(
-    async (values: AdminFormData) => {
-      console.log('📝 AdministradorForm: Submitting form data')
-      try {
-        await onSubmit(values)
-        console.log('✅ AdministradorForm: Form submitted successfully')
-        form.reset()
-      } catch (error) {
-        console.error('❌ AdministradorForm: Error submitting form:', error)
+    async (values: z.infer<typeof formSchema>) => {
+      const formData: AdministradorFormData = {
+        username: values.username,
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+        first_name: values.first_name,
+        last_name: values.last_name,
       }
+
+      await onSubmit(formData)
     },
-    [onSubmit, form],
+    [onSubmit],
   )
 
   return (
@@ -99,7 +94,7 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
             <FormItem>
               <FormLabel>Nombre de usuario</FormLabel>
               <FormControl>
-                <Input placeholder="admin123" {...field} disabled={isLoading} />
+                <Input placeholder="admin_usuario" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -142,12 +137,7 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
             <FormItem>
               <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="carlos.mendoza@example.com"
-                  type="email"
-                  {...field}
-                  disabled={isLoading}
-                />
+                <Input placeholder="carlos.mendoza@example.com" type="email" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -163,8 +153,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
               <div className="relative">
                 <FormControl>
                   <Input
-                    placeholder="••••••••"
-                    type={showPassword ? 'text' : 'password'}
+                    placeholder="********"
+                    type={showPassword ? "text" : "password"}
                     {...field}
                     disabled={isLoading}
                   />
@@ -177,7 +167,7 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
                 >
-                  {showPassword ? 'Ocultar' : 'Mostrar'}
+                  {showPassword ? "Ocultar" : "Mostrar"}
                 </Button>
               </div>
               <FormMessage />
@@ -194,8 +184,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
               <div className="relative">
                 <FormControl>
                   <Input
-                    placeholder="••••••••"
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="********"
+                    type={showConfirmPassword ? "text" : "password"}
                     {...field}
                     disabled={isLoading}
                   />
@@ -208,7 +198,7 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isLoading}
                 >
-                  {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                  {showConfirmPassword ? "Ocultar" : "Mostrar"}
                 </Button>
               </div>
               <FormMessage />
@@ -216,12 +206,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
           )}
         />
 
-        <Button
-          type="submit"
-          className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-6"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Guardando...' : 'Guardar Administrador'}
+        <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4" disabled={isLoading}>
+          {isLoading ? "Guardando..." : "Guardar Administrador"}
         </Button>
       </form>
     </Form>
