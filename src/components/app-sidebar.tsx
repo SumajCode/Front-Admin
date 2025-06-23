@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import usuarioData from '@/data/usuario.json'
+import authService from '@/services/authService'
 
 const navMainData = [
   {
@@ -70,7 +70,21 @@ const navSecondaryData = [
 ]
 
 function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = usuarioData.usuario
+  // Obtener datos del usuario actual desde el servicio de autenticación
+  const currentUser = authService.getCurrentUser()
+
+  // Mapear datos del usuario para el componente NavUser
+  const user = currentUser
+    ? {
+        name: `${currentUser.first_name} ${currentUser.last_name}`,
+        email: currentUser.email,
+        avatar: '/placeholder.svg?height=32&width=32',
+      }
+    : {
+        name: 'Usuario',
+        email: 'usuario@admin.com',
+        avatar: '/placeholder.svg?height=32&width=32',
+      }
 
   return (
     <Sidebar variant="inset" {...props}>

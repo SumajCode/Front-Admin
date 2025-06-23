@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { PlusCircle, Pencil, Trash2 } from 'lucide-react'
+import { PlusCircle, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -29,157 +29,272 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Switch } from '@/components/ui/switch'
-import { DocenteForm } from '@/components/docentes/docente-form'
 import { useToast } from '@/hooks/use-toast'
-import type { Docente } from '@/types/docente'
-import { useCallback } from 'react'
-import docentesData from '@/data/docentes.json'
+import { AdministradorForm } from '@/components/administradores/administrador-form'
+import adminService from '@/services/adminService'
+import { mapAdminToUI, mapFormToAPI, type AdminFormData } from '@/types/admin'
 
-export default function DocentesPage() {
-  const [teachers, setTeachers] = useState<Docente[]>([])
+interface UIAdmin {
+  id: string
+  name: string
+  email: string
+  username: string
+  status: 'Activo' | 'Inactivo'
+  created_at: string
+  updated_at?: string
+}
+
+export default function GestionAdministradoresPage() {
+  const [admins, setAdmins] = useState<UIAdmin[]>([])
   const [isOpen, setIsOpen] = useState(false)
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [currentDocente, setCurrentDocente] = useState<Docente | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
+  const [isSecurityDialogOpen, setIsSecurityDialogOpen] = useState(false)
+  const [currentAdmin, setCurrentAdmin] = useState<UIAdmin | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
-  // Cargar datos al montar el componente
+  // Cargar administradores al montar el componente
   useEffect(() => {
-    setTeachers(docentesData.docentes as Docente[])
+    loadAdmins()
   }, [])
 
-  const handleSuccess = useCallback(
-    (success: boolean) => {
-      setIsOpen(false)
+  const loadAdmins = async () => {
+    console.log('📋 GestionAdmins: Loading admins...')
+    setIsLoading(true)
 
+    try {
+      const adminData = await adminService.getAllAdmins()
+      const uiAdmins = adminData.map(mapAdminToUI)
+
+      console.log('✅ GestionAdmins: Admins loaded:', uiAdmins.length)
+      setAdmins(uiAdmins)
+    } catch (error) {
+      console.error('❌ GestionAdmins: Error loading admins:', error)
       toast({
-        title: isEditMode ? 'Docente actualizado' : 'Docente registrado',
-        description: isEditMode
-          ? 'El docente ha sido actualizado correctamente.'
-          : 'El docente ha sido registrado correctamente.',
-        variant: success ? 'success' : 'destructive',
-      })
-    },
-    [isEditMode, toast],
-  )
-
-  const handleNewDocente = useCallback(() => {
-    setIsEditMode(false)
-    setCurrentDocente(null)
-    setIsOpen(true)
-  }, [])
-
-  const handleEditDocente = useCallback((docente: Docente) => {
-    setIsEditMode(true)
-    setCurrentDocente(docente)
-    setIsOpen(true)
-  }, [])
-
-  const handleDeleteClick = useCallback((docente: Docente) => {
-    setCurrentDocente(docente)
-    setIsDeleteDialogOpen(true)
-  }, [])
-
-  const handleDeleteConfirm = useCallback(() => {
-    setIsDeleteDialogOpen(false)
-
-    if (simulateDeleteSuccess && currentDocente) {
-      setTeachers((prevTeachers) =>
-        prevTeachers.filter((teacher) => teacher.id !== currentDocente.id),
-      )
-
-      toast({
-        title: 'Docente eliminado',
-        description: 'El docente ha sido eliminado correctamente.',
-        variant: 'success',
-      })
-    } else {
-      toast({
-        title: 'Error al eliminar',
-        description: 'No se pudo eliminar el docente. Intente nuevamente.',
+        title: 'Error al cargar administradores',
+        description: error instanceof Error ? error.message : 'Error desconocido',
         variant: 'destructive',
       })
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    setCurrentDocente(null)
-  }, [currentDocente, simulateDeleteSuccess, toast])
+  // Contar administradores activos
+  const activeAdminsCount = admins.filter((admin) => admin.status === 'Activo').length
+
+  const handleSuccess = useCallback(
+    async (formData: AdminFormData) => {
+      console.log('📝 GestionAdmins: Creating new admin...')
+      setIsSubmitting(true)
+
+      try {
+        const apiData = mapFormToAPI(formData)
+        const newAdmin = await adminService.createAdmin(apiData)
+        const uiAdmin = mapAdminToUI(newAdmin)
+
+        console.log('✅ GestionAdmins: Admin created successfully')
+        setAdmins((prevAdmins) => [uiAdmin, ...prevAdmins])
+        setIsOpen(false)
+
+        toast({
+          title: 'Administrador creado',
+          description: 'El administrador ha sido registrado correctamente.',
+          variant: 'success',
+        })
+      } catch (error) {
+        console.error('❌ GestionAdmins: Error creating admin:', error)
+        toast({
+          title: 'Error al crear administrador',
+          description: error instanceof Error ? error.message : 'Error desconocido',
+          variant: 'destructive',
+        })
+      } finally {
+        setIsSubmitting(false)
+      }
+    },
+    [toast],
+  )
+
+  const handleNewAdmin = useCallback(() => {
+    setIsOpen(true)
+  }, [])
+
+  const handleToggleStatus = useCallback(
+    async (admin: UIAdmin) => {
+      console.log('🔄 GestionAdmins: Toggling admin status:', admin.id)
+
+      // Verificar si hay suficientes administradores activos antes de desactivar
+      if (admin.status === 'Activo' && activeAdminsCount <= 1) {
+        setCurrentAdmin(admin)
+        setIsSecurityDialogOpen(true)
+        return
+      }
+
+      try {
+        const newStatus = admin.status === 'Activo' ? false : true
+        await adminService.toggleAdminStatus(admin.id, newStatus)
+
+        console.log('✅ GestionAdmins: Admin status toggled successfully')
+        setAdmins((prevAdmins) =>
+          prevAdmins.map((a) =>
+            a.id === admin.id ? { ...a, status: newStatus ? 'Activo' : 'Inactivo' } : a,
+          ),
+        )
+
+        toast({
+          title: `Administrador ${newStatus ? 'activado' : 'desactivado'}`,
+          description: `El administrador ha sido ${newStatus ? 'activado' : 'desactivado'} correctamente.`,
+          variant: 'success',
+        })
+      } catch (error) {
+        console.error('❌ GestionAdmins: Error toggling status:', error)
+        toast({
+          title: 'Error al cambiar estado',
+          description: error instanceof Error ? error.message : 'Error desconocido',
+          variant: 'destructive',
+        })
+      }
+    },
+    [activeAdminsCount, toast],
+  )
+
+  const handleDeleteClick = useCallback(
+    (admin: UIAdmin) => {
+      setCurrentAdmin(admin)
+
+      // Verificar si hay suficientes administradores activos
+      if (activeAdminsCount <= 1 && admin.status === 'Activo') {
+        setIsSecurityDialogOpen(true)
+      } else {
+        setIsDeleteDialogOpen(true)
+      }
+    },
+    [activeAdminsCount],
+  )
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!currentAdmin) return
+
+    console.log('🗑️ GestionAdmins: Deleting admin:', currentAdmin.id)
+    setIsDeleteDialogOpen(false)
+
+    try {
+      await adminService.deleteAdmin(currentAdmin.id)
+
+      console.log('✅ GestionAdmins: Admin deleted successfully')
+      setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== currentAdmin.id))
+
+      toast({
+        title: 'Administrador eliminado',
+        description: 'El administrador ha sido eliminado correctamente.',
+        variant: 'success',
+      })
+    } catch (error) {
+      console.error('❌ GestionAdmins: Error deleting admin:', error)
+      toast({
+        title: 'Error al eliminar',
+        description: error instanceof Error ? error.message : 'Error desconocido',
+        variant: 'destructive',
+      })
+    } finally {
+      setCurrentAdmin(null)
+    }
+  }, [currentAdmin, toast])
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00bf7d]"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Gestión de Docentes</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Gestión de Administradores</h1>
+          <p className="text-muted-foreground mt-1">
+            {admins.length} administradores registrados ({activeAdminsCount} activos)
+          </p>
+        </div>
         <Button
           className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white"
-          onClick={handleNewDocente}
+          onClick={handleNewAdmin}
         >
           <PlusCircle className="h-4 w-4" />
-          Nuevo Docente
+          Nuevo Administrador
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Listado de Docentes</CardTitle>
+          <CardTitle>Listado de Administradores</CardTitle>
           <CardDescription>
-            Administre los docentes de la institución. Puede crear, editar o dar de baja docentes.
+            Administre los usuarios con acceso al sistema. Puede crear, activar/desactivar o
+            eliminar administradores.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
+                <TableHead>Usuario</TableHead>
                 <TableHead>Nombre</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Facultades</TableHead>
                 <TableHead>Estado</TableHead>
+                <TableHead>Fecha de Creación</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teachers.map((teacher) => (
-                <TableRow key={teacher.id}>
-                  <TableCell>{teacher.id}</TableCell>
-                  <TableCell className="font-medium">{teacher.name}</TableCell>
-                  <TableCell>{teacher.email}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col gap-1">
-                      {teacher.facultades.map((facultad, index) => (
-                        <span key={index} className="text-xs">
-                          {facultad}
-                        </span>
-                      ))}
-                    </div>
-                  </TableCell>
+              {admins.map((admin) => (
+                <TableRow key={admin.id}>
+                  <TableCell className="font-medium">{admin.username}</TableCell>
+                  <TableCell>{admin.name}</TableCell>
+                  <TableCell>{admin.email}</TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        teacher.status === 'Activo'
+                        admin.status === 'Activo'
                           ? 'bg-[#00bf7d]/20 text-[#00bf7d]'
                           : 'bg-red-100 text-red-800'
                       }`}
                     >
-                      {teacher.status}
+                      {admin.status}
                     </span>
                   </TableCell>
+                  <TableCell>{new Date(admin.created_at).toLocaleDateString('es-ES')}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-[#0073e6] hover:bg-[#0073e6]/10"
-                        onClick={() => handleEditDocente(teacher)}
+                        className={`${
+                          admin.status === 'Activo'
+                            ? 'text-orange-500 hover:text-orange-700 border-orange-500 hover:bg-orange-50'
+                            : 'text-green-500 hover:text-green-700 border-green-500 hover:bg-green-50'
+                        }`}
+                        onClick={() => handleToggleStatus(admin)}
                       >
-                        <Pencil className="h-4 w-4" />
-                        <span className="sr-only">Editar</span>
+                        {admin.status === 'Activo' ? (
+                          <ToggleRight className="h-4 w-4" />
+                        ) : (
+                          <ToggleLeft className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">
+                          {admin.status === 'Activo' ? 'Desactivar' : 'Activar'}
+                        </span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         className="text-red-500 hover:text-red-700 border-red-500 hover:bg-red-50"
-                        onClick={() => handleDeleteClick(teacher)}
+                        onClick={() => handleDeleteClick(admin)}
                       >
                         <Trash2 className="h-4 w-4" />
                         <span className="sr-only">Eliminar</span>
@@ -196,48 +311,27 @@ export default function DocentesPage() {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
           <SheetHeader>
-            <SheetTitle>{isEditMode ? 'Editar Docente' : 'Nuevo Docente'}</SheetTitle>
+            <SheetTitle>Nuevo Administrador</SheetTitle>
             <SheetDescription>
-              {isEditMode
-                ? 'Modifique los datos del docente y guarde los cambios.'
-                : 'Complete el formulario para registrar un nuevo docente.'}
+              Complete el formulario para registrar un nuevo administrador.
             </SheetDescription>
           </SheetHeader>
           <div className="py-6">
-            <DocenteForm
-              onSubmit={handleSuccess}
-              docente={currentDocente ?? undefined}
-              isEditMode={isEditMode}
-            />
+            <AdministradorForm onSubmit={handleSuccess} isLoading={isSubmitting} />
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Diálogo de confirmación para eliminar */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Está seguro de eliminar este docente?</AlertDialogTitle>
+            <AlertDialogTitle>¿Está seguro de eliminar este administrador?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El docente será eliminado permanentemente del
+              Esta acción no se puede deshacer. El administrador será eliminado permanentemente del
               sistema.
             </AlertDialogDescription>
           </AlertDialogHeader>
-
-          <div className="flex items-center space-x-2 py-4">
-            <Switch
-              id="simulate-delete-success"
-              checked={simulateDeleteSuccess}
-              onCheckedChange={setSimulateDeleteSuccess}
-            />
-            <label
-              htmlFor="simulate-delete-success"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {simulateDeleteSuccess
-                ? 'Simular eliminación exitosa'
-                : 'Simular error de eliminación'}
-            </label>
-          </div>
-
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
@@ -246,6 +340,22 @@ export default function DocentesPage() {
             >
               Eliminar
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Diálogo de seguridad para evitar eliminar cuando hay pocos administradores */}
+      <AlertDialog open={isSecurityDialogOpen} onOpenChange={setIsSecurityDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Operación no permitida</AlertDialogTitle>
+            <AlertDialogDescription>
+              Por razones de seguridad, no es posible realizar esta acción. El sistema debe mantener
+              al menos 1 administrador activo en todo momento.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Entendido</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
