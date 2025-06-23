@@ -1,8 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useEffect, useRef } from 'react'
-import '@/components/auth/LogoutButton'
+import { LogOut } from 'lucide-react'
 
 interface LogoutButtonProps {
   text?: string
@@ -17,7 +16,7 @@ interface LogoutButtonProps {
 
 export function LogoutButtonReact({
   text = 'Cerrar Sesión',
-  className = 'logout-btn',
+  className = '',
   showIcon = true,
   confirm = false,
   style,
@@ -25,49 +24,30 @@ export function LogoutButtonReact({
   onLogoutComplete,
   onLogoutError,
 }: LogoutButtonProps) {
-  const elementRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const element = elementRef.current
-    if (!element) return
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleBeforeLogout = (_event: Event) => {
+  const handleClick = async () => {
+    try {
       onBeforeLogout?.()
-    }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleLogoutComplete = (_event: Event) => {
+      if (confirm && !window.confirm('¿Estás seguro de que quieres cerrar sesión?')) return
+
+      const { logoutAndRedirect } = await import('@/utils/authUtils')
+      await logoutAndRedirect()
+
       onLogoutComplete?.()
+    } catch (error) {
+      console.error('❌ Error en logout:', error)
+      onLogoutError?.(error instanceof Error ? error.message : String(error))
     }
+  }
 
-    const handleLogoutError = (event: Event) => {
-      const customEvent = event as CustomEvent<{ error: string; timestamp: string }>
-      onLogoutError?.(customEvent.detail?.error || 'Error desconocido')
-    }
-
-    element.addEventListener('beforeLogout', handleBeforeLogout)
-    element.addEventListener('logoutComplete', handleLogoutComplete)
-    element.addEventListener('logoutError', handleLogoutError)
-
-    return () => {
-      element.removeEventListener('beforeLogout', handleBeforeLogout)
-      element.removeEventListener('logoutComplete', handleLogoutComplete)
-      element.removeEventListener('logoutError', handleLogoutError)
-    }
-  }, [onBeforeLogout, onLogoutComplete, onLogoutError])
-
-  // Crear el elemento usando React.createElement para evitar problemas de tipos
-  return React.createElement('logout-button', {
-    ref: elementRef,
-    text,
-    class: className,
-    'show-icon': showIcon.toString(),
-    confirm: confirm.toString(),
-    style: style
-      ? Object.entries(style)
-          .map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value}`)
-          .join('; ')
-      : undefined,
-  })
+  return (
+    <button
+      onClick={handleClick}
+      className={`flex items-center gap-2 rounded px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition ${className}`}
+      style={style}
+    >
+      {showIcon && <LogOut className="size-4" />}
+      {text}
+    </button>
+  )
 }
