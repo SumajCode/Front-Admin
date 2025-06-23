@@ -55,7 +55,7 @@ class AdminService {
     console.log('👥 AdminService: Getting all admins...')
 
     try {
-      const response = await apiService.get('/admins')
+      const response = await apiService.get('/admins/')
       const data: AdminResponse = await response.json()
 
       console.log('👥 AdminService: Response received:', data.success)
@@ -106,7 +106,7 @@ class AdminService {
     console.log('👥 AdminService: Admin data:', { ...adminData, password: '[HIDDEN]' })
 
     try {
-      const response = await apiService.post('/admins', adminData)
+      const response = await apiService.post('/admins/', adminData)
       const data: AdminResponse = await response.json()
 
       console.log('👥 AdminService: Create response received:', data.success)
