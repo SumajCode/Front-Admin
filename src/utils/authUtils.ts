@@ -6,7 +6,7 @@
 
 // Configuración de URLs y endpoints
 const CONFIG = {
-  LOGIN_URL: 'https://front-loginv1-kevinurena82-6772s-projects.vercel.app',
+  LOGIN_URL: 'https://front-loginv1.vercel.app',
   ADMIN_URL: 'https://front-adminv1.vercel.app',
   API_BASE_URL: 'https://microservice-admin.onrender.com/api',
 
