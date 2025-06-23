@@ -480,7 +480,7 @@ export async function logoutAndRedirect(): Promise<void> {
 
   // Redirigir al login
   console.log('🔄 AuthUtils: Redirecting to login after logout...')
-  window.location.href = CONFIG.LOGIN_URL
+  window.location.href = `${CONFIG.LOGIN_URL}?logged_out=true`
 }
 
 /**
