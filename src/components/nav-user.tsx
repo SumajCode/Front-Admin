@@ -35,7 +35,7 @@ function NavUserComponent() {
           name:
             `${parsedUser.first_name || ""} ${parsedUser.last_name || ""}`.trim() || parsedUser.username || "Usuario",
           email: parsedUser.email || "usuario@example.com",
-          avatar: parsedUser.avatar || "/placeholder.svg?height=32&width=32",
+          avatar: "/placeholder.svg?height=32&width=32",
         })
       } catch (error) {
         console.error("Error parsing user data:", error)
