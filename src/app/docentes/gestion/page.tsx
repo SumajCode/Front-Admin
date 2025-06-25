@@ -33,8 +33,12 @@ import { Switch } from '@/components/ui/switch'
 import { DocenteForm } from '@/components/docentes/docente-form'
 import { useToast } from '@/hooks/use-toast'
 import type { Docente } from '@/types/docente'
+import type { DocenteFormData } from '@/types/docente' // Asegúrate de que este path sea correcto
 import { useCallback } from 'react'
-import docentesData from '@/data/docentes.json'
+
+// Asegúrate de que la ruta sea correcta según tu estructura de proyecto
+import { docenteService } from '@/services/docenteService'
+
 
 export default function DocentesPage() {
   const [teachers, setTeachers] = useState<Docente[]>([])
@@ -75,18 +79,45 @@ export default function DocentesPage() {
   }, [])
 
   const handleSuccess = useCallback(
-    (success: boolean) => {
-      setIsOpen(false)
+    async (formData: DocenteFormData) => {
+      try {
+        console.log("📦 Datos del formulario recibidos:", formData)
 
-      toast({
-        title: isEditMode ? 'Docente actualizado' : 'Docente registrado',
-        description: isEditMode
-          ? 'El docente ha sido actualizado correctamente.'
-          : 'El docente ha sido registrado correctamente.',
-        variant: success ? 'success' : 'destructive',
-      })
+        // Aquí puedes llamar a tu servicio
+        if (isEditMode && currentDocente) {
+          // Actualizar
+          await docenteService.updateDocente(mapFormToAPIUpdate(formData, currentDocente.id))
+          toast({
+            title: "Docente actualizado",
+            description: "El docente ha sido actualizado correctamente.",
+            variant: "success",
+          })
+        } else {
+          // Crear nuevo
+          await docenteService.createDocente(mapFormToAPICreate(formData))
+          toast({
+            title: "Docente registrado",
+            description: "El docente ha sido registrado correctamente.",
+            variant: "success",
+          })
+        }
+
+        setIsOpen(false)
+        setCurrentDocente(null)
+
+        // Recargar docentes si lo deseas
+        // await fetchTeachers() <-- si lo mueves al scope
+      } catch (error) {
+        console.error("❌ Error en operación de docente:", error)
+        toast({
+          title: "Error en operación",
+          description:
+            error instanceof Error ? error.message : "Ocurrió un error inesperado.",
+          variant: "destructive",
+        })
+      }
     },
-    [isEditMode, toast],
+    [isEditMode, currentDocente, toast]
   )
 
   const handleNewDocente = useCallback(() => {
@@ -276,3 +307,25 @@ export default function DocentesPage() {
     </div>
   )
 }
+function mapFormToAPIUpdate(formData: DocenteFormData, id: number): import("@/services/docenteService").DocenteUpdateRequest {
+  // Implementa el mapeo de los datos del formulario para actualizar un docente
+  return {
+    id,
+    ...formData,
+  }
+}
+
+function mapFormToAPICreate(formData: DocenteFormData): import("@/services/docenteService").DocenteCreateRequest {
+  // Mapea los campos del formulario a los campos requeridos por la API
+  return {
+    nombre: formData.nombre,
+    apellidos: formData.apellido, // o formData.apellidos si el formulario lo tiene así
+    celular: formData.telefono,
+    correo: formData.email,
+    nacimiento: formData.fechaNacimiento,
+    usuario: formData.usuario,
+    password: formData.password,
+    // facultades: formData.facultades, // Removido porque no existe en DocenteCreateRequest
+  }
+}
+
