@@ -1,115 +1,93 @@
-"use client"
+'use client'
 
-import { useState, useCallback } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import type { AdministradorFormData } from "@/types/administrador"
+import { useState, useCallback } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import type { AdministradorFormData } from '@/types/administrador'
 
 const formSchema = z
   .object({
-    username: z
+    nombre: z
       .string()
-      .min(3, { message: "El nombre de usuario debe tener al menos 3 caracteres." })
-      .max(50, { message: "El nombre de usuario no puede exceder 50 caracteres." })
-      .regex(/^[a-zA-Z0-9_]+$/, {
-        message: "El nombre de usuario solo puede contener letras, números y guiones bajos.",
-      }),
-    first_name: z
-      .string()
-      .min(2, { message: "El nombre debe tener al menos 2 caracteres." })
-      .max(50, { message: "El nombre no puede exceder 50 caracteres." })
+      .min(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
       .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-        message: "El nombre solo debe contener letras y espacios.",
+        message: 'El nombre solo debe contener letras y espacios.',
       }),
-    last_name: z
+    apellido: z
       .string()
-      .min(2, { message: "El apellido debe tener al menos 2 caracteres." })
-      .max(50, { message: "El apellido no puede exceder 50 caracteres." })
+      .min(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
       .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-        message: "El apellido solo debe contener letras y espacios.",
+        message: 'El apellido solo debe contener letras y espacios.',
       }),
-    email: z
-      .string()
-      .email({ message: "Ingrese un correo electrónico válido." })
-      .max(100, { message: "El email no puede exceder 100 caracteres." }),
+    email: z.string().email({
+      message: 'Ingrese un correo electrónico válido.',
+    }),
     password: z
       .string()
-      .min(6, { message: "La contraseña debe tener al menos 6 caracteres." })
-      .max(100, { message: "La contraseña no puede exceder 100 caracteres." }),
+      .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
+      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, {
+        message:
+          'La contraseña debe contener al menos una letra mayúscula, una minúscula, un número y un carácter especial.',
+      }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirmPassword"],
+    message: 'Las contraseñas no coinciden',
+    path: ['confirmPassword'],
   })
 
 interface AdministradorFormProps {
-  onSubmit: (data: AdministradorFormData) => Promise<void>
-  isLoading?: boolean
+  onSubmit: (success: boolean) => void
 }
 
-export function AdministradorForm({ onSubmit, isLoading = false }: AdministradorFormProps) {
+export function AdministradorForm({ onSubmit }: AdministradorFormProps) {
+  const [simulateSuccess, setSimulateSuccess] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      first_name: "",
-      last_name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      nombre: '',
+      apellido: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   })
 
   const handleSubmit = useCallback(
-    async (values: z.infer<typeof formSchema>) => {
-      const formData: AdministradorFormData = {
-        username: values.username,
-        email: values.email,
-        password: values.password,
-        confirmPassword: values.confirmPassword,
-        first_name: values.first_name,
-        last_name: values.last_name,
-      }
-
-      await onSubmit(formData)
+    (values: AdministradorFormData) => {
+      console.log(values)
+      setTimeout(() => onSubmit(simulateSuccess), 500)
     },
-    [onSubmit],
+    [onSubmit, simulateSuccess],
   )
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre de usuario</FormLabel>
-              <FormControl>
-                <Input placeholder="admin_usuario" {...field} disabled={isLoading} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="first_name"
+            name="nombre"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Nombre</FormLabel>
                 <FormControl>
-                  <Input placeholder="Carlos" {...field} disabled={isLoading} />
+                  <Input placeholder="Carlos" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -117,12 +95,12 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
           />
           <FormField
             control={form.control}
-            name="last_name"
+            name="apellido"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Apellido</FormLabel>
                 <FormControl>
-                  <Input placeholder="Mendoza" {...field} disabled={isLoading} />
+                  <Input placeholder="Mendoza" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -137,7 +115,7 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
             <FormItem>
               <FormLabel>Correo electrónico</FormLabel>
               <FormControl>
-                <Input placeholder="carlos.mendoza@example.com" type="email" {...field} disabled={isLoading} />
+                <Input placeholder="carlos.mendoza@example.com" type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -154,9 +132,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
                 <FormControl>
                   <Input
                     placeholder="********"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     {...field}
-                    disabled={isLoading}
                   />
                 </FormControl>
                 <Button
@@ -165,9 +142,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
                   size="sm"
                   className="absolute right-0 top-0 h-9 px-3"
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
                 >
-                  {showPassword ? "Ocultar" : "Mostrar"}
+                  {showPassword ? 'Ocultar' : 'Mostrar'}
                 </Button>
               </div>
               <FormMessage />
@@ -185,9 +161,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
                 <FormControl>
                   <Input
                     placeholder="********"
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showConfirmPassword ? 'text' : 'password'}
                     {...field}
-                    disabled={isLoading}
                   />
                 </FormControl>
                 <Button
@@ -196,9 +171,8 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
                   size="sm"
                   className="absolute right-0 top-0 h-9 px-3"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isLoading}
                 >
-                  {showConfirmPassword ? "Ocultar" : "Mostrar"}
+                  {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
                 </Button>
               </div>
               <FormMessage />
@@ -206,8 +180,22 @@ export function AdministradorForm({ onSubmit, isLoading = false }: Administrador
           )}
         />
 
-        <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4" disabled={isLoading}>
-          {isLoading ? "Guardando..." : "Guardar Administrador"}
+        <div className="flex items-center space-x-2 py-4">
+          <Switch
+            id="simulate-success"
+            checked={simulateSuccess}
+            onCheckedChange={setSimulateSuccess}
+          />
+          <label
+            htmlFor="simulate-success"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {simulateSuccess ? 'Simular operación exitosa' : 'Simular error de operación'}
+          </label>
+        </div>
+
+        <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4">
+          Guardar Administrador
         </Button>
       </form>
     </Form>
