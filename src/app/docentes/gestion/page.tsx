@@ -53,7 +53,7 @@ export default function DocentesPage() {
   useEffect(() => {
     async function fetchTeachers() {
       try {
-        const res = await fetch('https://tuservicio.com/api/admins') // Usa tu URL real
+        const res = await fetch('https://microservice-docente.onrender.com/apidocentes/v1/docente') // Usa tu URL real
         const json = await res.json()
 
         if (json.success && Array.isArray(json.data.admins)) {
