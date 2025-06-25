@@ -16,7 +16,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
 import { AdministradorForm } from "@/components/administradores/administrador-form"
 import type { Administrador, AdministradorFormData, AdministradorEditFormData } from "@/types/administrador"
@@ -30,27 +29,17 @@ export default function GestionAdministradoresPage() {
   const [currentAdmin, setCurrentAdmin] = useState<Administrador | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isSecurityDialogOpen, setIsSecurityDialogOpen] = useState(false)
-  const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const { toast } = useToast()
 
-  // Cargar administradores desde la API
   const loadAdmins = useCallback(async () => {
-    console.log("📋 GestionAdmins: Loading admins from API...")
     setLoading(true)
-
     try {
       const apiAdmins = await adminService.getAllAdmins()
-      console.log("📋 GestionAdmins: Received admins:", apiAdmins.length)
-
-      // Importar la función de mapeo dinámicamente
       const { mapAdminFromAPI } = await import("@/types/administrador")
       const mappedAdmins = apiAdmins.map(mapAdminFromAPI)
-
-      console.log("📋 GestionAdmins: Mapped admins:", mappedAdmins)
       setAdmins(mappedAdmins)
     } catch (error) {
-      console.error("❌ GestionAdmins: Error loading admins:", error)
       toast({
         title: "Error al cargar administradores",
         description: error instanceof Error ? error.message : "Error desconocido",
@@ -61,12 +50,10 @@ export default function GestionAdministradoresPage() {
     }
   }, [toast])
 
-  // Cargar datos al montar el componente
   useEffect(() => {
     loadAdmins()
   }, [loadAdmins])
 
-  // Contar administradores activos
   const activeAdminsCount = admins.filter((admin) => admin.status === "Activo").length
 
   const handleSuccess = useCallback(
@@ -90,34 +77,22 @@ export default function GestionAdministradoresPage() {
 
       try {
         if (isEditMode && currentAdmin) {
-          console.log("📝 GestionAdmins: Updating admin:", currentAdmin.id)
-
-          // Importar función de mapeo dinámicamente
           const { mapEditFormDataToAPI, mapAdminFromAPI } = await import("@/types/administrador")
           const apiData = mapEditFormDataToAPI(formData as AdministradorEditFormData)
-
           const updatedAdmin = await adminService.updateAdmin(currentAdmin.id, apiData)
           const mappedAdmin = mapAdminFromAPI(updatedAdmin)
-
-          setAdmins((prevAdmins) => prevAdmins.map((admin) => (admin.id === currentAdmin.id ? mappedAdmin : admin)))
-
+          setAdmins((prev) => prev.map((a) => (a.id === currentAdmin.id ? mappedAdmin : a)))
           toast({
             title: "Administrador actualizado",
             description: "El administrador ha sido actualizado correctamente.",
             variant: "success",
           })
         } else {
-          console.log("➕ GestionAdmins: Creating new admin")
-
-          // Importar función de mapeo dinámicamente
           const { mapFormDataToAPI, mapAdminFromAPI } = await import("@/types/administrador")
           const apiData = mapFormDataToAPI(formData as AdministradorFormData)
-
           const newAdmin = await adminService.createAdmin(apiData)
           const mappedAdmin = mapAdminFromAPI(newAdmin)
-
-          setAdmins((prevAdmins) => [mappedAdmin, ...prevAdmins])
-
+          setAdmins((prev) => [mappedAdmin, ...prev])
           toast({
             title: "Administrador creado",
             description: "El administrador ha sido creado correctamente.",
@@ -125,7 +100,6 @@ export default function GestionAdministradoresPage() {
           })
         }
       } catch (error) {
-        console.error("❌ GestionAdmins: Error in form submission:", error)
         toast({
           title: isEditMode ? "Error al actualizar" : "Error al crear",
           description: error instanceof Error ? error.message : "Error desconocido",
@@ -156,8 +130,6 @@ export default function GestionAdministradoresPage() {
   const handleDeleteClick = useCallback(
     (admin: Administrador) => {
       setCurrentAdmin(admin)
-
-      // Verificar si hay suficientes administradores activos
       if (activeAdminsCount <= 2 && admin.status === "Activo") {
         setIsSecurityDialogOpen(true)
       } else {
@@ -171,32 +143,17 @@ export default function GestionAdministradoresPage() {
     if (!currentAdmin) return
 
     setIsDeleteDialogOpen(false)
-
-    if (!simulateDeleteSuccess) {
-      toast({
-        title: "Error al eliminar",
-        description: "No se pudo eliminar el administrador. Intente nuevamente.",
-        variant: "destructive",
-      })
-      setCurrentAdmin(null)
-      return
-    }
-
     setActionLoading(`deleting-${currentAdmin.id}`)
 
     try {
-      console.log("🗑️ GestionAdmins: Deleting admin:", currentAdmin.id)
       await adminService.deleteAdmin(currentAdmin.id)
-
-      setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin.id !== currentAdmin.id))
-
+      setAdmins((prev) => prev.filter((a) => a.id !== currentAdmin.id))
       toast({
         title: "Administrador eliminado",
         description: "El administrador ha sido eliminado correctamente.",
         variant: "success",
       })
     } catch (error) {
-      console.error("❌ GestionAdmins: Error deleting admin:", error)
       toast({
         title: "Error al eliminar",
         description: error instanceof Error ? error.message : "Error desconocido",
@@ -206,13 +163,11 @@ export default function GestionAdministradoresPage() {
       setActionLoading(null)
       setCurrentAdmin(null)
     }
-  }, [currentAdmin, simulateDeleteSuccess, toast])
+  }, [currentAdmin, toast])
 
   const handleToggleStatus = useCallback(
     async (admin: Administrador) => {
       const newStatus = admin.status === "Activo" ? false : true
-
-      // Verificar si se está desactivando y quedarían pocos admins activos
       if (admin.status === "Activo" && activeAdminsCount <= 2) {
         setCurrentAdmin(admin)
         setIsSecurityDialogOpen(true)
@@ -222,21 +177,16 @@ export default function GestionAdministradoresPage() {
       setActionLoading(`toggling-${admin.id}`)
 
       try {
-        console.log("🔄 GestionAdmins: Toggling admin status:", admin.id, "to", newStatus)
-
         const { mapAdminFromAPI } = await import("@/types/administrador")
         const updatedAdmin = await adminService.toggleAdminStatus(admin.id, newStatus)
         const mappedAdmin = mapAdminFromAPI(updatedAdmin)
-
-        setAdmins((prevAdmins) => prevAdmins.map((a) => (a.id === admin.id ? mappedAdmin : a)))
-
+        setAdmins((prev) => prev.map((a) => (a.id === admin.id ? mappedAdmin : a)))
         toast({
           title: "Estado actualizado",
           description: `El administrador ha sido ${newStatus ? "activado" : "desactivado"} correctamente.`,
           variant: "success",
         })
       } catch (error) {
-        console.error("❌ GestionAdmins: Error toggling status:", error)
         toast({
           title: "Error al cambiar estado",
           description: error instanceof Error ? error.message : "Error desconocido",
@@ -322,7 +272,6 @@ export default function GestionAdministradoresPage() {
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
                       </Button>
-
                       <Button
                         variant="outline"
                         size="sm"
@@ -343,7 +292,6 @@ export default function GestionAdministradoresPage() {
                         )}
                         <span className="sr-only">{admin.status === "Activo" ? "Desactivar" : "Activar"}</span>
                       </Button>
-
                       <Button
                         variant="outline"
                         size="sm"
@@ -364,7 +312,6 @@ export default function GestionAdministradoresPage() {
               ))}
             </TableBody>
           </Table>
-
           {admins.length === 0 && (
             <div className="text-center py-8">
               <p className="text-muted-foreground">No hay administradores registrados.</p>
@@ -389,7 +336,6 @@ export default function GestionAdministradoresPage() {
         </SheetContent>
       </Sheet>
 
-      {/* Diálogo de confirmación para eliminar */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -407,21 +353,6 @@ export default function GestionAdministradoresPage() {
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
-
-          <div className="flex items-center space-x-2 py-4">
-            <Switch
-              id="simulate-delete-success"
-              checked={simulateDeleteSuccess}
-              onCheckedChange={setSimulateDeleteSuccess}
-            />
-            <label
-              htmlFor="simulate-delete-success"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {simulateDeleteSuccess ? "Simular eliminación exitosa" : "Simular error de eliminación"}
-            </label>
-          </div>
-
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-500 hover:bg-red-600 text-white">
@@ -431,7 +362,6 @@ export default function GestionAdministradoresPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Diálogo de seguridad para evitar eliminar cuando hay pocos administradores */}
       <AlertDialog open={isSecurityDialogOpen} onOpenChange={setIsSecurityDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
