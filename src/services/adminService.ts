@@ -67,10 +67,11 @@ class AdminService {
       const data: AdminResponse = await response.json()
       console.log("👥 AdminService: Response data:", data)
 
-      if (data.success && Array.isArray(data.data)) {
-        console.log("✅ AdminService: Successfully retrieved", data.data.length, "admins")
-        return data.data
-      } else {
+        if (data.success && data.data && Array.isArray((data.data as any).admins)) {
+            const admins = (data.data as any).admins
+            console.log("✅ AdminService: Successfully retrieved", admins.length, "admins")
+            return admins
+        } else {
         console.error("❌ AdminService: Invalid response format:", data)
         throw new Error(data.message || "Invalid response format")
       }
