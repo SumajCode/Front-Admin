@@ -105,7 +105,7 @@ function NavUserComponent({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/*<DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
                 Account
@@ -115,7 +115,7 @@ function NavUserComponent({
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator />*/}
             <div className="p-1">
               <LogoutButtonReact
                 text="Cerrar Sesión"

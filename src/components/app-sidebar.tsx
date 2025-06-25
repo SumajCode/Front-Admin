@@ -28,10 +28,10 @@ const navMainData = [
         title: 'Gestionar Docentes',
         url: '/docentes/gestion',
       },
-      {
+      /*{
         title: 'Historial de Docentes',
         url: '/docentes/historial',
-      },
+      },*/
     ],
   },
   {
@@ -43,10 +43,10 @@ const navMainData = [
         title: 'Gestionar Administradores',
         url: '/administradores/gestion',
       },
-      {
+      /*{
         title: 'Historial de Administradores',
         url: '/administradores/historial',
-      },
+      },*/
     ],
   },
 ]
@@ -56,7 +56,7 @@ const navSecondaryData = [
     title: 'Noticias y Anuncios',
     url: '/noticias',
     icon: Newspaper,
-  },
+  },/*
   {
     title: 'Support',
     url: '#',
@@ -66,7 +66,7 @@ const navSecondaryData = [
     title: 'Feedback',
     url: '#',
     icon: Send,
-  },
+  },*/
 ]
 
 function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -78,7 +78,7 @@ function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>)
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <a href="/">
                 <div className="bg-[#2546f0] text-white flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
