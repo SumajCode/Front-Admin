@@ -1,138 +1,105 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { useState, useEffect } from "react"
-import { BadgeCheck, Bell, ChevronsUpDown } from "lucide-react"
+import * as React from 'react'
+import { BookUser, Command, LifeBuoy, Newspaper, Send, Users } from 'lucide-react'
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { NavMain } from '@/components/nav-main'
+import { NavSecondary } from '@/components/nav-secondary'
+import { NavUser } from '@/components/nav-user'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import { LogoutButtonReact } from "@/components/auth/LogoutButtonReact"
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar'
+import usuarioData from '@/data/usuario.json'
 
-function NavUserComponent() {
-  const { isMobile } = useSidebar()
-  const [user, setUser] = useState({
-    name: "Usuario",
-    email: "usuario@example.com",
-    avatar: "/placeholder.svg?height=32&width=32",
-  })
+const navMainData = [
+  {
+    title: 'Docentes',
+    url: '#',
+    icon: BookUser,
+    isActive: true,
+    items: [
+      {
+        title: 'Gestionar Docentes',
+        url: '/docentes/gestion',
+      },
+      /*{
+        title: 'Historial de Docentes',
+        url: '/docentes/historial',
+      },*/
+    ],
+  },
+  {
+    title: 'Administradores',
+    url: '#',
+    icon: Users,
+    items: [
+      {
+        title: 'Gestionar Administradores',
+        url: '/administradores/gestion',
+      },
+      /*{
+        title: 'Historial de Administradores',
+        url: '/administradores/historial',
+      },*/
+    ],
+  },
+]
 
-  useEffect(() => {
-    // Obtener datos del usuario desde localStorage
-    const userData = localStorage.getItem("user_data")
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData)
-        setUser({
-          name:
-            `${parsedUser.first_name || ""} ${parsedUser.last_name || ""}`.trim() || parsedUser.username || "Usuario",
-          email: parsedUser.email || "usuario@example.com",
-          avatar: parsedUser.avatar || "/placeholder.svg?height=32&width=32",
-        })
-      } catch (error) {
-        console.error("Error parsing user data:", error)
-      }
-    }
-  }, [])
+const navSecondaryData = [
+  {
+    title: 'Noticias y Anuncios',
+    url: '/noticias',
+    icon: Newspaper,
+  },/*
+  {
+    title: 'Support',
+    url: '#',
+    icon: LifeBuoy,
+  },
+  {
+    title: 'Feedback',
+    url: '#',
+    icon: Send,
+  },*/
+]
 
-  const handleBeforeLogout = () => {
-    console.log("Iniciando proceso de logout...")
-  }
-
-  const handleLogoutComplete = () => {
-    console.log("Logout completado exitosamente")
-  }
-
-  const handleLogoutError = (error: string) => {
-    console.error("Error durante logout:", error)
-  }
+function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = usuarioData.usuario
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white">
-              <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
-                <AvatarImage
-                  src={user.avatar && user.avatar.trim() !== "" ? user.avatar : "/placeholder.svg?height=32&width=32"}
-                  alt={user.name}
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder.svg?height=32&width=32"
-                  }}
-                />
-                <AvatarFallback className="rounded-lg bg-[#2546f0] text-white">
-                  {user.name?.charAt(0).toUpperCase() || "A"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={user.avatar && user.avatar.trim() !== "" ? user.avatar : "/placeholder.svg?height=32&width=32"}
-                    alt={user.name}
-                    onError={(e) => {
-                      e.currentTarget.src = "/placeholder.svg?height=32&width=32"
-                    }}
-                  />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+    <Sidebar variant="inset" {...props}>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="/">
+                <div className="bg-[#2546f0] text-white flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Command className="size-4" />
                 </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <div className="p-1">
-              <LogoutButtonReact
-                text="Cerrar Sesión"
-                className="logout-btn minimal"
-                showIcon={true}
-                confirm={true}
-                style={{ width: "100%", justifyContent: "flex-start" }}
-                onBeforeLogout={handleBeforeLogout}
-                onLogoutComplete={handleLogoutComplete}
-                onLogoutError={handleLogoutError}
-              />
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">SumajCode</span>
+                  <span className="truncate text-xs text-muted">Generacion de Software</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={navMainData} />
+        <NavSecondary items={navSecondaryData} className="mt-auto" />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={user} />
+      </SidebarFooter>
+    </Sidebar>
   )
 }
 
-export const NavUser = React.memo(NavUserComponent)
+export const AppSidebar = React.memo(AppSidebarComponent)
