@@ -79,7 +79,6 @@ interface AdministradorFormProps {
 }
 
 export function AdministradorForm({ onSubmit, administrador, isEditMode = false }: AdministradorFormProps) {
-  const [simulateSuccess, setSimulateSuccess] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -131,9 +130,9 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
   const handleSubmit = useCallback(
     (values: AdministradorFormData | AdministradorEditFormData) => {
       console.log("Form values:", values)
-      onSubmit(simulateSuccess, values)
+      onSubmit(true, values)
     },
-    [onSubmit, simulateSuccess],
+    [onSubmit],
   )
 
   return (
@@ -249,16 +248,6 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
             />
           </>
         )}
-
-        <div className="flex items-center space-x-2 py-4">
-          <Switch id="simulate-success" checked={simulateSuccess} onCheckedChange={setSimulateSuccess} />
-          <label
-            htmlFor="simulate-success"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {simulateSuccess ? "Simular operación exitosa" : "Simular error de operación"}
-          </label>
-        </div>
 
         <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4">
           {isEditMode ? "Actualizar Administrador" : "Guardar Administrador"}
