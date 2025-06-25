@@ -47,7 +47,31 @@ export default function DocentesPage() {
 
   // Cargar datos al montar el componente
   useEffect(() => {
-    setTeachers(docentesData.docentes as Docente[])
+    async function fetchTeachers() {
+      try {
+        const res = await fetch('https://tuservicio.com/api/admins') // Usa tu URL real
+        const json = await res.json()
+
+        if (json.success && Array.isArray(json.data.admins)) {
+          // Adaptamos los campos si es necesario
+          const mapped = json.data.admins.map((admin: any) => ({
+            id: admin._id,
+            name: admin.first_name + (admin.last_name ? ' ' + admin.last_name : ''),
+            email: admin.email,
+            facultades: [], // Ajusta si viene esta info
+            status: admin.is_active ? 'Activo' : 'Inactivo',
+          }))
+
+          setTeachers(mapped)
+        } else {
+          console.error('Formato de respuesta no válido', json)
+        }
+      } catch (error) {
+        console.error('Error al obtener docentes:', error)
+      }
+    }
+
+    fetchTeachers()
   }, [])
 
   const handleSuccess = useCallback(
