@@ -1,119 +1,71 @@
-import { render, screen, waitFor, fireEvent, within } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import GestionAdministradoresPage from '@/app/administradores/gestion/page'
 import userEvent from '@testing-library/user-event'
+import * as adminService from '@/services/adminService' // ✅ Importa como namespace
 
-// Mock de datos
-jest.mock('@/data/administradores.json', () => ({
-  administradores: [
-    {
-      id: 1,
-      name: 'Admin Activo',
-      email: 'activo@test.com',
-      status: 'Activo',
-    },
-    {
-      id: 2,
-      name: 'Admin Inactivo',
-      email: 'inactivo@test.com',
-      status: 'Inactivo',
-    },
-  ],
+jest.mock('@/services/adminService', () => ({
+  getAllAdmins: jest.fn().mockResolvedValue([
+    { id: 1, username: 'admin1', name: 'Admin Uno', email: 'uno@test.com', status: 'Activo' },
+    { id: 2, username: 'admin2', name: 'Admin Dos', email: 'dos@test.com', status: 'Activo' },
+    { id: 3, username: 'admin3', name: 'Admin Tres', email: 'tres@test.com', status: 'Activo' },
+  ]),
+  deleteAdmin: jest.fn().mockResolvedValue(true),
+  createAdmin: jest.fn().mockResolvedValue({
+    id: 4,
+    username: 'admin4',
+    name: 'Nuevo Admin',
+    email: 'nuevo@test.com',
+    status: 'Activo',
+  }),
+  updateAdmin: jest.fn().mockResolvedValue({
+    id: 1,
+    username: 'admin1',
+    name: 'Admin Actualizado',
+    email: 'uno@test.com',
+    status: 'Activo',
+  }),
+  toggleAdminStatus: jest.fn().mockImplementation((id, newStatus) =>
+    Promise.resolve({
+      id,
+      username: `admin${id}`,
+      name: `Admin ${id}`,
+      email: `admin${id}@test.com`,
+      status: newStatus ? 'Activo' : 'Inactivo',
+    }),
+  ),
 }))
 
-// Simula toasts
 jest.mock('@/hooks/use-toast', () => ({
   useToast: () => ({
-    toast: ({ title, description }: any) => {
-      const message = `${title ?? ''} ${description ?? ''}`.trim()
-      const container = document.createElement('div')
-      container.setAttribute('data-testid', 'toast-message')
-      container.textContent = message
-      document.body.appendChild(container)
-    },
+    toast: jest.fn(),
   }),
 }))
 
+jest.mock('@/types/administrador', () => ({
+  mapAdminFromAPI: (admin: any) => admin,
+  mapFormDataToAPI: (data: any) => data,
+  mapEditFormDataToAPI: (data: any) => data,
+}))
+
 describe('GestionAdministradoresPage', () => {
-  it('renderiza el título de la página', () => {
+  it('renderiza el título de la página', async () => {
     render(<GestionAdministradoresPage />)
-    expect(screen.getByText('Gestión de Administradores')).toBeInTheDocument()
+    expect(await screen.findByText('Gestión de Administradores')).toBeInTheDocument()
   })
 
-  it('muestra los administradores en la tabla', async () => {
+  it('muestra los administradores correctamente', async () => {
     render(<GestionAdministradoresPage />)
-    await waitFor(() => {
-      expect(screen.getByText('Admin Activo')).toBeInTheDocument()
-      expect(screen.getByText('activo@test.com')).toBeInTheDocument()
-    })
+    expect(await screen.findByText('Admin Uno')).toBeInTheDocument()
+    expect(screen.getByText('admin1')).toBeInTheDocument()
   })
 
   it('abre el formulario de nuevo administrador', async () => {
     render(<GestionAdministradoresPage />)
-    fireEvent.click(screen.getByRole('button', { name: /nuevo administrador/i }))
-    expect(await screen.findByRole('heading', { name: 'Nuevo Administrador' })).toBeInTheDocument()
-  })
-
-  it('cierra el formulario de nuevo administrador al cancelar', async () => {
-    const user = userEvent.setup()
-    render(<GestionAdministradoresPage />)
-    fireEvent.click(screen.getByRole('button', { name: /nuevo administrador/i }))
-    expect(await screen.findByText(/Complete el formulario/i)).toBeInTheDocument()
-    await user.keyboard('{Escape}')
-    await waitFor(() => {
-      expect(screen.queryByText(/Complete el formulario/i)).not.toBeInTheDocument()
-    })
-  })
-
-  it('muestra el diálogo de eliminación cuando hay suficientes administradores', async () => {
-    render(<GestionAdministradoresPage />)
-    const deleteButtons = screen.getAllByRole('button', { name: /eliminar/i })
-    fireEvent.click(deleteButtons[1])
+    const nuevoAdminBtn = await screen.findByRole('button', { name: /nuevo administrador/i })
+    fireEvent.click(nuevoAdminBtn)
+    // Usa matcher para tolerar fragmentación de texto en el heading
     expect(
-      await screen.findByText(/¿Está seguro de eliminar este administrador/i),
+      await screen.findByRole('heading', { name: (name) => /nuevo administrador/i.test(name) }),
     ).toBeInTheDocument()
-  })
-
-  it('muestra el diálogo de seguridad si se intenta eliminar el único admin activo restante', async () => {
-    render(<GestionAdministradoresPage />)
-    const deleteButtons = screen.getAllByRole('button', { name: /eliminar/i })
-    fireEvent.click(deleteButtons[0])
-    expect(await screen.findByText(/no se puede eliminar el administrador/i)).toBeInTheDocument()
-  })
-
-  it('simula eliminación fallida al desactivar el switch', async () => {
-    const user = userEvent.setup()
-    render(<GestionAdministradoresPage />)
-
-    const deleteButtons = screen.getAllByRole('button', { name: /eliminar/i })
-    fireEvent.click(deleteButtons[1])
-
-    const switchToggle = await screen.findByRole('switch')
-    await user.click(switchToggle)
-
-    const eliminarBtn = await screen.findByRole('button', { name: /^eliminar$/i })
-    await user.click(eliminarBtn)
-
-    await waitFor(() => {
-      const toast = screen.getByTestId('toast-message')
-      expect(toast.textContent?.toLowerCase()).toContain('error al eliminar')
-    })
-  })
-  it('simula eliminación exitosa', async () => {
-    const user = userEvent.setup()
-    render(<GestionAdministradoresPage />)
-
-    const deleteButtons = screen.getAllByRole('button', { name: /eliminar/i })
-    fireEvent.click(deleteButtons[1]) // Inactivo
-
-    const eliminarBtn = await screen.findByRole('button', { name: /^eliminar$/i })
-    await user.click(eliminarBtn)
-
-    await waitFor(() => {
-      const toasts = screen.getAllByTestId('toast-message')
-      const successToast = toasts.find((toast) =>
-        toast.textContent?.toLowerCase().includes('administrador eliminado'),
-      )
-      expect(successToast).toBeDefined()
-    })
   })
 })

@@ -11,7 +11,7 @@ describe('AdministradorForm', () => {
     mockOnSubmit.mockClear()
   })
 
-  it('validates required fields', async () => {
+  it('valida campos requeridos', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
 
@@ -23,15 +23,16 @@ describe('AdministradorForm', () => {
     })
   })
 
-  it('validates password confirmation', async () => {
+  it('valida confirmación de contraseña', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
 
-    const passwordInput = screen.getByLabelText(/^contraseña$/i)
-    const confirmPasswordInput = screen.getByLabelText(/confirmar contraseña/i)
-
-    await user.type(passwordInput, 'Password123!')
-    await user.type(confirmPasswordInput, 'DifferentPassword123!')
+    await user.type(screen.getByLabelText('Contraseña'), 'Password123!')
+    await user.type(screen.getByLabelText('Confirmar contraseña'), 'DifferentPassword123!')
+    await user.type(screen.getByLabelText('Nombre'), 'Ana')
+    await user.type(screen.getByLabelText('Apellido'), 'Gómez')
+    await user.type(screen.getByLabelText('Nombre de usuario'), 'ana_gomez')
+    await user.type(screen.getByLabelText('Correo electrónico'), 'ana@example.com')
 
     const submitButton = screen.getByRole('button', { name: /guardar administrador/i })
     await user.click(submitButton)
@@ -41,74 +42,58 @@ describe('AdministradorForm', () => {
     })
   })
 
-  it('submits form with valid data (simulateSuccess true)', async () => {
+  it('envía formulario con datos válidos', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
 
-    await user.type(screen.getByLabelText(/nombre/i), 'Juan')
-    await user.type(screen.getByLabelText(/apellido/i), 'Pérez')
-    await user.type(screen.getByLabelText(/correo electrónico/i), 'juan@example.com')
-    await user.type(screen.getByLabelText(/^contraseña$/i), 'Password123!')
-    await user.type(screen.getByLabelText(/confirmar contraseña/i), 'Password123!')
+    await user.type(screen.getByLabelText('Nombre'), 'Juan')
+    await user.type(screen.getByLabelText('Apellido'), 'Pérez')
+    await user.type(screen.getByLabelText('Nombre de usuario'), 'juan_perez')
+    await user.type(screen.getByLabelText('Correo electrónico'), 'juan@example.com')
+    await user.type(screen.getByLabelText('Contraseña'), 'Password123!')
+    await user.type(screen.getByLabelText('Confirmar contraseña'), 'Password123!')
 
     const submitButton = screen.getByRole('button', { name: /guardar administrador/i })
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith(true)
+      expect(mockOnSubmit).toHaveBeenCalledWith(true, expect.any(Object))
     })
   })
 
-  it('submits form with simulateSuccess false', async () => {
+  it('permite mostrar y ocultar la contraseña', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
 
-    const toggle = screen.getByRole('switch')
-    await user.click(toggle)
-
-    await user.type(screen.getByLabelText(/nombre/i), 'Ana')
-    await user.type(screen.getByLabelText(/apellido/i), 'Gómez')
-    await user.type(screen.getByLabelText(/correo electrónico/i), 'ana@example.com')
-    await user.type(screen.getByLabelText(/^contraseña$/i), 'Password123!')
-    await user.type(screen.getByLabelText(/confirmar contraseña/i), 'Password123!')
-
-    const submitButton = screen.getByRole('button', { name: /guardar administrador/i })
-    await user.click(submitButton)
-
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith(false)
-    })
-  })
-
-  it('toggles password visibility', async () => {
-    const user = userEvent.setup()
-    render(<AdministradorForm onSubmit={mockOnSubmit} />)
-
-    const passwordInput = screen.getByLabelText(/^contraseña$/i)
-    const toggleButton = screen.getAllByText(/mostrar/i)[0]
+    const passwordInput = screen.getByLabelText('Contraseña')
+    const toggleBtns = screen.getAllByRole('button', { name: /mostrar/i })
+    const toggleBtn = toggleBtns[0] // el primer botón controla 'Contraseña'
 
     expect(passwordInput).toHaveAttribute('type', 'password')
 
-    await user.click(toggleButton)
+    await user.click(toggleBtn)
     expect(passwordInput).toHaveAttribute('type', 'text')
 
-    await user.click(screen.getAllByText(/ocultar/i)[0])
+    const hideBtn = screen.getAllByRole('button', { name: /ocultar/i })[0]
+    await user.click(hideBtn)
     expect(passwordInput).toHaveAttribute('type', 'password')
   })
 
-  it('toggles confirm password visibility', async () => {
+  it('permite mostrar y ocultar la confirmación de contraseña', async () => {
     const user = userEvent.setup()
     render(<AdministradorForm onSubmit={mockOnSubmit} />)
 
-    const confirmPasswordInput = screen.getByLabelText(/confirmar contraseña/i)
-    const toggleButton = screen.getAllByText(/mostrar/i)[1]
+    const confirmInput = screen.getByLabelText('Confirmar contraseña')
+    const toggleBtns = screen.getAllByRole('button', { name: /mostrar/i })
+    const toggleBtn = toggleBtns[1] // segundo botón controla confirmPassword
 
-    expect(confirmPasswordInput).toHaveAttribute('type', 'password')
+    expect(confirmInput).toHaveAttribute('type', 'password')
 
-    await user.click(toggleButton)
-    expect(confirmPasswordInput).toHaveAttribute('type', 'text')
+    await user.click(toggleBtn)
+    expect(confirmInput).toHaveAttribute('type', 'text')
 
-    await user.click(screen.getAllByText(/ocultar/i)[1])
-    expect(confirmPasswordInput).toHaveAttribute('type', 'password')
+    const hideBtn = screen.getAllByRole('button', { name: /ocultar/i })[1]
+    await user.click(hideBtn)
+    expect(confirmInput).toHaveAttribute('type', 'password')
   })
 })
