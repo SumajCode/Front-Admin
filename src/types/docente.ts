@@ -1,3 +1,4 @@
+// Tipos para la API de docentes
 export interface DocenteAPI {
   id: number
   nombre: string
@@ -6,9 +7,10 @@ export interface DocenteAPI {
   correo: string
   nacimiento: string
   usuario: string
-  password?: string
+  password: string
 }
 
+// Tipo para el docente en la UI
 export interface Docente {
   id: number
   name: string
@@ -16,10 +18,10 @@ export interface Docente {
   telefono?: string
   fechaNacimiento?: string
   usuario?: string
-  facultades: string[]
   status: "Activo" | "Inactivo"
 }
 
+// Tipo para los datos del formulario
 export interface DocenteFormData {
   nombre: string
   apellido: string
@@ -27,36 +29,46 @@ export interface DocenteFormData {
   telefono: string
   fechaNacimiento: string
   usuario: string
-  password: string
-  confirmPassword: string
-  facultades: string[]
+  password?: string
+  confirmPassword?: string
 }
 
-export type DocenteStatus = "Activo" | "Inactivo"
+// Tipos para las requests de la API
+export interface DocenteCreateRequest {
+  nombre: string
+  apellidos: string
+  celular: string
+  correo: string
+  nacimiento: string
+  usuario: string
+  password: string
+}
 
-export interface DocenteHistorial {
-  id: number
-  name: string
-  action: "Creación" | "Edición" | "Baja"
-  date: string
-  user: string
+export interface DocenteUpdateRequest {
+  id: string
+  nombre: string
+  apellidos: string
+  celular: string
+  correo: string
+  nacimiento: string
+  usuario: string
+  password?: string
 }
 
 // Funciones helper para mapear entre API y UI
-export const mapAPIToDocente = (apiDocente: DocenteAPI): Docente => {
+export function mapAPIToDocente(apiDocente: DocenteAPI): Docente {
   return {
     id: apiDocente.id,
     name: `${apiDocente.nombre} ${apiDocente.apellidos}`,
     email: apiDocente.correo,
-    telefono: apiDocente.celular?.toString(),
+    telefono: apiDocente.celular.toString(),
     fechaNacimiento: apiDocente.nacimiento,
     usuario: apiDocente.usuario,
-    facultades: [], // Las facultades se manejan por separado
-    status: "Activo", // Por defecto activo, se puede ajustar según la lógica
+    status: "Activo", // Por defecto, ya que la API no devuelve estado
   }
 }
 
-export const mapFormToAPICreate = (formData: DocenteFormData) => {
+export function mapFormToAPICreate(formData: DocenteFormData): DocenteCreateRequest {
   return {
     nombre: formData.nombre,
     apellidos: formData.apellido,
@@ -64,12 +76,12 @@ export const mapFormToAPICreate = (formData: DocenteFormData) => {
     correo: formData.email,
     nacimiento: formData.fechaNacimiento,
     usuario: formData.usuario,
-    password: formData.password,
+    password: formData.password || "",
   }
 }
 
-export const mapFormToAPIUpdate = (formData: DocenteFormData, id: number) => {
-  const updateData: any = {
+export function mapFormToAPIUpdate(formData: DocenteFormData, id: number): DocenteUpdateRequest {
+  const updateData: DocenteUpdateRequest = {
     id: id.toString(),
     nombre: formData.nombre,
     apellidos: formData.apellido,
@@ -80,15 +92,15 @@ export const mapFormToAPIUpdate = (formData: DocenteFormData, id: number) => {
   }
 
   // Solo incluir password si se proporcionó
-  if (formData.password && formData.password.trim() !== "") {
+  if (formData.password && formData.password.length > 0) {
     updateData.password = formData.password
   }
 
   return updateData
 }
 
-// Función para formatear fecha de la API
-export const formatDateFromAPI = (dateString: string): string => {
+// Función para formatear fecha de la API (GMT) a formato DD/MM/YYYY
+export function formatDateFromAPI(dateString: string): string {
   try {
     const date = new Date(dateString)
     const day = date.getDate().toString().padStart(2, "0")
@@ -96,17 +108,7 @@ export const formatDateFromAPI = (dateString: string): string => {
     const year = date.getFullYear()
     return `${day}/${month}/${year}`
   } catch (error) {
-    return dateString
-  }
-}
-
-// Función para formatear fecha para la API
-export const formatDateForAPI = (dateString: string): string => {
-  try {
-    // Asumiendo formato DD/MM/YYYY
-    const [day, month, year] = dateString.split("/")
-    return `${day}/${month}/${year}`
-  } catch (error) {
+    console.error("Error al formatear fecha:", error)
     return dateString
   }
 }

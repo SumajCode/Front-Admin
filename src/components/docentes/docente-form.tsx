@@ -7,15 +7,9 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { X, Eye, EyeOff } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Eye, EyeOff } from "lucide-react"
 import type { Docente, DocenteFormData } from "@/types/docente"
 import { formatDateFromAPI } from "@/types/docente"
-import React from "react"
-import facultadesData from "@/data/facultades.json"
 
 const formSchema = z
   .object({
@@ -55,9 +49,6 @@ const formSchema = z
       }),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
-    facultades: z.array(z.string()).min(1, {
-      message: "Seleccione al menos una facultad.",
-    }),
   })
   .refine(
     (data) => {
@@ -116,9 +107,6 @@ const editFormSchema = z
       }),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
-    facultades: z.array(z.string()).min(1, {
-      message: "Seleccione al menos una facultad.",
-    }),
   })
   .refine(
     (data) => {
@@ -154,16 +142,8 @@ interface DocenteFormProps {
 }
 
 export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFormProps) {
-  const [simulateSuccess, setSimulateSuccess] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [facultades, setFacultades] = useState<string[]>([])
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
-  // Cargar facultades al montar el componente
-  useEffect(() => {
-    setFacultades(facultadesData.facultades as string[])
-  }, [])
 
   // Extraer nombre y apellido del nombre completo si estamos en modo edición
   const getNombreApellido = useCallback(() => {
@@ -189,7 +169,6 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
       usuario: isEditMode && docente?.usuario ? docente.usuario : "",
       password: "",
       confirmPassword: "",
-      facultades: isEditMode && docente ? docente.facultades : [],
     },
   })
 
@@ -206,29 +185,16 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
         usuario: docente.usuario || "",
         password: "",
         confirmPassword: "",
-        facultades: docente.facultades,
       })
     }
   }, [docente, isEditMode, form, getNombreApellido])
 
   const handleSubmit = useCallback(
-    (values: any) => {
-      // Asegurarse de que password y confirmPassword sean strings
-      const safeValues: DocenteFormData = {
-        ...values,
-        password: values.password ?? "",
-        confirmPassword: values.confirmPassword ?? "",
-      }
-      console.log("Datos del formulario:", safeValues)
-      onSubmit(safeValues)
+    (values: DocenteFormData) => {
+      console.log("Datos del formulario:", values)
+      onSubmit(values)
     },
     [onSubmit],
-  )
-
-  // Filtrar facultades basado en el término de búsqueda
-  const filteredFacultades = React.useMemo(
-    () => facultades.filter((facultad) => facultad.toLowerCase().includes(searchTerm.toLowerCase())),
-    [searchTerm, facultades],
   )
 
   return (
@@ -369,89 +335,6 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
               </FormItem>
             )}
           />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="facultades"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Facultades</FormLabel>
-              <FormMessage />
-
-              <div className="border rounded-md p-4">
-                <Input
-                  placeholder="Buscar facultades..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="mb-2"
-                />
-
-                <ScrollArea className="h-60 rounded-md border">
-                  <div className="p-4 space-y-2">
-                    {filteredFacultades.length === 0 ? (
-                      <p className="text-sm text-muted-foreground">No se encontraron facultades</p>
-                    ) : (
-                      filteredFacultades.map((facultad) => (
-                        <div key={facultad} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={facultad}
-                            checked={field.value?.includes(facultad)}
-                            onCheckedChange={(checked) => {
-                              const currentValues = field.value || []
-                              const newValues = checked
-                                ? [...currentValues, facultad]
-                                : currentValues.filter((value) => value !== facultad)
-
-                              form.setValue("facultades", newValues, { shouldValidate: true })
-                            }}
-                          />
-                          <label
-                            htmlFor={facultad}
-                            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                          >
-                            {facultad}
-                          </label>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </ScrollArea>
-              </div>
-
-              {field.value.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {field.value.map((facultad) => (
-                    <Badge key={facultad} variant="secondary" className="text-xs">
-                      {facultad}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-auto p-0 ml-2"
-                        onClick={() => {
-                          const newValues = field.value.filter((value) => value !== facultad)
-                          form.setValue("facultades", newValues, { shouldValidate: true })
-                        }}
-                      >
-                        <X className="h-3 w-3" />
-                        <span className="sr-only">Eliminar</span>
-                      </Button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </FormItem>
-          )}
-        />
-
-        <div className="flex items-center space-x-2 py-4">
-          <Switch id="simulate-success" checked={simulateSuccess} onCheckedChange={setSimulateSuccess} />
-          <label
-            htmlFor="simulate-success"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {simulateSuccess ? "Simular operación exitosa" : "Simular error de operación"}
-          </label>
         </div>
 
         <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4">

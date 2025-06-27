@@ -1,161 +1,115 @@
-// Servicio para la gestión de docentes con la API
+import type { DocenteAPI, DocenteCreateRequest, DocenteUpdateRequest } from "@/types/docente"
+
 const API_BASE_URL = "https://microservice-docente.onrender.com/apidocentes/v1/docente"
 
-// Función para obtener el token de autorización
-const getAuthToken = (): string | null => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("access_token")
-  }
-  return null
-}
+// Función helper para obtener headers con autenticación
+function getAuthHeaders(): HeadersInit {
+  const accessToken = localStorage.getItem("access_token")
 
-// Función para obtener headers con autorización
-const getAuthHeaders = () => {
-  const token = getAuthToken()
   return {
     "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
   }
 }
 
-export interface DocenteAPI {
-  id: number
-  nombre: string
-  apellidos: string
-  celular: number
-  correo: string
-  nacimiento: string
-  usuario: string
-  password?: string
+// Función helper para manejar respuestas de la API
+async function handleResponse<T>(response: Response): Promise<T> {
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error(`❌ Error ${response.status}:`, errorText)
+    throw new Error(`Error ${response.status}: ${errorText}`)
+  }
+
+  const data = await response.json()
+  console.log("✅ Respuesta exitosa:", data)
+  return data
 }
 
-export interface DocenteCreateRequest {
-  nombre: string
-  apellidos: string
-  celular: string
-  correo: string
-  nacimiento: string
-  usuario: string
-  password: string
-}
-
-export interface DocenteUpdateRequest {
-  id: string
-  nombre?: string
-  apellidos?: string
-  celular?: string
-  correo?: string
-  nacimiento?: string
-  usuario?: string
-  password?: string
-}
-
-export interface APIResponse<T> {
-  data: T
-  message: string
-  status: number
-}
-
-class DocenteService {
+export const docenteService = {
   // Obtener todos los docentes
   async getAllDocentes(): Promise<DocenteAPI[]> {
-    try {
-      console.log("🔄 Obteniendo lista de docentes...")
+    console.log("📡 Obteniendo todos los docentes...")
 
+    try {
       const response = await fetch(`${API_BASE_URL}/listar`, {
         method: "GET",
         headers: getAuthHeaders(),
       })
 
-      if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`)
+      const result = await handleResponse<{ data: DocenteAPI[]; message: string; status: number }>(response)
+
+      if (result.data && Array.isArray(result.data)) {
+        console.log(`✅ ${result.data.length} docentes obtenidos exitosamente`)
+        return result.data
+      } else {
+        console.warn("⚠️ Formato de respuesta inesperado:", result)
+        return []
       }
-
-      const result: APIResponse<DocenteAPI[]> = await response.json()
-      console.log("✅ Docentes obtenidos exitosamente:", result.data?.length || 0)
-
-      return result.data || []
     } catch (error) {
       console.error("❌ Error al obtener docentes:", error)
-      throw new Error("No se pudieron cargar los docentes")
+      throw error
     }
-  }
+  },
 
-  // Obtener un docente específico por ID
-  async getDocenteById(id: string): Promise<DocenteAPI> {
+  // Obtener un docente por ID
+  async getDocenteById(id: number): Promise<DocenteAPI> {
+    console.log(`📡 Obteniendo docente con ID: ${id}`)
+
     try {
-      console.log("🔄 Obteniendo docente por ID:", id)
-
       const response = await fetch(`${API_BASE_URL}/listar/${id}`, {
         method: "GET",
         headers: getAuthHeaders(),
       })
 
-      if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`)
-      }
+      const result = await handleResponse<{ data: DocenteAPI[]; message: string; status: number }>(response)
 
-      const result: APIResponse<DocenteAPI[]> = await response.json()
-      console.log("✅ Docente obtenido exitosamente:", result.data[0])
-
-      if (!result.data || result.data.length === 0) {
+      if (result.data && Array.isArray(result.data) && result.data.length > 0) {
+        console.log("✅ Docente obtenido exitosamente:", result.data[0])
+        return result.data[0]
+      } else {
         throw new Error("Docente no encontrado")
       }
-
-      return result.data[0]
     } catch (error) {
-      console.error("❌ Error al obtener docente:", error)
+      console.error(`❌ Error al obtener docente ${id}:`, error)
       throw error
     }
-  }
+  },
 
   // Crear un nuevo docente
   async createDocente(docenteData: DocenteCreateRequest): Promise<void> {
-    try {
-      console.log("🔄 Creando nuevo docente...", docenteData)
+    console.log("📡 Creando nuevo docente:", docenteData)
 
+    try {
       const response = await fetch(`${API_BASE_URL}/crear`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(docenteData),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `Error HTTP: ${response.status}`)
-      }
-
-      const result: APIResponse<any> = await response.json()
-      console.log("✅ Docente creado exitosamente:", result.message)
+      await handleResponse<{ data: any[]; message: string; status: number }>(response)
+      console.log("✅ Docente creado exitosamente")
     } catch (error) {
       console.error("❌ Error al crear docente:", error)
       throw error
     }
-  }
+  },
 
   // Actualizar un docente existente
   async updateDocente(docenteData: DocenteUpdateRequest): Promise<void> {
-    try {
-      console.log("🔄 Actualizando docente...", docenteData)
+    console.log("📡 Actualizando docente:", docenteData)
 
+    try {
       const response = await fetch(`${API_BASE_URL}/editar`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify(docenteData),
       })
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `Error HTTP: ${response.status}`)
-      }
-
-      const result: APIResponse<any> = await response.json()
-      console.log("✅ Docente actualizado exitosamente:", result.message)
+      await handleResponse<{ data: any[]; message: string; status: number }>(response)
+      console.log("✅ Docente actualizado exitosamente")
     } catch (error) {
       console.error("❌ Error al actualizar docente:", error)
       throw error
     }
-  }
+  },
 }
-
-export const docenteService = new DocenteService()

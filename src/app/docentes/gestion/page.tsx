@@ -2,21 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Pencil, Trash2, Loader2 } from "lucide-react"
+import { PlusCircle, Pencil, Loader2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Switch } from "@/components/ui/switch"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocenteForm } from "@/components/docentes/docente-form"
 import { useToast } from "@/hooks/use-toast"
@@ -31,8 +20,6 @@ export default function DocentesPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentDocente, setCurrentDocente] = useState<Docente | null>(null)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [simulateDeleteSuccess, setSimulateDeleteSuccess] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const { toast } = useToast()
 
@@ -115,33 +102,6 @@ export default function DocentesPage() {
     setIsOpen(true)
   }, [])
 
-  const handleDeleteClick = useCallback((docente: Docente) => {
-    setCurrentDocente(docente)
-    setIsDeleteDialogOpen(true)
-  }, [])
-
-  const handleDeleteConfirm = useCallback(() => {
-    setIsDeleteDialogOpen(false)
-
-    if (simulateDeleteSuccess && currentDocente) {
-      setTeachers((prevTeachers) => prevTeachers.filter((teacher) => teacher.id !== currentDocente.id))
-
-      toast({
-        title: "Docente eliminado",
-        description: "El docente ha sido eliminado correctamente.",
-        variant: "default",
-      })
-    } else {
-      toast({
-        title: "Error al eliminar",
-        description: "No se pudo eliminar el docente. Intente nuevamente.",
-        variant: "destructive",
-      })
-    }
-
-    setCurrentDocente(null)
-  }, [currentDocente, simulateDeleteSuccess, toast])
-
   // Componente de loading para la tabla
   const TableSkeleton = () => (
     <>
@@ -167,7 +127,6 @@ export default function DocentesPage() {
           </TableCell>
           <TableCell className="text-right">
             <div className="flex justify-end gap-2">
-              <Skeleton className="h-8 w-8" />
               <Skeleton className="h-8 w-8" />
             </div>
           </TableCell>
@@ -247,15 +206,6 @@ export default function DocentesPage() {
                           <Pencil className="h-4 w-4" />
                           <span className="sr-only">Editar</span>
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-500 hover:text-red-700 border-red-500 hover:bg-red-50 bg-transparent"
-                          onClick={() => handleDeleteClick(teacher)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span className="sr-only">Eliminar</span>
-                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -292,45 +242,6 @@ export default function DocentesPage() {
           </div>
         </SheetContent>
       </Sheet>
-
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Está seguro de eliminar este docente?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. El docente será eliminado permanentemente del sistema.
-              {currentDocente && (
-                <div className="mt-2 p-2 bg-muted rounded">
-                  <strong>Docente:</strong> {currentDocente.name}
-                  <br />
-                  <strong>Email:</strong> {currentDocente.email}
-                </div>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="flex items-center space-x-2 py-4">
-            <Switch
-              id="simulate-delete-success"
-              checked={simulateDeleteSuccess}
-              onCheckedChange={setSimulateDeleteSuccess}
-            />
-            <label
-              htmlFor="simulate-delete-success"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {simulateDeleteSuccess ? "Simular eliminación exitosa" : "Simular error de eliminación"}
-            </label>
-          </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-500 hover:bg-red-600 text-white">
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
