@@ -1,11 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { BookUser, Command, LifeBuoy, Newspaper, Send, Users } from 'lucide-react'
-
-import { NavMain } from '@/components/nav-main'
-import { NavSecondary } from '@/components/nav-secondary'
+import { BookUser, Command, Users, CircleUser } from 'lucide-react'
 import { NavUser } from '@/components/nav-user'
+import { NavMain } from '@/components/nav-main'
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +13,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import usuarioData from '@/data/usuario.json'
 
 const navMainData = [
   {
@@ -70,7 +67,30 @@ const navMainData = [
 ]*/
 
 function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = usuarioData.usuario
+  const [user, setUser] = React.useState<{ name: string; email: string; avatar: string }>({
+    name: '',
+    email: '',
+    avatar: '/placeholder.svg?height=32&width=32',
+  })
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userDataString = localStorage.getItem('user_data')
+      if (userDataString) {
+        try {
+          const parsed = JSON.parse(userDataString)
+          const fullName = `${parsed.first_name} ${parsed.last_name}`
+          setUser({
+            name: fullName,
+            email: parsed.email,
+            avatar: '', // Si tienes una URL, puedes usar parsed.avatar o similar
+          })
+        } catch (err) {
+          console.error('Error parsing user_data:', err)
+        }
+      }
+    }
+  }, [])
 
   return (
     <Sidebar variant="inset" {...props}>
