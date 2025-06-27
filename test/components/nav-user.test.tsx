@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { NavUser } from '@/components/nav-user'
 import { SidebarProvider } from '@/components/ui/sidebar'
 
-// Variante sin avatar para cubrir AvatarFallback
+// Usuario sin avatar para validar AvatarFallback
 const mockUserWithoutAvatar = {
   name: 'Sin Avatar',
   email: 'sin.avatar@test.com',
@@ -37,10 +37,11 @@ describe('NavUser', () => {
       </SidebarProvider>,
     )
 
-    expect(screen.getByText('CN')).toBeInTheDocument()
+    // 'S' por 'Sin Avatar'
+    expect(screen.getAllByText('S')[0]).toBeInTheDocument()
   })
 
-  it('opens dropdown menu on click', async () => {
+  it('shows dropdown on click and displays logout option', async () => {
     const user = userEvent.setup()
     render(
       <SidebarProvider>
@@ -53,27 +54,9 @@ describe('NavUser', () => {
 
     if (userButton) {
       await user.click(userButton)
-      expect(screen.getByText('Account')).toBeInTheDocument()
-      expect(screen.getByText('Notifications')).toBeInTheDocument()
-      expect(screen.getByText('Log out')).toBeInTheDocument()
-    }
-  })
 
-  it('renders dropdown menu items', async () => {
-    const user = userEvent.setup()
-    render(
-      <SidebarProvider>
-        <NavUser user={mockUser} />
-      </SidebarProvider>,
-    )
-
-    const userButton = screen.getByText('Admin Test').closest('button')
-    if (userButton) {
-      await user.click(userButton)
-
-      expect(screen.getByText('Account')).toBeInTheDocument()
-      expect(screen.getByText('Notifications')).toBeInTheDocument()
-      expect(screen.getByText('Log out')).toBeInTheDocument()
+      // Asegura que el dropdown contiene el botón de cerrar sesión
+      expect(screen.getByText('Cerrar Sesión')).toBeInTheDocument()
     }
   })
 })

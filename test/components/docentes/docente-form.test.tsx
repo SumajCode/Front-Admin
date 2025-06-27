@@ -4,15 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { DocenteForm } from '@/components/docentes/docente-form'
 
-// Mock de los datos de facultades
-jest.mock('@/data/facultades.json', () => ({
-  facultades: [
-    'Facultad de Ciencias y Tecnología',
-    'Facultad de Medicina',
-    'Facultad de Ciencias Económicas',
-  ],
-}))
-
 describe('DocenteForm', () => {
   const mockOnSubmit = jest.fn()
 
@@ -47,16 +38,6 @@ describe('DocenteForm', () => {
     })
   })
 
-  it('allows faculty selection', async () => {
-    const user = userEvent.setup()
-    render(<DocenteForm onSubmit={mockOnSubmit} />)
-
-    const facultyCheckbox = screen.getByLabelText(/facultad de ciencias y tecnología/i)
-    await user.click(facultyCheckbox)
-
-    expect(facultyCheckbox).toBeChecked()
-  })
-
   it('submits form with valid data', async () => {
     const user = userEvent.setup()
     render(<DocenteForm onSubmit={mockOnSubmit} />)
@@ -65,15 +46,27 @@ describe('DocenteForm', () => {
     await user.type(screen.getByLabelText(/apellido/i), 'Pérez')
     await user.type(screen.getByLabelText(/correo electrónico/i), 'juan@example.com')
     await user.type(screen.getByLabelText(/célular/i), '12345678')
+    await user.type(screen.getByLabelText(/fecha de nacimiento/i), '15/10/2000')
+    await user.type(screen.getByLabelText(/usuario/i), 'juan_perez')
 
-    const facultyCheckbox = screen.getByLabelText(/facultad de ciencias y tecnología/i)
-    await user.click(facultyCheckbox)
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••')
+    await user.type(passwordInputs[0], '123456') // Contraseña
+    await user.type(passwordInputs[1], '123456') // Confirmar contraseña
 
     const submitButton = screen.getByRole('button', { name: /guardar docente/i })
     await user.click(submitButton)
 
     await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith(true)
+      expect(mockOnSubmit).toHaveBeenCalled()
+      const submittedData = mockOnSubmit.mock.calls[0][0]
+      expect(submittedData.nombre).toBe('Juan')
+      expect(submittedData.apellido).toBe('Pérez')
+      expect(submittedData.email).toBe('juan@example.com')
+      expect(submittedData.telefono).toBe('12345678')
+      expect(submittedData.fechaNacimiento).toBe('15/10/2000')
+      expect(submittedData.usuario).toBe('juan_perez')
+      expect(submittedData.password).toBe('123456')
+      expect(submittedData.confirmPassword).toBe('123456')
     })
   })
 
@@ -83,7 +76,8 @@ describe('DocenteForm', () => {
       name: 'Juan Pérez',
       email: 'juan@example.com',
       telefono: '12345678',
-      facultades: ['Facultad de Ciencias y Tecnología'],
+      fechaNacimiento: '2000-10-15',
+      usuario: 'juan_perez',
       status: 'Activo' as const,
     }
 
@@ -93,6 +87,7 @@ describe('DocenteForm', () => {
     expect(screen.getByDisplayValue('Pérez')).toBeInTheDocument()
     expect(screen.getByDisplayValue('juan@example.com')).toBeInTheDocument()
     expect(screen.getByDisplayValue('12345678')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('juan_perez')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /actualizar docente/i })).toBeInTheDocument()
   })
 })
