@@ -6,7 +6,7 @@
 
 // Configuración de URLs y endpoints
 const CONFIG = {
-  LOGIN_URL: 'https://front-loginv1-kevinurena82-6772s-projects.vercel.app',
+  LOGIN_URL: 'https://front-loginv1.vercel.app',
   ADMIN_URL: 'https://front-adminv1.vercel.app',
   API_BASE_URL: 'https://microservice-admin.onrender.com/api',
 
@@ -444,7 +444,7 @@ export function redirectToLogin(): void {
   const loginUrl = `${CONFIG.LOGIN_URL}?return_url=${returnUrl}`
 
   console.log('🔄 AuthUtils: Full login URL:', loginUrl)
-  window.location.href = loginUrl
+  window.location.href = `${CONFIG.LOGIN_URL}?logged_out=true`
 }
 
 /**
@@ -480,7 +480,7 @@ export async function logoutAndRedirect(): Promise<void> {
 
   // Redirigir al login
   console.log('🔄 AuthUtils: Redirecting to login after logout...')
-  window.location.href = CONFIG.LOGIN_URL
+  window.location.href = `${CONFIG.LOGIN_URL}?logged_out=true`
 }
 
 /**

@@ -162,12 +162,37 @@ if (typeof window !== 'undefined' && typeof HTMLElement !== 'undefined') {
           }),
         )
 
-        // Importar dinámicamente las utilidades de auth
-        console.log('🚪 LogoutButton: Importing authUtils...')
-        const { logoutAndRedirect } = await import('../../utils/authUtils')
+        console.log('🚪 LogoutButton: Importing authUtils for logout...')
 
-        console.log('🚪 LogoutButton: Calling logoutAndRedirect()...')
-        await logoutAndRedirect()
+        if (typeof window === 'undefined') {
+          console.error('❌ LogoutButton: No se puede hacer logout en SSR')
+          return
+        }
+
+        try {
+          const { logoutAndRedirect } = await import('@/utils/authUtils') // <- usa alias "@"
+          await logoutAndRedirect()
+        } catch (error) {
+          console.error('❌ LogoutButton: Error al hacer logout:', error)
+
+          try {
+            const { clearAuthData, redirectToLogin } = await import('@/utils/authUtils')
+            clearAuthData()
+            redirectToLogin()
+          } catch (fallbackError) {
+            console.error('❌ LogoutButton: Error en fallback logout:', fallbackError)
+          }
+
+          this.dispatchEvent(
+            new CustomEvent('logoutError', {
+              bubbles: true,
+              detail: {
+                error: error instanceof Error ? error.message : String(error),
+                timestamp: new Date().toISOString(),
+              },
+            }),
+          )
+        }
 
         // El logout redirige automáticamente, pero por si acaso:
         console.log('🚪 LogoutButton: Emitting logoutComplete event')
