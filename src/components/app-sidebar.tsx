@@ -51,7 +51,7 @@ const navMainData = [
   },
 ]
 
-const navSecondaryData = [
+/*const navSecondaryData = [
   {
     title: 'Noticias y Anuncios',
     url: '/noticias',
@@ -66,8 +66,8 @@ const navSecondaryData = [
     title: 'Feedback',
     url: '#',
     icon: Send,
-  },*/
-]
+  },
+]*/
 
 function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = usuarioData.usuario
@@ -93,7 +93,7 @@ function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>)
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMainData} />
-        <NavSecondary items={navSecondaryData} className="mt-auto" />
+        {/*<NavSecondary items={navSecondaryData} className="mt-auto" />*/}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
