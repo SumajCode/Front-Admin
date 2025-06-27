@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Docente, DocenteFormData } from "@/types/docente"
+import { formatDateFromAPI } from "@/types/docente"
 import React from "react"
 import facultadesData from "@/data/facultades.json"
 
@@ -52,16 +53,99 @@ const formSchema = z
       .regex(/^[a-zA-Z0-9_]+$/, {
         message: "El usuario solo puede contener letras, números y guiones bajos.",
       }),
-    password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres." }),
-    confirmPassword: z.string().min(6, { message: "Confirme la contraseña." }),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
     facultades: z.array(z.string()).min(1, {
       message: "Seleccione al menos una facultad.",
     }),
   })
+  .refine(
+    (data) => {
+      // En modo creación, la contraseña es obligatoria
+      if (!data.password || data.password.length === 0) {
+        return false
+      }
+      return data.password.length >= 6
+    },
+    {
+      message: "La contraseña debe tener al menos 6 caracteres",
+      path: ["password"],
+    },
+  )
   .refine((data) => data.password === data.confirmPassword, {
     message: "Las contraseñas no coinciden",
     path: ["confirmPassword"],
   })
+
+// Schema para modo edición (contraseña opcional)
+const editFormSchema = z
+  .object({
+    nombre: z
+      .string()
+      .min(2, { message: "El nombre debe tener al menos 2 caracteres." })
+      .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
+        message: "El nombre solo debe contener letras y espacios.",
+      }),
+    apellido: z
+      .string()
+      .min(2, { message: "El apellido debe tener al menos 2 caracteres." })
+      .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
+        message: "El apellido solo debe contener letras y espacios.",
+      }),
+    email: z.string().email({
+      message: "Ingrese un correo electrónico válido.",
+    }),
+    telefono: z
+      .string()
+      .min(8, { message: "Ingrese un número de célular válido." })
+      .max(8, { message: "El número de teléfono debe tener exactamente 8 dígitos." })
+      .regex(/^[0-9]+$/, {
+        message: "El teléfono solo debe contener números.",
+      }),
+    fechaNacimiento: z
+      .string()
+      .min(1, { message: "La fecha de nacimiento es requerida." })
+      .regex(/^\d{2}\/\d{2}\/\d{4}$/, {
+        message: "Formato de fecha inválido. Use DD/MM/YYYY.",
+      }),
+    usuario: z
+      .string()
+      .min(3, { message: "El usuario debe tener al menos 3 caracteres." })
+      .regex(/^[a-zA-Z0-9_]+$/, {
+        message: "El usuario solo puede contener letras, números y guiones bajos.",
+      }),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+    facultades: z.array(z.string()).min(1, {
+      message: "Seleccione al menos una facultad.",
+    }),
+  })
+  .refine(
+    (data) => {
+      // En modo edición, si se proporciona contraseña, debe tener al menos 6 caracteres
+      if (data.password && data.password.length > 0) {
+        return data.password.length >= 6
+      }
+      return true
+    },
+    {
+      message: "La contraseña debe tener al menos 6 caracteres",
+      path: ["password"],
+    },
+  )
+  .refine(
+    (data) => {
+      // En modo edición, las contraseñas deben coincidir si se proporcionan
+      if (data.password || data.confirmPassword) {
+        return data.password === data.confirmPassword
+      }
+      return true
+    },
+    {
+      message: "Las contraseñas no coinciden",
+      path: ["confirmPassword"],
+    },
+  )
 
 interface DocenteFormProps {
   onSubmit: (formData: DocenteFormData) => void | Promise<void>
@@ -95,13 +179,13 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
   const { nombre, apellido } = getNombreApellido()
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(isEditMode ? editFormSchema : formSchema),
     defaultValues: {
       nombre: isEditMode ? nombre : "",
       apellido: isEditMode ? apellido : "",
       email: isEditMode && docente ? docente.email : "",
       telefono: isEditMode && docente?.telefono ? docente.telefono : "",
-      fechaNacimiento: isEditMode && docente?.fechaNacimiento ? docente.fechaNacimiento : "",
+      fechaNacimiento: isEditMode && docente?.fechaNacimiento ? formatDateFromAPI(docente.fechaNacimiento) : "",
       usuario: isEditMode && docente?.usuario ? docente.usuario : "",
       password: "",
       confirmPassword: "",
@@ -118,7 +202,7 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
         apellido,
         email: docente.email,
         telefono: docente.telefono || "",
-        fechaNacimiento: docente.fechaNacimiento || "",
+        fechaNacimiento: docente.fechaNacimiento ? formatDateFromAPI(docente.fechaNacimiento) : "",
         usuario: docente.usuario || "",
         password: "",
         confirmPassword: "",
@@ -128,11 +212,17 @@ export function DocenteForm({ onSubmit, docente, isEditMode = false }: DocenteFo
   }, [docente, isEditMode, form, getNombreApellido])
 
   const handleSubmit = useCallback(
-    (values: DocenteFormData) => {
-      console.log("Datos del formulario:", values)
-      onSubmit(values) // ya no necesita 'simulateSuccess'
+    (values: any) => {
+      // Asegurarse de que password y confirmPassword sean strings
+      const safeValues: DocenteFormData = {
+        ...values,
+        password: values.password ?? "",
+        confirmPassword: values.confirmPassword ?? "",
+      }
+      console.log("Datos del formulario:", safeValues)
+      onSubmit(safeValues)
     },
-    [onSubmit]
+    [onSubmit],
   )
 
   // Filtrar facultades basado en el término de búsqueda

@@ -69,14 +69,44 @@ export const mapFormToAPICreate = (formData: DocenteFormData) => {
 }
 
 export const mapFormToAPIUpdate = (formData: DocenteFormData, id: number) => {
-  return {
-    id: id,
+  const updateData: any = {
+    id: id.toString(),
     nombre: formData.nombre,
     apellidos: formData.apellido,
     celular: formData.telefono,
     correo: formData.email,
     nacimiento: formData.fechaNacimiento,
     usuario: formData.usuario,
-    ...(formData.password && { password: formData.password }),
+  }
+
+  // Solo incluir password si se proporcionó
+  if (formData.password && formData.password.trim() !== "") {
+    updateData.password = formData.password
+  }
+
+  return updateData
+}
+
+// Función para formatear fecha de la API
+export const formatDateFromAPI = (dateString: string): string => {
+  try {
+    const date = new Date(dateString)
+    const day = date.getDate().toString().padStart(2, "0")
+    const month = (date.getMonth() + 1).toString().padStart(2, "0")
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+  } catch (error) {
+    return dateString
+  }
+}
+
+// Función para formatear fecha para la API
+export const formatDateForAPI = (dateString: string): string => {
+  try {
+    // Asumiendo formato DD/MM/YYYY
+    const [day, month, year] = dateString.split("/")
+    return `${day}/${month}/${year}`
+  } catch (error) {
+    return dateString
   }
 }
