@@ -52,7 +52,7 @@ function NavUserComponent({
               size="lg"
               className="data-[state=open]:bg-[#00bf7d] data-[state=open]:text-white"
             >
-              <Avatar className="h-8 w-8 rounded-lg border-2 border-[#00b4c5]">
+              <Avatar className="h-8 w-8 rounded-full border-2 border-[#00b4c5]">
                 <AvatarImage
                   src={
                     user.avatar && user.avatar.trim() !== ''
@@ -64,7 +64,7 @@ function NavUserComponent({
                     e.currentTarget.src = '/placeholder.svg?height=32&width=32'
                   }}
                 />
-                <AvatarFallback className="rounded-lg bg-[#2546f0] text-white">
+                <AvatarFallback className="rounded-full bg-[#2546f0] text-white">
                   {user.name?.charAt(0).toUpperCase() || 'A'}
                 </AvatarFallback>
               </Avatar>
@@ -84,7 +84,7 @@ function NavUserComponent({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-full">
                   <AvatarImage
                     src={
                       user.avatar && user.avatar.trim() !== ''
@@ -96,7 +96,7 @@ function NavUserComponent({
                       e.currentTarget.src = '/placeholder.svg?height=32&width=32'
                     }}
                   />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-full">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
