@@ -1,11 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { BookUser, Command, LifeBuoy, Newspaper, Send, Users } from 'lucide-react'
-
-import { NavMain } from '@/components/nav-main'
-import { NavSecondary } from '@/components/nav-secondary'
+import { BookUser, Command, Users, CircleUser } from 'lucide-react'
 import { NavUser } from '@/components/nav-user'
+import { NavMain } from '@/components/nav-main'
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +13,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import usuarioData from '@/data/usuario.json'
 
 const navMainData = [
   {
@@ -28,10 +25,10 @@ const navMainData = [
         title: 'Gestionar Docentes',
         url: '/docentes/gestion',
       },
-      {
+      /*{
         title: 'Historial de Docentes',
         url: '/docentes/historial',
-      },
+      },*/
     ],
   },
   {
@@ -43,20 +40,20 @@ const navMainData = [
         title: 'Gestionar Administradores',
         url: '/administradores/gestion',
       },
-      {
+      /*{
         title: 'Historial de Administradores',
         url: '/administradores/historial',
-      },
+      },*/
     ],
   },
 ]
 
-const navSecondaryData = [
+/*const navSecondaryData = [
   {
     title: 'Noticias y Anuncios',
     url: '/noticias',
     icon: Newspaper,
-  },
+  },/*
   {
     title: 'Support',
     url: '#',
@@ -67,10 +64,33 @@ const navSecondaryData = [
     url: '#',
     icon: Send,
   },
-]
+]*/
 
 function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = usuarioData.usuario
+  const [user, setUser] = React.useState<{ name: string; email: string; avatar: string }>({
+    name: '',
+    email: '',
+    avatar: '/placeholder.svg?height=32&width=32',
+  })
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userDataString = localStorage.getItem('user_data')
+      if (userDataString) {
+        try {
+          const parsed = JSON.parse(userDataString)
+          const fullName = `${parsed.first_name} ${parsed.last_name}`
+          setUser({
+            name: fullName,
+            email: parsed.email,
+            avatar: '', // Si tienes una URL, puedes usar parsed.avatar o similar
+          })
+        } catch (err) {
+          console.error('Error parsing user_data:', err)
+        }
+      }
+    }
+  }, [])
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -78,7 +98,7 @@ function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>)
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <a href="/">
                 <div className="bg-[#2546f0] text-white flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
@@ -93,7 +113,7 @@ function AppSidebarComponent({ ...props }: React.ComponentProps<typeof Sidebar>)
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMainData} />
-        <NavSecondary items={navSecondaryData} className="mt-auto" />
+        {/*<NavSecondary items={navSecondaryData} className="mt-auto" />*/}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
