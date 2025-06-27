@@ -96,7 +96,7 @@ function NavUserComponent({
                       e.currentTarget.src = '/placeholder.svg?height=32&width=32'
                     }}
                   />
-                  <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-full bg-[#2546f0]">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
