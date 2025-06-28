@@ -5,7 +5,7 @@ Una aplicación web construida con Next. **TypeScript**, que muestra la gestión
 ## 🌐 Deploy
 
 Accede a la aplicación en producción aquí:  
-🔗 [https://front-admin.vercel.app](https://front-admin.vercel.app)
+🔗 [https://front-adminv1.vercel.app/](https://front-adminv1.vercel.app/)
 
 ---
 

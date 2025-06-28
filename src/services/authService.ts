@@ -32,6 +32,7 @@ export interface UserData {
   role: string
   is_active: boolean
   created_at: string
+  updated_at: string
 }
 
 export interface AuthData {
@@ -69,7 +70,7 @@ class AuthService {
     console.log('🔍 AuthService: User role:', userRole)
 
     const authData = {
-      isAuthenticated: !!(accessToken && userData && userRole === 'administrador'),
+      isAuthenticated: !!(accessToken && userData && userRole === 'admin'),
       user: userData ? JSON.parse(userData) : null,
       token: accessToken,
       role: userRole,

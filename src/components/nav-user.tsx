@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { BadgeCheck, Bell, ChevronsUpDown } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { LogoutButtonReact } from '@/components/auth/LogoutButtonReact'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { LogoutButtonReact } from '@/components/auth/LogoutButtonReact'
 
 function NavUserComponent({
   user,
