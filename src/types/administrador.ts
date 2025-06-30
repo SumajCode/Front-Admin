@@ -18,7 +18,7 @@ export interface Administrador {
   name: string
   email: string
   username: string
-  status: "Activo" | "Inactivo"
+  status: 'Activo' | 'Inactivo'
   created_at: string
   updated_at?: string
 }
@@ -41,12 +41,12 @@ export interface AdministradorEditFormData {
   username: string
 }
 
-export type AdministradorStatus = "Activo" | "Inactivo"
+export type AdministradorStatus = 'Activo' | 'Inactivo'
 
 export interface AdministradorHistorial {
   id: number
   name: string
-  action: "Creación" | "Edición" | "Baja"
+  action: 'Creación' | 'Edición' | 'Baja'
   date: string
   user: string
 }
@@ -58,7 +58,7 @@ export function mapAdminFromAPI(apiAdmin: AdminFromAPI): Administrador {
     name: `${apiAdmin.first_name} ${apiAdmin.last_name}`,
     email: apiAdmin.email,
     username: apiAdmin.username,
-    status: apiAdmin.is_active ? "Activo" : "Inactivo",
+    status: apiAdmin.is_active ? 'Activo' : 'Inactivo',
     created_at: apiAdmin.created_at,
     updated_at: apiAdmin.updated_at,
   }
@@ -79,7 +79,7 @@ export function mapFormDataToAPI(formData: AdministradorFormData): {
     password: formData.password,
     first_name: formData.nombre,
     last_name: formData.apellido,
-    role: "admin",
+    role: 'admin',
   }
 }
 

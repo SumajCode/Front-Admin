@@ -18,7 +18,7 @@ export interface Docente {
   telefono?: string
   fechaNacimiento?: string
   usuario?: string
-  status: "Activo" | "Inactivo"
+  status: 'Activo' | 'Inactivo'
 }
 
 // Tipo para los datos del formulario
@@ -64,7 +64,7 @@ export function mapAPIToDocente(apiDocente: DocenteAPI): Docente {
     telefono: apiDocente.celular.toString(),
     fechaNacimiento: apiDocente.nacimiento,
     usuario: apiDocente.usuario,
-    status: "Activo", // Por defecto, ya que la API no devuelve estado
+    status: 'Activo', // Por defecto, ya que la API no devuelve estado
   }
 }
 
@@ -76,7 +76,7 @@ export function mapFormToAPICreate(formData: DocenteFormData): DocenteCreateRequ
     correo: formData.email,
     nacimiento: formData.fechaNacimiento,
     usuario: formData.usuario,
-    password: formData.password || "",
+    password: formData.password || '',
   }
 }
 
@@ -103,12 +103,12 @@ export function mapFormToAPIUpdate(formData: DocenteFormData, id: number): Docen
 export function formatDateFromAPI(dateString: string): string {
   try {
     const date = new Date(dateString)
-    const day = date.getDate().toString().padStart(2, "0")
-    const month = (date.getMonth() + 1).toString().padStart(2, "0")
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
     const year = date.getFullYear()
     return `${day}/${month}/${year}`
   } catch (error) {
-    console.error("Error al formatear fecha:", error)
+    console.error('Error al formatear fecha:', error)
     return dateString
   }
 }

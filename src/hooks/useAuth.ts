@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import authService from "@/services/authService"
+import { useState, useEffect } from 'react'
+import authService from '@/services/authService'
 
 interface User {
   _id: string
@@ -27,14 +27,14 @@ export function useAuth() {
         const authData = authService.checkAuthentication()
         const isAuth = authData.isAuthenticated
 
-        console.log("🔐 useAuth: Loading user data...")
-        console.log("🔐 useAuth: Current user:", currentUser)
-        console.log("🔐 useAuth: Is authenticated:", isAuth)
+        console.log('🔐 useAuth: Loading user data...')
+        console.log('🔐 useAuth: Current user:', currentUser)
+        console.log('🔐 useAuth: Is authenticated:', isAuth)
 
         setUser(currentUser)
         setIsAuthenticated(isAuth)
       } catch (error) {
-        console.error("❌ useAuth: Error loading user data:", error)
+        console.error('❌ useAuth: Error loading user data:', error)
         setUser(null)
         setIsAuthenticated(false)
       } finally {
@@ -47,42 +47,42 @@ export function useAuth() {
 
     // Escuchar cambios en el localStorage
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === "access_token" || event.key === "user_data") {
-        console.log("🔐 useAuth: Storage change detected, reloading user data")
+      if (event.key === 'access_token' || event.key === 'user_data') {
+        console.log('🔐 useAuth: Storage change detected, reloading user data')
         loadUserData()
       }
     }
 
     // Escuchar eventos personalizados de autenticación
     const handleUserAuthenticated = () => {
-      console.log("🔐 useAuth: User authenticated event received")
+      console.log('🔐 useAuth: User authenticated event received')
       loadUserData()
     }
 
     const handleUserLoggedOut = () => {
-      console.log("🔐 useAuth: User logged out event received")
+      console.log('🔐 useAuth: User logged out event received')
       setUser(null)
       setIsAuthenticated(false)
       setIsLoading(false)
     }
 
-    window.addEventListener("storage", handleStorageChange)
-    window.addEventListener("user-authenticated", handleUserAuthenticated)
-    window.addEventListener("userLoggedOut", handleUserLoggedOut)
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('user-authenticated', handleUserAuthenticated)
+    window.addEventListener('userLoggedOut', handleUserLoggedOut)
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange)
-      window.removeEventListener("user-authenticated", handleUserAuthenticated)
-      window.removeEventListener("userLoggedOut", handleUserLoggedOut)
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('user-authenticated', handleUserAuthenticated)
+      window.removeEventListener('userLoggedOut', handleUserLoggedOut)
     }
   }, [])
 
   const logout = async () => {
     try {
-      const { logoutAndRedirect } = await import("@/utils/authUtils")
+      const { logoutAndRedirect } = await import('@/utils/authUtils')
       await logoutAndRedirect()
     } catch (error) {
-      console.error("❌ useAuth: Error during logout:", error)
+      console.error('❌ useAuth: Error during logout:', error)
     }
   }
 

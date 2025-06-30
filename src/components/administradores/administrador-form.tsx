@@ -1,74 +1,86 @@
-"use client"
+'use client'
 
-import { useState, useCallback, useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import type { AdministradorFormData, AdministradorEditFormData, Administrador } from "@/types/administrador"
+import { useState, useCallback, useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import type {
+  AdministradorFormData,
+  AdministradorEditFormData,
+  Administrador,
+} from '@/types/administrador'
 
 const createFormSchema = z
   .object({
     nombre: z
       .string()
-      .min(2, { message: "El nombre debe tener al menos 2 caracteres." })
+      .min(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
       .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-        message: "El nombre solo debe contener letras y espacios.",
+        message: 'El nombre solo debe contener letras y espacios.',
       }),
     apellido: z
       .string()
-      .min(2, { message: "El apellido debe tener al menos 2 caracteres." })
+      .min(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
       .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-        message: "El apellido solo debe contener letras y espacios.",
+        message: 'El apellido solo debe contener letras y espacios.',
       }),
     username: z
       .string()
-      .min(3, { message: "El nombre de usuario debe tener al menos 3 caracteres." })
-      .max(20, { message: "El nombre de usuario no puede exceder 20 caracteres." })
+      .min(3, { message: 'El nombre de usuario debe tener al menos 3 caracteres.' })
+      .max(20, { message: 'El nombre de usuario no puede exceder 20 caracteres.' })
       .regex(/^[a-zA-Z0-9_]+$/, {
-        message: "El nombre de usuario solo puede contener letras, números y guiones bajos.",
+        message: 'El nombre de usuario solo puede contener letras, números y guiones bajos.',
       }),
     email: z.string().email({
-      message: "Ingrese un correo electrónico válido.",
+      message: 'Ingrese un correo electrónico válido.',
     }),
     password: z
       .string()
-      .min(6, { message: "La contraseña debe tener al menos 6 caracteres." })
+      .min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' })
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
-        message: "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número.",
+        message:
+          'La contraseña debe contener al menos una letra mayúscula, una minúscula y un número.',
       }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden",
-    path: ["confirmPassword"],
+    message: 'Las contraseñas no coinciden',
+    path: ['confirmPassword'],
   })
 
 const editFormSchema = z.object({
   nombre: z
     .string()
-    .min(2, { message: "El nombre debe tener al menos 2 caracteres." })
+    .min(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
     .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-      message: "El nombre solo debe contener letras y espacios.",
+      message: 'El nombre solo debe contener letras y espacios.',
     }),
   apellido: z
     .string()
-    .min(2, { message: "El apellido debe tener al menos 2 caracteres." })
+    .min(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
     .regex(/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/, {
-      message: "El apellido solo debe contener letras y espacios.",
+      message: 'El apellido solo debe contener letras y espacios.',
     }),
   username: z
     .string()
-    .min(3, { message: "El nombre de usuario debe tener al menos 3 caracteres." })
-    .max(20, { message: "El nombre de usuario no puede exceder 20 caracteres." })
+    .min(3, { message: 'El nombre de usuario debe tener al menos 3 caracteres.' })
+    .max(20, { message: 'El nombre de usuario no puede exceder 20 caracteres.' })
     .regex(/^[a-zA-Z0-9_]+$/, {
-      message: "El nombre de usuario solo puede contener letras, números y guiones bajos.",
+      message: 'El nombre de usuario solo puede contener letras, números y guiones bajos.',
     }),
   email: z.string().email({
-    message: "Ingrese un correo electrónico válido.",
+    message: 'Ingrese un correo electrónico válido.',
   }),
 })
 
@@ -78,18 +90,22 @@ interface AdministradorFormProps {
   isEditMode?: boolean
 }
 
-export function AdministradorForm({ onSubmit, administrador, isEditMode = false }: AdministradorFormProps) {
+export function AdministradorForm({
+  onSubmit,
+  administrador,
+  isEditMode = false,
+}: AdministradorFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // Extraer nombre y apellido del nombre completo si estamos en modo edición
   const getNombreApellido = useCallback(() => {
-    if (!administrador || !administrador.name) return { nombre: "", apellido: "" }
+    if (!administrador || !administrador.name) return { nombre: '', apellido: '' }
 
-    const nameParts = administrador.name.split(" ")
+    const nameParts = administrador.name.split(' ')
     return {
-      nombre: nameParts[0] || "",
-      apellido: nameParts.slice(1).join(" ") || "",
+      nombre: nameParts[0] || '',
+      apellido: nameParts.slice(1).join(' ') || '',
     }
   }, [administrador])
 
@@ -101,16 +117,16 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
       ? {
           nombre: nombre,
           apellido: apellido,
-          username: administrador?.username || "",
-          email: administrador?.email || "",
+          username: administrador?.username || '',
+          email: administrador?.email || '',
         }
       : {
-          nombre: "",
-          apellido: "",
-          username: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
+          nombre: '',
+          apellido: '',
+          username: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
         },
   })
 
@@ -129,7 +145,7 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
 
   const handleSubmit = useCallback(
     (values: AdministradorFormData | AdministradorEditFormData) => {
-      console.log("Form values:", values)
+      console.log('Form values:', values)
       onSubmit(true, values)
     },
     [onSubmit],
@@ -205,7 +221,11 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
                   <FormLabel>Contraseña</FormLabel>
                   <div className="relative">
                     <FormControl>
-                      <Input placeholder="********" type={showPassword ? "text" : "password"} {...field} />
+                      <Input
+                        placeholder="********"
+                        type={showPassword ? 'text' : 'password'}
+                        {...field}
+                      />
                     </FormControl>
                     <Button
                       type="button"
@@ -214,7 +234,7 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
                       className="absolute right-0 top-0 h-9 px-3"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? "Ocultar" : "Mostrar"}
+                      {showPassword ? 'Ocultar' : 'Mostrar'}
                     </Button>
                   </div>
                   <FormMessage />
@@ -230,7 +250,11 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
                   <FormLabel>Confirmar contraseña</FormLabel>
                   <div className="relative">
                     <FormControl>
-                      <Input placeholder="********" type={showConfirmPassword ? "text" : "password"} {...field} />
+                      <Input
+                        placeholder="********"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        {...field}
+                      />
                     </FormControl>
                     <Button
                       type="button"
@@ -239,7 +263,7 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
                       className="absolute right-0 top-0 h-9 px-3"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
-                      {showConfirmPassword ? "Ocultar" : "Mostrar"}
+                      {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
                     </Button>
                   </div>
                   <FormMessage />
@@ -250,7 +274,7 @@ export function AdministradorForm({ onSubmit, administrador, isEditMode = false 
         )}
 
         <Button type="submit" className="w-full bg-[#00bf7d] hover:bg-[#00bf7d]/90 mt-4">
-          {isEditMode ? "Actualizar Administrador" : "Guardar Administrador"}
+          {isEditMode ? 'Actualizar Administrador' : 'Guardar Administrador'}
         </Button>
       </form>
     </Form>

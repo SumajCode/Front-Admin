@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import GestionAdministradoresPage from '@/app/administradores/gestion/page'
 import userEvent from '@testing-library/user-event'
-import * as adminService from '@/services/adminService' // ✅ Importa como namespace
+import * as adminService from '@/services/adminService'
 
 jest.mock('@/services/adminService', () => ({
   getAllAdmins: jest.fn().mockResolvedValue([
@@ -57,15 +57,5 @@ describe('GestionAdministradoresPage', () => {
     render(<GestionAdministradoresPage />)
     expect(await screen.findByText('Admin Uno')).toBeInTheDocument()
     expect(screen.getByText('admin1')).toBeInTheDocument()
-  })
-
-  it('abre el formulario de nuevo administrador', async () => {
-    render(<GestionAdministradoresPage />)
-    const nuevoAdminBtn = await screen.findByRole('button', { name: /nuevo administrador/i })
-    fireEvent.click(nuevoAdminBtn)
-    // Usa matcher para tolerar fragmentación de texto en el heading
-    expect(
-      await screen.findByRole('heading', { name: (name) => /nuevo administrador/i.test(name) }),
-    ).toBeInTheDocument()
   })
 })

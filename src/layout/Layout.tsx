@@ -1,11 +1,15 @@
-"use client"
+'use client'
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { Toaster } from "@/components/ui/toaster"
-import { initializeCrossDomainAuth, isAuthenticated as checkAuth, redirectToLogin } from "@/utils/authUtils"
+import type React from 'react'
+import { useEffect, useState } from 'react'
+import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/app-sidebar'
+import { Toaster } from '@/components/ui/toaster'
+import {
+  initializeCrossDomainAuth,
+  isAuthenticated as checkAuth,
+  redirectToLogin,
+} from '@/utils/authUtils'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -16,36 +20,36 @@ export default function Layout({ children }: LayoutProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    console.log("🏗️ Layout: Initializing authentication...")
+    console.log('🏗️ Layout: Initializing authentication...')
 
     const initializeAuth = async () => {
       try {
         // Procesar tokens de query parameters o verificar localStorage
-        console.log("🔐 Layout: Initializing cross-domain authentication...")
+        console.log('🔐 Layout: Initializing cross-domain authentication...')
         const authResult = initializeCrossDomainAuth()
-        console.log("🔐 Layout: Auth result:", authResult)
+        console.log('🔐 Layout: Auth result:', authResult)
 
         let authenticated = false
 
         if (authResult.success) {
-          console.log("✅ Layout: Authentication successful from query params or localStorage")
+          console.log('✅ Layout: Authentication successful from query params or localStorage')
           authenticated = true
         } else {
           // Fallback: verificar localStorage
-          console.log("🔍 Layout: Checking stored authentication...")
+          console.log('🔍 Layout: Checking stored authentication...')
           authenticated = checkAuth()
-          console.log("🏗️ Layout: Initial auth check result:", authenticated)
+          console.log('🏗️ Layout: Initial auth check result:', authenticated)
         }
 
         if (authenticated) {
           setIsAuthenticated(true)
         } else {
-          console.log("❌ Layout: No authentication found, redirecting to login")
+          console.log('❌ Layout: No authentication found, redirecting to login')
           redirectToLogin()
           return
         }
       } catch (error) {
-        console.error("❌ Layout: Error during authentication:", error)
+        console.error('❌ Layout: Error during authentication:', error)
         redirectToLogin()
       } finally {
         setIsLoading(false)
@@ -55,11 +59,11 @@ export default function Layout({ children }: LayoutProps) {
     initializeAuth()
   }, [])
 
-  console.log("🏗️ Layout: Current state - loading:", isLoading, "authenticated:", isAuthenticated)
+  console.log('🏗️ Layout: Current state - loading:', isLoading, 'authenticated:', isAuthenticated)
 
   // Mostrar loading mientras se verifica la autenticación
   if (isLoading) {
-    console.log("⏳ Layout: Showing loading state")
+    console.log('⏳ Layout: Showing loading state')
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#00bf7d]"></div>
@@ -69,7 +73,7 @@ export default function Layout({ children }: LayoutProps) {
 
   // Si no está autenticado, mostrar mensaje de redirección
   if (!isAuthenticated) {
-    console.log("🔄 Layout: Showing redirect message")
+    console.log('🔄 Layout: Showing redirect message')
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center space-y-4">
@@ -80,7 +84,7 @@ export default function Layout({ children }: LayoutProps) {
     )
   }
 
-  console.log("🏗️ Layout: User authenticated, rendering main layout")
+  console.log('🏗️ Layout: User authenticated, rendering main layout')
   return (
     <SidebarProvider>
       <AppSidebar />

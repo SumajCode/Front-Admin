@@ -1,18 +1,31 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, Pencil, Loader2 } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
-import { DocenteForm } from "@/components/docentes/docente-form"
-import { useToast } from "@/hooks/use-toast"
-import type { Docente, DocenteFormData } from "@/types/docente"
-import { mapAPIToDocente, mapFormToAPICreate, mapFormToAPIUpdate } from "@/types/docente"
-import { useCallback } from "react"
-import { docenteService } from "@/services/docenteService"
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { PlusCircle, Pencil, Loader2 } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { Skeleton } from '@/components/ui/skeleton'
+import { DocenteForm } from '@/components/docentes/docente-form'
+import { useToast } from '@/hooks/use-toast'
+import type { Docente, DocenteFormData } from '@/types/docente'
+import { mapAPIToDocente, mapFormToAPICreate, mapFormToAPIUpdate } from '@/types/docente'
+import { useCallback } from 'react'
+import { docenteService } from '@/services/docenteService'
 
 export default function DocentesPage() {
   const [teachers, setTeachers] = useState<Docente[]>([])
@@ -31,11 +44,11 @@ export default function DocentesPage() {
       const docentesMapped = docentesAPI.map(mapAPIToDocente)
       setTeachers(docentesMapped)
     } catch (error) {
-      console.error("Error al cargar docentes:", error)
+      console.error('Error al cargar docentes:', error)
       toast({
-        title: "Error al cargar docentes",
-        description: error instanceof Error ? error.message : "Ocurrió un error inesperado",
-        variant: "destructive",
+        title: 'Error al cargar docentes',
+        description: error instanceof Error ? error.message : 'Ocurrió un error inesperado',
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -51,23 +64,23 @@ export default function DocentesPage() {
     async (formData: DocenteFormData) => {
       try {
         setSubmitting(true)
-        console.log("📦 Datos del formulario recibidos:", formData)
+        console.log('📦 Datos del formulario recibidos:', formData)
 
         if (isEditMode && currentDocente) {
           // Actualizar
           await docenteService.updateDocente(mapFormToAPIUpdate(formData, currentDocente.id))
           toast({
-            title: "Docente actualizado",
-            description: "El docente ha sido actualizado correctamente.",
-            variant: "default",
+            title: 'Docente actualizado',
+            description: 'El docente ha sido actualizado correctamente.',
+            variant: 'default',
           })
         } else {
           // Crear nuevo
           await docenteService.createDocente(mapFormToAPICreate(formData))
           toast({
-            title: "Docente registrado",
-            description: "El docente ha sido registrado correctamente.",
-            variant: "default",
+            title: 'Docente registrado',
+            description: 'El docente ha sido registrado correctamente.',
+            variant: 'default',
           })
         }
 
@@ -77,11 +90,11 @@ export default function DocentesPage() {
         // Recargar la lista de docentes
         await fetchTeachers()
       } catch (error) {
-        console.error("❌ Error en operación de docente:", error)
+        console.error('❌ Error en operación de docente:', error)
         toast({
-          title: "Error en operación",
-          description: error instanceof Error ? error.message : "Ocurrió un error inesperado.",
-          variant: "destructive",
+          title: 'Error en operación',
+          description: error instanceof Error ? error.message : 'Ocurrió un error inesperado.',
+          variant: 'destructive',
         })
       } finally {
         setSubmitting(false)
@@ -184,12 +197,14 @@ export default function DocentesPage() {
                     <TableCell>{teacher.id}</TableCell>
                     <TableCell className="font-medium">{teacher.name}</TableCell>
                     <TableCell>{teacher.email}</TableCell>
-                    <TableCell>{teacher.telefono || "N/A"}</TableCell>
-                    <TableCell>{teacher.usuario || "N/A"}</TableCell>
+                    <TableCell>{teacher.telefono || 'N/A'}</TableCell>
+                    <TableCell>{teacher.usuario || 'N/A'}</TableCell>
                     <TableCell>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          teacher.status === "Activo" ? "bg-[#00bf7d]/20 text-[#00bf7d]" : "bg-red-100 text-red-800"
+                          teacher.status === 'Activo'
+                            ? 'bg-[#00bf7d]/20 text-[#00bf7d]'
+                            : 'bg-red-100 text-red-800'
                         }`}
                       >
                         {teacher.status}
@@ -223,22 +238,26 @@ export default function DocentesPage() {
               {submitting ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {isEditMode ? "Actualizando..." : "Guardando..."}
+                  {isEditMode ? 'Actualizando...' : 'Guardando...'}
                 </div>
               ) : isEditMode ? (
-                "Editar Docente"
+                'Editar Docente'
               ) : (
-                "Nuevo Docente"
+                'Nuevo Docente'
               )}
             </SheetTitle>
             <SheetDescription>
               {isEditMode
-                ? "Modifique los datos del docente y guarde los cambios."
-                : "Complete el formulario para registrar un nuevo docente."}
+                ? 'Modifique los datos del docente y guarde los cambios.'
+                : 'Complete el formulario para registrar un nuevo docente.'}
             </SheetDescription>
           </SheetHeader>
           <div className="py-6">
-            <DocenteForm onSubmit={handleSuccess} docente={currentDocente ?? undefined} isEditMode={isEditMode} />
+            <DocenteForm
+              onSubmit={handleSuccess}
+              docente={currentDocente ?? undefined}
+              isEditMode={isEditMode}
+            />
           </div>
         </SheetContent>
       </Sheet>

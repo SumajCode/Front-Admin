@@ -1,11 +1,24 @@
-"use client"
+'use client'
 
-import { useState, useCallback, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2, Pencil, ToggleLeft, ToggleRight } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { useState, useCallback, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { PlusCircle, Trash2, Pencil, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,11 +28,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { useToast } from "@/hooks/use-toast"
-import { AdministradorForm } from "@/components/administradores/administrador-form"
-import type { Administrador, AdministradorFormData, AdministradorEditFormData } from "@/types/administrador"
-import adminService from "@/services/adminService"
+} from '@/components/ui/alert-dialog'
+import { useToast } from '@/hooks/use-toast'
+import { AdministradorForm } from '@/components/administradores/administrador-form'
+import type {
+  Administrador,
+  AdministradorFormData,
+  AdministradorEditFormData,
+} from '@/types/administrador'
+import adminService from '@/services/adminService'
 
 export default function GestionAdministradoresPage() {
   const [admins, setAdmins] = useState<Administrador[]>([])
@@ -36,14 +53,14 @@ export default function GestionAdministradoresPage() {
     setLoading(true)
     try {
       const apiAdmins = await adminService.getAllAdmins()
-      const { mapAdminFromAPI } = await import("@/types/administrador")
+      const { mapAdminFromAPI } = await import('@/types/administrador')
       const mappedAdmins = apiAdmins.map(mapAdminFromAPI)
       setAdmins(mappedAdmins)
     } catch (error) {
       toast({
-        title: "Error al cargar administradores",
-        description: error instanceof Error ? error.message : "Error desconocido",
-        variant: "destructive",
+        title: 'Error al cargar administradores',
+        description: error instanceof Error ? error.message : 'Error desconocido',
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -54,15 +71,15 @@ export default function GestionAdministradoresPage() {
     loadAdmins()
   }, [loadAdmins])
 
-  const activeAdminsCount = admins.filter((admin) => admin.status === "Activo").length
+  const activeAdminsCount = admins.filter((admin) => admin.status === 'Activo').length
 
   const handleSuccess = useCallback(
     async (success: boolean, formData?: AdministradorFormData | AdministradorEditFormData) => {
       if (!success) {
         toast({
-          title: isEditMode ? "Error al actualizar" : "Error al crear",
-          description: "La operación falló. Intente nuevamente.",
-          variant: "destructive",
+          title: isEditMode ? 'Error al actualizar' : 'Error al crear',
+          description: 'La operación falló. Intente nuevamente.',
+          variant: 'destructive',
         })
         setIsOpen(false)
         return
@@ -73,37 +90,37 @@ export default function GestionAdministradoresPage() {
         return
       }
 
-      setActionLoading(isEditMode ? "updating" : "creating")
+      setActionLoading(isEditMode ? 'updating' : 'creating')
 
       try {
         if (isEditMode && currentAdmin) {
-          const { mapEditFormDataToAPI, mapAdminFromAPI } = await import("@/types/administrador")
+          const { mapEditFormDataToAPI, mapAdminFromAPI } = await import('@/types/administrador')
           const apiData = mapEditFormDataToAPI(formData as AdministradorEditFormData)
           const updatedAdmin = await adminService.updateAdmin(currentAdmin.id, apiData)
           const mappedAdmin = mapAdminFromAPI(updatedAdmin)
           setAdmins((prev) => prev.map((a) => (a.id === currentAdmin.id ? mappedAdmin : a)))
           toast({
-            title: "Administrador actualizado",
-            description: "El administrador ha sido actualizado correctamente.",
-            variant: "success",
+            title: 'Administrador actualizado',
+            description: 'El administrador ha sido actualizado correctamente.',
+            variant: 'success',
           })
         } else {
-          const { mapFormDataToAPI, mapAdminFromAPI } = await import("@/types/administrador")
+          const { mapFormDataToAPI, mapAdminFromAPI } = await import('@/types/administrador')
           const apiData = mapFormDataToAPI(formData as AdministradorFormData)
           const newAdmin = await adminService.createAdmin(apiData)
           const mappedAdmin = mapAdminFromAPI(newAdmin)
           setAdmins((prev) => [mappedAdmin, ...prev])
           toast({
-            title: "Administrador creado",
-            description: "El administrador ha sido creado correctamente.",
-            variant: "success",
+            title: 'Administrador creado',
+            description: 'El administrador ha sido creado correctamente.',
+            variant: 'success',
           })
         }
       } catch (error) {
         toast({
-          title: isEditMode ? "Error al actualizar" : "Error al crear",
-          description: error instanceof Error ? error.message : "Error desconocido",
-          variant: "destructive",
+          title: isEditMode ? 'Error al actualizar' : 'Error al crear',
+          description: error instanceof Error ? error.message : 'Error desconocido',
+          variant: 'destructive',
         })
       } finally {
         setActionLoading(null)
@@ -130,7 +147,7 @@ export default function GestionAdministradoresPage() {
   const handleDeleteClick = useCallback(
     (admin: Administrador) => {
       setCurrentAdmin(admin)
-      if (activeAdminsCount <= 2 && admin.status === "Activo") {
+      if (activeAdminsCount <= 2 && admin.status === 'Activo') {
         setIsSecurityDialogOpen(true)
       } else {
         setIsDeleteDialogOpen(true)
@@ -149,15 +166,15 @@ export default function GestionAdministradoresPage() {
       await adminService.deleteAdmin(currentAdmin.id)
       setAdmins((prev) => prev.filter((a) => a.id !== currentAdmin.id))
       toast({
-        title: "Administrador eliminado",
-        description: "El administrador ha sido eliminado correctamente.",
-        variant: "success",
+        title: 'Administrador eliminado',
+        description: 'El administrador ha sido eliminado correctamente.',
+        variant: 'success',
       })
     } catch (error) {
       toast({
-        title: "Error al eliminar",
-        description: error instanceof Error ? error.message : "Error desconocido",
-        variant: "destructive",
+        title: 'Error al eliminar',
+        description: error instanceof Error ? error.message : 'Error desconocido',
+        variant: 'destructive',
       })
     } finally {
       setActionLoading(null)
@@ -167,8 +184,8 @@ export default function GestionAdministradoresPage() {
 
   const handleToggleStatus = useCallback(
     async (admin: Administrador) => {
-      const newStatus = admin.status === "Activo" ? false : true
-      if (admin.status === "Activo" && activeAdminsCount <= 2) {
+      const newStatus = admin.status === 'Activo' ? false : true
+      if (admin.status === 'Activo' && activeAdminsCount <= 2) {
         setCurrentAdmin(admin)
         setIsSecurityDialogOpen(true)
         return
@@ -177,20 +194,20 @@ export default function GestionAdministradoresPage() {
       setActionLoading(`toggling-${admin.id}`)
 
       try {
-        const { mapAdminFromAPI } = await import("@/types/administrador")
+        const { mapAdminFromAPI } = await import('@/types/administrador')
         const updatedAdmin = await adminService.toggleAdminStatus(admin.id, newStatus)
         const mappedAdmin = mapAdminFromAPI(updatedAdmin)
         setAdmins((prev) => prev.map((a) => (a.id === admin.id ? mappedAdmin : a)))
         toast({
-          title: "Estado actualizado",
-          description: `El administrador ha sido ${newStatus ? "activado" : "desactivado"} correctamente.`,
-          variant: "success",
+          title: 'Estado actualizado',
+          description: `El administrador ha sido ${newStatus ? 'activado' : 'desactivado'} correctamente.`,
+          variant: 'success',
         })
       } catch (error) {
         toast({
-          title: "Error al cambiar estado",
-          description: error instanceof Error ? error.message : "Error desconocido",
-          variant: "destructive",
+          title: 'Error al cambiar estado',
+          description: error instanceof Error ? error.message : 'Error desconocido',
+          variant: 'destructive',
         })
       } finally {
         setActionLoading(null)
@@ -216,10 +233,10 @@ export default function GestionAdministradoresPage() {
         <Button
           className="flex items-center gap-2 bg-[#00bf7d] hover:bg-[#00bf7d]/90 text-white"
           onClick={handleNewAdmin}
-          disabled={actionLoading === "creating"}
+          disabled={actionLoading === 'creating'}
         >
           <PlusCircle className="h-4 w-4" />
-          {actionLoading === "creating" ? "Creando..." : "Nuevo Administrador"}
+          {actionLoading === 'creating' ? 'Creando...' : 'Nuevo Administrador'}
         </Button>
       </div>
 
@@ -227,10 +244,12 @@ export default function GestionAdministradoresPage() {
         <CardHeader>
           <CardTitle>Listado de Administradores</CardTitle>
           <CardDescription>
-            Administre los usuarios con acceso al sistema. Puede crear, editar o eliminar administradores.
+            Administre los usuarios con acceso al sistema. Puede crear, editar o eliminar
+            administradores.
             <br />
             <span className="text-sm text-muted-foreground">
-              Total: {admins.length} | Activos: {activeAdminsCount} | Inactivos: {admins.length - activeAdminsCount}
+              Total: {admins.length} | Activos: {activeAdminsCount} | Inactivos:{' '}
+              {admins.length - activeAdminsCount}
             </span>
           </CardDescription>
         </CardHeader>
@@ -254,7 +273,9 @@ export default function GestionAdministradoresPage() {
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        admin.status === "Activo" ? "bg-[#00bf7d]/20 text-[#00bf7d]" : "bg-red-100 text-red-800"
+                        admin.status === 'Activo'
+                          ? 'bg-[#00bf7d]/20 text-[#00bf7d]'
+                          : 'bg-red-100 text-red-800'
                       }`}
                     >
                       {admin.status}
@@ -267,7 +288,7 @@ export default function GestionAdministradoresPage() {
                         size="sm"
                         className="border-[#0073e6] hover:bg-[#0073e6]/10"
                         onClick={() => handleEditAdmin(admin)}
-                        disabled={actionLoading === "updating"}
+                        disabled={actionLoading === 'updating'}
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Editar</span>
@@ -276,21 +297,23 @@ export default function GestionAdministradoresPage() {
                         variant="outline"
                         size="sm"
                         className={`${
-                          admin.status === "Activo"
-                            ? "border-orange-500 hover:bg-orange-50 text-orange-600"
-                            : "border-green-500 hover:bg-green-50 text-green-600"
+                          admin.status === 'Activo'
+                            ? 'border-orange-500 hover:bg-orange-50 text-orange-600'
+                            : 'border-green-500 hover:bg-green-50 text-green-600'
                         }`}
                         onClick={() => handleToggleStatus(admin)}
                         disabled={actionLoading === `toggling-${admin.id}`}
                       >
                         {actionLoading === `toggling-${admin.id}` ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                        ) : admin.status === "Activo" ? (
+                        ) : admin.status === 'Activo' ? (
                           <ToggleLeft className="h-4 w-4" />
                         ) : (
                           <ToggleRight className="h-4 w-4" />
                         )}
-                        <span className="sr-only">{admin.status === "Activo" ? "Desactivar" : "Activar"}</span>
+                        <span className="sr-only">
+                          {admin.status === 'Activo' ? 'Desactivar' : 'Activar'}
+                        </span>
                       </Button>
                       <Button
                         variant="outline"
@@ -323,15 +346,19 @@ export default function GestionAdministradoresPage() {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto p-6">
           <SheetHeader>
-            <SheetTitle>{isEditMode ? "Editar Administrador" : "Nuevo Administrador"}</SheetTitle>
+            <SheetTitle>{isEditMode ? 'Editar Administrador' : 'Nuevo Administrador'}</SheetTitle>
             <SheetDescription>
               {isEditMode
-                ? "Modifique los datos del administrador y guarde los cambios."
-                : "Complete el formulario para registrar un nuevo administrador."}
+                ? 'Modifique los datos del administrador y guarde los cambios.'
+                : 'Complete el formulario para registrar un nuevo administrador.'}
             </SheetDescription>
           </SheetHeader>
           <div className="py-6">
-            <AdministradorForm onSubmit={handleSuccess} administrador={currentAdmin} isEditMode={isEditMode} />
+            <AdministradorForm
+              onSubmit={handleSuccess}
+              administrador={currentAdmin}
+              isEditMode={isEditMode}
+            />
           </div>
         </SheetContent>
       </Sheet>
@@ -341,7 +368,8 @@ export default function GestionAdministradoresPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>¿Está seguro de eliminar este administrador?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. El administrador será eliminado permanentemente del sistema.
+              Esta acción no se puede deshacer. El administrador será eliminado permanentemente del
+              sistema.
               {currentAdmin && (
                 <div className="mt-2 p-2 bg-muted rounded">
                   <strong>Usuario:</strong> {currentAdmin.username}
@@ -355,7 +383,10 @@ export default function GestionAdministradoresPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-red-500 hover:bg-red-600 text-white">
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -367,8 +398,8 @@ export default function GestionAdministradoresPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>No se puede realizar esta acción</AlertDialogTitle>
             <AlertDialogDescription>
-              Por razones de seguridad, no es posible eliminar o desactivar este administrador. El sistema debe mantener
-              al menos 2 administradores activos en todo momento.
+              Por razones de seguridad, no es posible eliminar o desactivar este administrador. El
+              sistema debe mantener al menos 2 administradores activos en todo momento.
               <br />
               <br />
               <strong>Administradores activos actuales:</strong> {activeAdminsCount}
